@@ -1,4 +1,6 @@
-﻿using AllPhi.HoGent.Datalake.Data.Store;
+﻿using AllPhi.HoGent.Datalake.Data.Models;
+using AllPhi.HoGent.Datalake.Data.Store;
+using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,8 +19,36 @@ namespace AllPhi.HoGent.RestApi.Controllers
             _fuelCardDriverStore = fuelCardDriverStore;
         }
 
-        // [HttpGet("getdriverbyid/{driverId}")]
-        // [HttpGet("getdriverincludedfuelcardsbydriverid/{driverId}")]
+        [HttpGet("getdriverbyid/{driverId}")]
+        public async Task<IActionResult> GetDriverById(Guid driverId)
+        {
+            Driver driver = await _driverStore.GetDriverByIdAsync(driverId);
+            if (driver == null)
+            {
+                return NotFound();
+            }
+            DriverDto driverDto = MapToDto(driver);
+            return Ok(driverDto);
+        }
+
+        private DriverDto MapToDto(Driver driver)
+        {
+            return new DriverDto
+            {
+                Id = driver.Id,
+                FirstName = driver.FirstName,
+                LastName = driver.LastName,
+                City = driver.City,
+                Street = driver.Street,
+                HouseNumber = driver.HouseNumber,
+                PostalCode = driver.PostalCode,
+                RegisterNumber = driver.RegisterNumber,
+                TypeOfDriverLicense = driver.TypeOfDriverLicense,
+                Status = driver.Status
+            };
+            
+        }
+        //[HttpGet("getdriverincludedfuelcardsbydriverid/{driverId}")]
         // [HttpGet("getalldrivers")]
         // [HttpPost("adddriver")]
         // [HttpPost("updatedriver")]
