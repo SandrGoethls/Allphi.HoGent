@@ -24,7 +24,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
         {
             using var dbContext = await _dbContextFactory.CreateDbContextAsync();
 
-            return await dbContext.Drivers.FirstOrDefaultAsync(x => x.Id == driverId);
+            return await dbContext.Drivers.FirstOrDefaultAsync(x => x.Id == driverId) ?? new();
         }
 
         public async Task<(List<Driver>, int)> GetAllDriversAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
