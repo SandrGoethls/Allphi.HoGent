@@ -13,28 +13,23 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 {
     public class FuelCardStore : IFuelCardStore
     {
-        private readonly IDbContextFactory<AllPhiDatalakeContext> _dbContextFactory;
-
-        public FuelCardStore(IDbContextFactory<AllPhiDatalakeContext> dbContextFactory)
+        private readonly AllPhiDatalakeContext _dbContext;
+        public FuelCardStore(AllPhiDatalakeContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
         }
 
         public async Task<FuelCard> GetFuelCardByFuelCardIdAsync(Guid fuelCardId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            return await dbContext.FuelCards.Include(x => x.FuelCardFuelTypes).FirstOrDefaultAsync(x => x.Id == fuelCardId);
+            return await _dbContext.FuelCards.Include(x => x.FuelCardFuelTypes).FirstOrDefaultAsync(x => x.Id == fuelCardId);
 
         }
 
         public async Task<(List<FuelCard>, int)> GetAllFuelCardsAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             List<FuelCard> fuelCards = new();
 
-            IQueryable<FuelCard> fuelCardsQuery = dbContext.FuelCards.Include(x => x.FuelCardFuelTypes);
+            IQueryable<FuelCard> fuelCardsQuery = _dbContext.FuelCards.Include(x => x.FuelCardFuelTypes);
 
             IQueryable<FuelCard> sortedFuelCards = sortBy switch
             {
@@ -58,25 +53,23 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task AddFuelCard(FuelCard fuelCard)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            bool existingFuelCard = await dbContext.FuelCards.AnyAsync(x => x.CardNumber == fuelCard.CardNumber);
+            bool existingFuelCard = await _dbContext.FuelCards.AnyAsync(x => x.CardNumber == fuelCard.CardNumber);
 
             if (!existingFuelCard)
             {
                 try
                 {
-                    await dbContext.Database.BeginTransactionAsync();
+                    await _dbContext.Database.BeginTransactionAsync();
 
-                    await dbContext.FuelCards.AddAsync(fuelCard);
+                    await _dbContext.FuelCards.AddAsync(fuelCard);
 
-                    await dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
-                    await dbContext.Database.CommitTransactionAsync();
+                    await _dbContext.Database.CommitTransactionAsync();
                 }
                 catch
                 {
-                    await dbContext.Database.RollbackTransactionAsync();
+                    await _dbContext.Database.RollbackTransactionAsync();
                     throw;
                 }
             }
@@ -86,9 +79,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task UpdateFuelCard(FuelCard fuelCard)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var existingFuelCard = await dbContext.FuelCards.FindAsync(fuelCard.Id);
+            var existingFuelCard = await _dbContext.FuelCards.FindAsync(fuelCard.Id);
             if (existingFuelCard == null)
             {
                 throw new Exception("FuelCard not found.");
@@ -96,36 +87,36 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var fuelCardTypes = dbContext.FuelCardFuelTypes.Where(x => x.FuelCardId == fuelCard.Id);
-                dbContext.FuelCardFuelTypes.RemoveRange(fuelCardTypes);
-                await dbContext.SaveChangesAsync();
+                var fuelCardTypes = _dbContext.FuelCardFuelTypes.Where(x => x.FuelCardId == fuelCard.Id);
+                _dbContext.FuelCardFuelTypes.RemoveRange(fuelCardTypes);
+                await _dbContext.SaveChangesAsync();
 
-                bool existingFuelCardNumber = await dbContext.FuelCards.AnyAsync(x => x.CardNumber == fuelCard.CardNumber && x.Id != fuelCard.Id);
+                bool existingFuelCardNumber = await _dbContext.FuelCards.AnyAsync(x => x.CardNumber == fuelCard.CardNumber && x.Id != fuelCard.Id);
                 if (!existingFuelCardNumber)
                 {
-                    dbContext.Entry(existingFuelCard).CurrentValues.SetValues(fuelCard);
+                    _dbContext.Entry(existingFuelCard).CurrentValues.SetValues(fuelCard);
 
                     if (fuelCard.FuelCardFuelTypes != null && fuelCard.FuelCardFuelTypes.Any())
                     {
-                        await dbContext.FuelCardFuelTypes.AddRangeAsync(fuelCard.FuelCardFuelTypes);
+                        await _dbContext.FuelCardFuelTypes.AddRangeAsync(fuelCard.FuelCardFuelTypes);
                     }
 
-                    await dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
-                    await dbContext.Database.CommitTransactionAsync();
+                    await _dbContext.Database.CommitTransactionAsync();
                 }
                 else
                 {
-                    await dbContext.Database.RollbackTransactionAsync();
+                    await _dbContext.Database.RollbackTransactionAsync();
                     throw new Exception("A fuelcard already exist with the same cardnumber!");
                 }
 
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
 
@@ -133,9 +124,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task RemoveFuelCard(Guid fuelCardId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var existingFuelCard = await dbContext.FuelCards.FindAsync(fuelCardId);
+            var existingFuelCard = await _dbContext.FuelCards.FindAsync(fuelCardId);
             if (existingFuelCard == null)
             {
                 throw new Exception("FuelCard not found.");
@@ -143,20 +132,20 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var relatedEntries = dbContext.FuelCardDrivers.Where(fcd => fcd.FuelCardId == fuelCardId);
-                dbContext.FuelCardDrivers.RemoveRange(relatedEntries);
+                var relatedEntries = _dbContext.FuelCardDrivers.Where(fcd => fcd.FuelCardId == fuelCardId);
+                _dbContext.FuelCardDrivers.RemoveRange(relatedEntries);
 
-                dbContext.FuelCards.Remove(existingFuelCard);
+                _dbContext.FuelCards.Remove(existingFuelCard);
 
-                await dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }

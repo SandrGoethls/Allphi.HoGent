@@ -7,7 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-builder.Services.AddDbContextFactory<AllPhiDatalakeContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Development")));
+//builder.Services.AddDbContextFactory<AllPhiDatalakeContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Development")));
+
+builder.Services.AddDbContext<AllPhiDatalakeContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Development")));
 
 builder.Services.AddScoped<IFuelCardStore, FuelCardStore>();
 builder.Services.AddScoped<IVehicleStore, VehicleStore>();

@@ -13,20 +13,18 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 {
     public class FuelCardDriverStore : IFuelCardDriverStore
     {
-        private readonly IDbContextFactory<AllPhiDatalakeContext> _dbContextFactory;
+        private readonly AllPhiDatalakeContext _dbContext;
 
-        public FuelCardDriverStore(IDbContextFactory<AllPhiDatalakeContext> dbContextFactory)
+        public FuelCardDriverStore(AllPhiDatalakeContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
         }
 
         public async Task<(List<FuelCardDriver>, int)> GetAllFuelCardDriverAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             List<FuelCardDriver> fuelCardDrivers = new();
 
-            IQueryable<FuelCardDriver> fuelCardDriverQuery = dbContext.FuelCardDrivers.Include(x => x.Driver).Include(x => x.FuelCard);
+            IQueryable<FuelCardDriver> fuelCardDriverQuery = _dbContext.FuelCardDrivers.Include(x => x.Driver).Include(x => x.FuelCard);
 
             IQueryable<FuelCardDriver> sortedFuelCardDrivers = sortBy switch
             {
@@ -48,9 +46,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task<List<FuelCardDriver>> GetDriverWithConnectedFuelCardsByDriverId(Guid driverId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var driverWithFuelCards = dbContext.FuelCardDrivers.Where(x => x.DriverId == driverId)
+            var driverWithFuelCards = _dbContext.FuelCardDrivers.Where(x => x.DriverId == driverId)
                                                                 .Include(x => x.FuelCard)
                                                                 .ThenInclude(x => x.FuelCardFuelTypes)
                                                                 .ToList() ?? new List<FuelCardDriver>();
@@ -59,9 +55,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task<List<FuelCardDriver>> GetFuelCardWithConnectedDriversByFuelCardId(Guid fuelCardId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var driverWithFuelCards = dbContext.FuelCardDrivers.Where(x => x.FuelCardId == fuelCardId)
+            var driverWithFuelCards = _dbContext.FuelCardDrivers.Where(x => x.FuelCardId == fuelCardId)
                                                                .Include(x => x.Driver)
                                                                .ToList() ?? new List<FuelCardDriver>();
             return driverWithFuelCards;
@@ -69,9 +63,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task<List<FuelCardDriver>> GetDriverAndFuelCardByDriverIdAndFuelCardId(Guid driverId, Guid fuelCardId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var driverWithFuelCards = dbContext.FuelCardDrivers.Where(x => x.DriverId == driverId && x.FuelCardId == fuelCardId)
+            var driverWithFuelCards = _dbContext.FuelCardDrivers.Where(x => x.DriverId == driverId && x.FuelCardId == fuelCardId)
                                                                .Include(x => x.Driver)
                                                                .Include(x => x.FuelCard)
                                                                .ToList() ?? new List<FuelCardDriver>();
@@ -80,97 +72,89 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task UpdateDriverWithFuelCardsByDriverIdAndListOfFuelCardIds(Guid driverId, List<Guid> newFuelCardIds)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var existingRelations = dbContext.FuelCardDrivers.Where(fcd => fcd.DriverId == driverId);
-                dbContext.FuelCardDrivers.RemoveRange(existingRelations);
-                await dbContext.SaveChangesAsync();
+                var existingRelations = _dbContext.FuelCardDrivers.Where(fcd => fcd.DriverId == driverId);
+                _dbContext.FuelCardDrivers.RemoveRange(existingRelations);
+                await _dbContext.SaveChangesAsync();
 
                 foreach (var fuelCardId in newFuelCardIds)
                 {
-                    dbContext.FuelCardDrivers.Add(new FuelCardDriver { DriverId = driverId, FuelCardId = fuelCardId });
+                    _dbContext.FuelCardDrivers.Add(new FuelCardDriver { DriverId = driverId, FuelCardId = fuelCardId });
                 }
 
-                await dbContext.SaveChangesAsync();
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.SaveChangesAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
 
         public async Task UpdateFuelCardWithDriversByFuelCardIdAndDriverIds(Guid fuelCardId, List<Guid> newDriverIds)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var existingRelations = dbContext.FuelCardDrivers.Where(fcd => fcd.FuelCardId == fuelCardId);
-                dbContext.FuelCardDrivers.RemoveRange(existingRelations);
+                var existingRelations = _dbContext.FuelCardDrivers.Where(fcd => fcd.FuelCardId == fuelCardId);
+                _dbContext.FuelCardDrivers.RemoveRange(existingRelations);
 
                 foreach (var driverId in newDriverIds)
                 {
-                    dbContext.FuelCardDrivers.Add(new FuelCardDriver { DriverId = driverId, FuelCardId = fuelCardId });
+                    _dbContext.FuelCardDrivers.Add(new FuelCardDriver { DriverId = driverId, FuelCardId = fuelCardId });
                 }
 
-                await dbContext.SaveChangesAsync();
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.SaveChangesAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
 
         public async Task RemoveDriverWithConnectedFuelCardsByDriverId(Guid driverId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var relationsToRemove = dbContext.FuelCardDrivers.Where(fcd => fcd.DriverId == driverId);
+                var relationsToRemove = _dbContext.FuelCardDrivers.Where(fcd => fcd.DriverId == driverId);
 
-                dbContext.FuelCardDrivers.RemoveRange(relationsToRemove);
+                _dbContext.FuelCardDrivers.RemoveRange(relationsToRemove);
 
-                await dbContext.SaveChangesAsync();
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.SaveChangesAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
 
         public async Task RemoveFuelCardWithConnectedDriversByFuelCardId(Guid fuelCardId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var relationsToRemove = dbContext.FuelCardDrivers.Where(fcd => fcd.FuelCardId == fuelCardId);
+                var relationsToRemove = _dbContext.FuelCardDrivers.Where(fcd => fcd.FuelCardId == fuelCardId);
 
-                dbContext.FuelCardDrivers.RemoveRange(relationsToRemove);
+                _dbContext.FuelCardDrivers.RemoveRange(relationsToRemove);
 
-                await dbContext.SaveChangesAsync();
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.SaveChangesAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }

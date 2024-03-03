@@ -13,26 +13,21 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 {
     public class VehicleStore : IVehicleStore
     {
-        private readonly IDbContextFactory<AllPhiDatalakeContext> _dbContextFactory;
-
-        public VehicleStore(IDbContextFactory<AllPhiDatalakeContext> dbContextFactory)
+        private readonly AllPhiDatalakeContext _dbContext;
+        public VehicleStore(AllPhiDatalakeContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
         }
 
         public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            return await dbContext.Vehicles.FirstOrDefaultAsync(x => x.Id == vehicleId);
+            return await _dbContext.Vehicles.FirstOrDefaultAsync(x => x.Id == vehicleId);
         }
 
         public async Task<(List<Vehicle>, int)> GetAllVehiclesAsync([Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             List<Vehicle> vehicles = new();
-            IQueryable<Vehicle> vehiclesQuery = dbContext.Vehicles;
+            IQueryable<Vehicle> vehiclesQuery = _dbContext.Vehicles;
 
             IQueryable<Vehicle> sortedVehicles = sortBy switch
             {
@@ -57,25 +52,23 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task AddVehicle(Vehicle vehicle)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            bool existingvehicle = await dbContext.Vehicles.AnyAsync(x => x.ChassisNumber == vehicle.ChassisNumber);
+            bool existingvehicle = await _dbContext.Vehicles.AnyAsync(x => x.ChassisNumber == vehicle.ChassisNumber);
 
             if (!existingvehicle)
             {
                 try
                 {
-                    await dbContext.Database.BeginTransactionAsync();
+                    await _dbContext.Database.BeginTransactionAsync();
 
-                    await dbContext.Vehicles.AddAsync(vehicle);
+                    await _dbContext.Vehicles.AddAsync(vehicle);
 
-                    await dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
-                    await dbContext.Database.CommitTransactionAsync();
+                    await _dbContext.Database.CommitTransactionAsync();
                 }
                 catch
                 {
-                    await dbContext.Database.RollbackTransactionAsync();
+                    await _dbContext.Database.RollbackTransactionAsync();
                     throw;
                 }
 
@@ -86,9 +79,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task UpdateVehicle(Vehicle vehicle)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var existingVehicle = await dbContext.Vehicles.FindAsync(vehicle.Id);
+            var existingVehicle = await _dbContext.Vehicles.FindAsync(vehicle.Id);
             if (existingVehicle == null)
             {
                 throw new Exception("Vehicle not found.");
@@ -96,26 +87,24 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                dbContext.Entry(existingVehicle).CurrentValues.SetValues(vehicle);
+                _dbContext.Entry(existingVehicle).CurrentValues.SetValues(vehicle);
 
-                await dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
 
         public async Task RemoveVehicle(Guid vehicleId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var existingVehicle = await dbContext.Vehicles.FindAsync(vehicleId);
+            var existingVehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
             if (existingVehicle == null)
             {
                 throw new Exception("Vehicle not found.");
@@ -123,17 +112,17 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                dbContext.Vehicles.Remove(existingVehicle);
+                _dbContext.Vehicles.Remove(existingVehicle);
 
-                await dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
