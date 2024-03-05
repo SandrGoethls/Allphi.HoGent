@@ -13,27 +13,24 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 {
     public class DriverStore : IDriverStore
     {
-        private readonly IDbContextFactory<AllPhiDatalakeContext> _dbContextFactory;
+        private readonly AllPhiDatalakeContext _dbContext;
 
-        public DriverStore(IDbContextFactory<AllPhiDatalakeContext> dbContextFactory)
+        public DriverStore(AllPhiDatalakeContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+
+            _dbContext = dbContext;
         }
 
         public async Task<Driver> GetDriverByIdAsync(Guid driverId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            return await dbContext.Drivers.FirstOrDefaultAsync(x => x.Id == driverId) ?? new();
+            return await _dbContext.Drivers.FirstOrDefaultAsync(x => x.Id == driverId) ?? new();
         }
 
         public async Task<(List<Driver>, int)> GetAllDriversAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             List<Driver> drivers = new();
 
-            IQueryable<Driver> driverQuery = dbContext.Drivers;
+            IQueryable<Driver> driverQuery = _dbContext.Drivers;
 
             IQueryable<Driver> sorteddrivers = sortBy switch
             {
@@ -57,24 +54,22 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task AddDriver(Driver driver)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            bool existingFuelCard = await dbContext.Drivers.AnyAsync(x => x.RegisterNumber == driver.RegisterNumber);
+            bool existingFuelCard = await _dbContext.Drivers.AnyAsync(x => x.RegisterNumber == driver.RegisterNumber);
 
             if (!existingFuelCard)
             {
                 try
                 {
-                    await dbContext.Database.BeginTransactionAsync();
+                    await _dbContext.Database.BeginTransactionAsync();
 
-                    await dbContext.Drivers.AddAsync(driver);
-                    await dbContext.SaveChangesAsync();
+                    await _dbContext.Drivers.AddAsync(driver);
+                    await _dbContext.SaveChangesAsync();
 
-                    await dbContext.Database.CommitTransactionAsync();
+                    await _dbContext.Database.CommitTransactionAsync();
                 }
                 catch (Exception ex)
                 {
-                    await dbContext.Database.RollbackTransactionAsync();
+                    await _dbContext.Database.RollbackTransactionAsync();
                     throw;
                 }
             }
@@ -84,8 +79,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task UpdateDriver(Driver driver)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-            var existingDriver = await dbContext.Drivers.FindAsync(driver.Id);
+            var existingDriver = await _dbContext.Drivers.FindAsync(driver.Id);
 
             if (existingDriver == null)
             {
@@ -94,25 +88,24 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                dbContext.Entry(existingDriver).CurrentValues.SetValues(driver);
+                _dbContext.Entry(existingDriver).CurrentValues.SetValues(driver);
 
-                await dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
 
         public async Task RemoveDriver(Guid driverId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-            var driverToRemove = await dbContext.Drivers.FindAsync(driverId);
+            var driverToRemove = await _dbContext.Drivers.FindAsync(driverId);
 
             if (driverToRemove == null)
             {
@@ -121,20 +114,20 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var relatedEntries = dbContext.FuelCardDrivers.Where(fcd => fcd.DriverId == driverId);
-                dbContext.FuelCardDrivers.RemoveRange(relatedEntries);
+                var relatedEntries = _dbContext.FuelCardDrivers.Where(fcd => fcd.DriverId == driverId);
+                _dbContext.FuelCardDrivers.RemoveRange(relatedEntries);
 
-                dbContext.Drivers.Remove(driverToRemove);
+                _dbContext.Drivers.Remove(driverToRemove);
 
-                await dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }

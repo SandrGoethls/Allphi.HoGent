@@ -13,6 +13,7 @@ builder.Services.AddScoped<IFuelCardServices, FuelCardServices>();
 builder.Services.AddScoped<IVehicleServices, VehicleServices>();
 builder.Services.AddScoped<IDriverServices, DriverServices>();
 builder.Services.AddScoped<IFuelCardDriverServices, FuelCardDriverServices>();
+builder.Services.AddScoped<IDriverVehicleServices, DriverVehicleServices>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

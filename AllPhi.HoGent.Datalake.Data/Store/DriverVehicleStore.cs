@@ -13,20 +13,18 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 {
     public class DriverVehicleStore : IDriverVehicleStore
     {
-        private readonly IDbContextFactory<AllPhiDatalakeContext> _dbContextFactory;
+        private readonly AllPhiDatalakeContext _dbContext;
 
-        public DriverVehicleStore(IDbContextFactory<AllPhiDatalakeContext> dbContextFactory)
+        public DriverVehicleStore(AllPhiDatalakeContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
         }
 
         public async Task<(List<DriverVehicle>, int)> GetAllDriverVehicleAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             List<DriverVehicle> driverVehicles = new();
 
-            IQueryable<DriverVehicle> driverVehiclesQuery = dbContext.DriverVehicle.Include(x => x.Driver).Include(x => x.Vehicle);
+            IQueryable<DriverVehicle> driverVehiclesQuery = _dbContext.DriverVehicle.Include(x => x.Driver).Include(x => x.Vehicle);
 
             IQueryable<DriverVehicle> sortedDriverVehicles = sortBy switch
             {
@@ -48,9 +46,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task<List<DriverVehicle>> GetDriverWithConnectedVehicleByDriverId(Guid driverId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var driverWithVehicles = dbContext.DriverVehicle.Where(x => x.DriverId == driverId)
+            var driverWithVehicles = _dbContext.DriverVehicle.Where(x => x.DriverId == driverId)
                                                                 .Include(x => x.Vehicle)
                                                                 .ToList() ?? new List<DriverVehicle>();
             return driverWithVehicles;
@@ -58,9 +54,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task<List<DriverVehicle>> GetVehicleWithConnectedDriversByVehicleId(Guid vehicleId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var vehicleWithDrivers = dbContext.DriverVehicle.Where(x => x.VehicleId == vehicleId)
+            var vehicleWithDrivers = _dbContext.DriverVehicle.Where(x => x.VehicleId == vehicleId)
                                                                .Include(x => x.Driver)
                                                                .ToList() ?? new List<DriverVehicle>();
             return vehicleWithDrivers;
@@ -68,9 +62,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task<List<DriverVehicle>> GetDriverAndVehicleByDriverIdAndVehicleId(Guid driverId, Guid vehicleId)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            var driverWithVehicle = dbContext.DriverVehicle.Where(x => x.DriverId == driverId && x.VehicleId == vehicleId)
+            var driverWithVehicle = _dbContext.DriverVehicle.Where(x => x.DriverId == driverId && x.VehicleId == vehicleId)
                                                                .Include(x => x.Driver)
                                                                .Include(x => x.Vehicle)
                                                                .ToList() ?? new List<DriverVehicle>();
@@ -79,53 +71,49 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task UpdateDriverWithVehiclesByDriverIdAndListOfVehicleIds(Guid driverId, List<Guid> newVehicleIds)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var existingRelations = dbContext.DriverVehicle.Where(fcd => fcd.DriverId == driverId);
-                dbContext.DriverVehicle.RemoveRange(existingRelations);
-                await dbContext.SaveChangesAsync();
+                var existingRelations = _dbContext.DriverVehicle.Where(fcd => fcd.DriverId == driverId);
+                _dbContext.DriverVehicle.RemoveRange(existingRelations);
+                await _dbContext.SaveChangesAsync();
 
                 foreach (var vehicleId in newVehicleIds)
                 {
-                    dbContext.DriverVehicle.Add(new DriverVehicle { DriverId = driverId, VehicleId = vehicleId });
+                    _dbContext.DriverVehicle.Add(new DriverVehicle { DriverId = driverId, VehicleId = vehicleId });
                 }
 
-                await dbContext.SaveChangesAsync();
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.SaveChangesAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
 
         public async Task UpdateVehicleWithDriversByFuelCardIdAndDriverIds(Guid vehicleId, List<Guid> newDriverIds)
         {
-            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
             try
             {
-                await dbContext.Database.BeginTransactionAsync();
+                await _dbContext.Database.BeginTransactionAsync();
 
-                var existingRelations = dbContext.DriverVehicle.Where(fcd => fcd.VehicleId == vehicleId);
-                dbContext.DriverVehicle.RemoveRange(existingRelations);
+                var existingRelations = _dbContext.DriverVehicle.Where(fcd => fcd.VehicleId == vehicleId);
+                _dbContext.DriverVehicle.RemoveRange(existingRelations);
 
                 foreach (var driverId in newDriverIds)
                 {
-                    dbContext.DriverVehicle.Add(new DriverVehicle { DriverId = driverId, VehicleId = vehicleId });
+                    _dbContext.DriverVehicle.Add(new DriverVehicle { DriverId = driverId, VehicleId = vehicleId });
                 }
 
-                await dbContext.SaveChangesAsync();
-                await dbContext.Database.CommitTransactionAsync();
+                await _dbContext.SaveChangesAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                await dbContext.Database.RollbackTransactionAsync();
+                await _dbContext.Database.RollbackTransactionAsync();
                 throw;
             }
         }
