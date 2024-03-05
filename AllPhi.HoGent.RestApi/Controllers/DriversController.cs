@@ -65,10 +65,10 @@ namespace AllPhi.HoGent.RestApi.Controllers
             await _driverStore.RemoveDriver(driverId);
             return Ok();
         }
-        
+
         // [HttpGet("getdriverincludedfuelcardsbydriverid/{driverId}")]
-        
-        
+
+        [ApiExplorerSettings(IgnoreApi = true)]
         private DriverDto MapToDriverDto(Driver driver)
         {
             return new DriverDto
@@ -86,6 +86,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             };
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         private DriverListDto MapToDriverListDto(List<Driver> drivers, int count)
         {
             return new DriverListDto

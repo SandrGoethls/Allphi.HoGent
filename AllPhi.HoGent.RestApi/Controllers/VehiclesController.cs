@@ -83,6 +83,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             return Ok(vehicleListDto);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         private VehicleDto MapToVehicleDto(Vehicle vehicle)
         {
             return new VehicleDto
@@ -99,6 +100,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             };
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         private VehicleListDto MapToVehicleListDto(List<Vehicle> vehicles, int count)
         {
             return new VehicleListDto
