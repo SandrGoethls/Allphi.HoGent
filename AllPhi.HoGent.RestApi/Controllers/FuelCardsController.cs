@@ -66,6 +66,8 @@ namespace AllPhi.HoGent.RestApi.Controllers
 
         // [HttpGet("getfuelcardincludeddriversbyfuelcardid/{fuelcardId}")]
 
+
+        [ApiExplorerSettings(IgnoreApi = true)]
         public FuelCardDto MapToDto(FuelCard fuelCard)
         {
             return new FuelCardDto
@@ -84,6 +86,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             };
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         private FuelCardListDto MapToFuelCardListDto(List<FuelCard> fuelCards, int count)
         {
             return new FuelCardListDto
