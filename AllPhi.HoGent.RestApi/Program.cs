@@ -1,6 +1,8 @@
 using AllPhi.HoGent.Datalake.Data.Context;
 using AllPhi.HoGent.Datalake.Data.Store;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,13 @@ builder.Services.AddScoped<IDriverStore, DriverStore>();
 builder.Services.AddScoped<IFuelCardDriverStore, FuelCardDriverStore>();
 builder.Services.AddScoped<IDriverVehicleStore, DriverVehicleStore>();
 
+builder.Services.AddRateLimiter(l => l.AddFixedWindowLimiter(policyName: "AllPhiFixedLimiter", Options =>
+{
+    Options.PermitLimit = 30;
+    Options.Window = TimeSpan.FromSeconds(10);
+    Options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+    Options.QueueLimit = 10;
+}));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,6 +44,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 

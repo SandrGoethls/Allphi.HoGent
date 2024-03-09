@@ -3,11 +3,13 @@ using AllPhi.HoGent.Datalake.Data.Store;
 using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AllPhi.HoGent.RestApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("AllPhiFixedLimiter")]
     public class DriversController : ControllerBase
     {
         private readonly IDriverStore _driverStore;
