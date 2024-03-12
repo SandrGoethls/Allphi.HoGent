@@ -1,9 +1,11 @@
-﻿using AllPhi.HoGent.Datalake.Data.Models;
+﻿using AllPhi.HoGent.Datalake.Data.Helpers;
+using AllPhi.HoGent.Datalake.Data.Models;
 using AllPhi.HoGent.Datalake.Data.Store;
 using AllPhi.HoGent.RestApi.Dto;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Runtime.InteropServices;
+using static AllPhi.HoGent.RestApi.Extensions.FuelCardMapperExtension;
 
 namespace AllPhi.HoGent.RestApi.Controllers
 {
@@ -22,20 +24,21 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getfuelcardbyid/{fuelcardId}")]
-        public async Task<IActionResult> GetFuelCardById(Guid fuelcardId)
+        public async Task<ActionResult<FuelCardDto>> GetFuelCardById(Guid fuelcardId)
         {
             var fuelCard = await _fuelCardStore.GetFuelCardByFuelCardIdAsync(fuelcardId);
             if (fuelCard == null)
             {
                 return NotFound();
             }
-            return Ok(fuelCard);
+            FuelCardDto fuelCardDto = MapToFuelCardDto(fuelCard);
+            return Ok(fuelCardDto);
         }
 
         [HttpGet("getallfuelcards")]
-        public async Task<IActionResult> GetAllFuelCards()
+        public async Task<ActionResult<FuelCardListDto>> GetAllFuelCards([Optional] string? sortby, [Optional] bool isAcending, Pagination? pagination)
         {
-            var (fuelCards, count) = await _fuelCardStore.GetAllFuelCardsAsync();
+            var (fuelCards, count) = await _fuelCardStore.GetAllFuelCardsAsync(sortby, isAcending, pagination);
             if (fuelCards == null)
             {
                 return NotFound();
@@ -46,16 +49,18 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpPost("addfuelcard")]
-        public async Task<IActionResult> AddFuelCard(FuelCard fuelCard)
+        public async Task<IActionResult> AddFuelCard(FuelCardDto fuelCardDto)
         {
+            FuelCard fuelCard = MapToFuelCard(fuelCardDto);
             await _fuelCardStore.AddFuelCard(fuelCard);
             return Ok();
         }
 
         [HttpPost("updatefuelcard")]
-        public async Task<IActionResult> UpdateFuelCard(FuelCard fuelCard)
+        public async Task<IActionResult> UpdateFuelCard(FuelCardDto fuelCard)
         {
-            await _fuelCardStore.UpdateFuelCard(fuelCard);
+            FuelCard fuelCardModel = MapToFuelCard(fuelCard);
+            await _fuelCardStore.UpdateFuelCard(fuelCardModel);
             return Ok();
         }
 
@@ -66,37 +71,20 @@ namespace AllPhi.HoGent.RestApi.Controllers
             return Ok();
         }
 
-        // [HttpGet("getfuelcardincludeddriversbyfuelcardid/{fuelcardId}")]
-
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public FuelCardDto MapToDto(FuelCard fuelCard)
+        [HttpGet("getfuelcardincludeddriversbyfuelcardid/{fuelcardId}")]
+        public async Task<ActionResult<FuelCardDto>> GetFuelCardIncludedDriversByFuelCardId(Guid fuelcardId)
         {
-            return new FuelCardDto
-            {
-                Id = fuelCard.Id,
-                Pin = fuelCard.Pin,
-                CardNumber = fuelCard.CardNumber,
-                ValidityDate = fuelCard.ValidityDate,
-                FuelCardFuelTypesDto = fuelCard.FuelCardFuelTypes.Select(f => new FuelCardFuelTypeDto
-                {
-                    FuelType = f.FuelType,
-                    FuelCardId = f.FuelCardId
-                }).ToList(),
-                Drivers = fuelCard.Drivers,
-                Status = fuelCard.Status
-            };
-        }
+            FuelCard fuelCard = await _fuelCardStore.GetFuelCardByFuelCardIdAsync(fuelcardId);
+            List<FuelCardDriver> fuelCardDriver = await _fuelCardDriverStore.GetFuelCardWithConnectedDriversByFuelCardId(fuelcardId);
 
-        [ApiExplorerSettings(IgnoreApi = true)]
-        private FuelCardListDto MapToFuelCardListDto(List<FuelCard> fuelCards, int count)
-        {
-            return new FuelCardListDto
+            if (fuelCard == null)
             {
-                FuelCards = fuelCards.Select(MapToDto).ToList(),
-                TotalItems = count
-            };
-            
+                return NotFound();
+            }
+
+            FuelCardDto fuelCardDto = MapToFuelCardDto(fuelCard);
+            fuelCardDto.Drivers = fuelCardDriver.Select(x => x.Driver).ToList();
+            return Ok(fuelCardDto);
         }
     }
 }
