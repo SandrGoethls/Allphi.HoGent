@@ -49,7 +49,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpPost("adddriver")]
-        public async Task<IActionResult> AddDriver(DriverDto driverDto)
+        public async Task<IActionResult> AddDriver([FromBody]DriverDto driverDto)
         {
             Driver driver = MapToDriver(driverDto);
             await _driverStore.AddDriver(driver);
@@ -57,7 +57,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpPost("updatedriver")]
-        public async Task<IActionResult> UpdateDriver(DriverDto driverDto)
+        public async Task<IActionResult> UpdateDriver([FromBody]DriverDto driverDto)
         {
             Driver driver = MapToDriver(driverDto);
             await _driverStore.UpdateDriver(driver);
