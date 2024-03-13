@@ -21,10 +21,17 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getallfuelcarddrivers")]
-        public async Task<IActionResult> GetAllFuelCardDrivers([FromQuery] string sortBy, [FromQuery] bool isAscending, [FromQuery] Pagination pagination)
+        public async Task<ActionResult<FuelCardDriverListDto>> GetAllFuelCardDrivers([FromQuery] string sortBy, [FromQuery] bool isAscending, [FromQuery] Pagination pagination)
         {
-            var (fuelCardDriverVehicles, count) = await _fuelCardDriverStore.GetAllFuelCardDriverAsync(sortBy, isAscending, pagination);
-            return Ok(new { fuelCardDriverVehicles, count });
+            var (fuelCardDrivers, count) = await _fuelCardDriverStore.GetAllFuelCardDriverAsync(sortBy, isAscending, pagination);
+            if (fuelCardDrivers == null)
+            {
+                return NotFound();
+            }
+            var fuelCardDriverListDto = new FuelCardDriverListDto();
+            fuelCardDriverListDto.Equals(MapToFuelCardDriverListDto(fuelCardDrivers));
+
+            return Ok(fuelCardDriverListDto);
         }
 
         [HttpGet("getdriverwithfuelcards/{driverId}")]
