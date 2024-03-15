@@ -4,6 +4,7 @@ using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using static AllPhi.HoGent.RestApi.Extensions.DriverVehicleMapperExtension;
 
 namespace AllPhi.HoGent.RestApi.Controllers
 {
@@ -20,7 +21,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getalldrivervehicles")]
-        public async Task<IActionResult> GetAllDriverVehicles()
+        public async Task<ActionResult<DriverVehicleListDto>> GetAllDriverVehicles()
         {
             var (driverVehicles, count) = await _driverVehicleStore.GetAllDriverVehicleAsync();
             if (driverVehicles == null)
@@ -33,7 +34,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getdriverwithvehiclesbydriverid/{driverId}")]
-        public async Task<IActionResult> GetDriverWithVehiclesByDriverId(Guid driverId)
+        public async Task<ActionResult<DriverVehicleListDto>> GetDriverWithVehiclesByDriverId(Guid driverId)
         {
             var driverVehicles = await _driverVehicleStore.GetDriverWithConnectedVehicleByDriverId(driverId);
             if (driverVehicles == null)
@@ -42,9 +43,9 @@ namespace AllPhi.HoGent.RestApi.Controllers
             }
             return Ok(MapToDriverVehicleListDto(driverVehicles, driverVehicles.Count));
         }
-        
+
         [HttpGet("getvehiclewithdrivers/{vehicleId}")]
-        public async Task<IActionResult> GetVehicleWithDriversByVehicleId(Guid vehicleId)
+        public async Task<ActionResult<DriverVehicleListDto>> GetVehicleWithDriversByVehicleId(Guid vehicleId)
         {
             var driverVehicles = await _driverVehicleStore.GetVehicleWithConnectedDriversByVehicleId(vehicleId);
             if (driverVehicles == null)
@@ -66,26 +67,6 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             await _driverVehicleStore.UpdateVehicleWithDriversByFuelCardIdAndDriverIds(vehicleId, newDriverIds);
             return Ok();
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public DriverVehicleDto MapToDriverVehicleDto(DriverVehicle driverVehicle)
-        {
-            return new DriverVehicleDto
-            {
-                DriverId = driverVehicle.DriverId,
-                VehicleId = driverVehicle.VehicleId
-            };
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public DriverVehicleListDto MapToDriverVehicleListDto(List<DriverVehicle> driverVehicles, int count)
-        {
-            return new DriverVehicleListDto
-            {
-                DriverVehicleDtos = driverVehicles.Select(MapToDriverVehicleDto).ToList(),
-                TotalItems = count
-            };
         }
     }
 }

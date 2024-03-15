@@ -5,6 +5,7 @@ using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using static AllPhi.HoGent.RestApi.Extensions.FuelCardDriverMapperExtension;
 
 namespace AllPhi.HoGent.RestApi.Controllers
 {
@@ -62,24 +63,6 @@ namespace AllPhi.HoGent.RestApi.Controllers
             return Ok();
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public FuelCardDriverDto MapToFuelCardDriverDto(FuelCardDriver fuelCardDriver)
-        {
-            return new FuelCardDriverDto
-            {
-                DriverId = fuelCardDriver.DriverId,
-                FuelCardId = fuelCardDriver.FuelCardId
-            };
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public FuelCardDriverListDto MapToFuelCardDriverListDto(List<FuelCardDriver> fuelCardDrivers)
-        {
-            return new FuelCardDriverListDto
-            {
-                FuelCardDriverDtos = fuelCardDrivers.Select(MapToFuelCardDriverDto).ToList(),
-                TotalItems = fuelCardDrivers.Count
-            };
-        }
+        
     }
 }
