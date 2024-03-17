@@ -5,6 +5,7 @@ using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Runtime.InteropServices;
 using static AllPhi.HoGent.RestApi.Extensions.FuelCardDriverMapperExtension;
 
 namespace AllPhi.HoGent.RestApi.Controllers
@@ -22,7 +23,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getallfuelcarddrivers")]
-        public async Task<ActionResult<FuelCardDriverListDto>> GetAllFuelCardDrivers([FromQuery] string sortBy, [FromQuery] bool isAscending, [FromQuery] Pagination pagination)
+        public async Task<ActionResult<FuelCardDriverListDto>> GetAllFuelCardDrivers([Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
             var (fuelCardDrivers, count) = await _fuelCardDriverStore.GetAllFuelCardDriverAsync(sortBy, isAscending, pagination);
             if (fuelCardDrivers == null)
