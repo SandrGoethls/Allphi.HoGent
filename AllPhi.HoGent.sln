@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllPhi.HoGent.Blazor", "AllPhi.HoGent.Blazor\AllPhi.HoGent.Blazor.csproj", "{C25B4F1B-ED23-45EC-8297-B9305B77D7E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllPhi.HoGent.Blazor", "AllPhi.HoGent.Blazor\AllPhi.HoGent.Blazor.csproj", "{C25B4F1B-ED23-45EC-8297-B9305B77D7E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllPhi.HoGent.Datalake.Data", "AllPhi.HoGent.Datalake.Data\AllPhi.HoGent.Datalake.Data.csproj", "{531F994A-405E-4FAC-9719-E7714B271E24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllPhi.HoGent.Datalake.Data", "AllPhi.HoGent.Datalake.Data\AllPhi.HoGent.Datalake.Data.csproj", "{531F994A-405E-4FAC-9719-E7714B271E24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllPhi.HoGent.Testing", "AllPhi.HoGent.Testing\AllPhi.HoGent.Testing.csproj", "{65821F80-94E9-4369-8CA5-58696C3C3AAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllPhi.HoGent.Testing", "AllPhi.HoGent.Testing\AllPhi.HoGent.Testing.csproj", "{65821F80-94E9-4369-8CA5-58696C3C3AAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllPhi.HoGent.RestApi", "AllPhi.HoGent.RestApi\AllPhi.HoGent.RestApi.csproj", "{D3A59DFA-D3C9-4EA2-8DE7-066420EB6D54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllPhi.HoGent.RestApi", "AllPhi.HoGent.RestApi\AllPhi.HoGent.RestApi.csproj", "{D3A59DFA-D3C9-4EA2-8DE7-066420EB6D54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
