@@ -13,4 +13,15 @@
 @code {
     private VehicleListDto? _vehicleListDto;
 
+    private bool _isSortAscending = true;
+    private string _currentSortColumn = "date";
+    private int _pageSize = 5;
+    private int _pageNumber = 1;
+    private int _totalPages;
+
+    private async Task LoadVehicleListDto()
+    {
+        _vehicleListDto = await _vehicleService.GetAllVehicleAsync(_currentSortColumn, _isSortAscending, _pageNumber, _pageSize);
+        _totalPages = (int)Math.Ceiling((double)_vehicleListDto.TotalItems / _pageSize);
+    }
 }
