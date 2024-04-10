@@ -13,6 +13,12 @@
 @code {
     private VehicleListDto? _vehicleListDto;
 
+
+    private bool _showSendConfirmation = false;
+    private bool _error = false;
+    private bool _addNewFuelCard = false;
+    private bool _selectedVehicle = false;
+
     private bool _isSortAscending = true;
     private string _currentSortColumn = "date";
     private int _pageSize = 5;
@@ -23,5 +29,19 @@
     {
         _vehicleListDto = await _vehicleService.GetAllVehicleAsync(_currentSortColumn, _isSortAscending, _pageNumber, _pageSize);
         _totalPages = (int)Math.Ceiling((double)_vehicleListDto.TotalItems / _pageSize);
+    }
+
+    private void AddNewVehicle()
+    {
+        SetBoolDefault();
+
+        _selectedVehicle = false;
+        _addNewFuelCard = true;
+    }
+
+    private void SetBoolDefault()
+    {
+        _showSendConfirmation = false;
+        _error = false;
     }
 }
