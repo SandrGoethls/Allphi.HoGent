@@ -46,7 +46,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadVehicleListDto();
-        _driverListDto = await _driverService.GetAllDriversAsync();
+        // _driverListDto = await _driverService.GetAllDriversAsync();
         _isLoading = false;
     }
 
