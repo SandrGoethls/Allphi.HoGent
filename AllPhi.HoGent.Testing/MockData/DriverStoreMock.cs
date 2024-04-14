@@ -26,7 +26,7 @@ namespace AllPhi.HoGent.Testing.MockData
                 City = "Amsterdam",
                 HouseNumber = "10",
                 PostalCode = "1000AA",
-                RegisterNumber = 111222,
+                RegisterNumber = "111222",
                 Street = "Hoofdstraat",
                 TypeOfDriverLicense = TypeOfDriverLicense.B
             };
@@ -40,7 +40,7 @@ namespace AllPhi.HoGent.Testing.MockData
                 City = "Rotterdam",
                 HouseNumber = "20",
                 PostalCode = "2000BB",
-                RegisterNumber = 2222333,
+                RegisterNumber = "2222333",
                 Street = "Zijstraat",
                 TypeOfDriverLicense = TypeOfDriverLicense.C
             };
@@ -54,7 +54,7 @@ namespace AllPhi.HoGent.Testing.MockData
                 City = "Lokeren",
                 HouseNumber = "30",
                 PostalCode = "3000AA",
-                RegisterNumber = 333444,
+                RegisterNumber = "333444",
                 Street = "Koningstraat",
                 TypeOfDriverLicense = TypeOfDriverLicense.C1
             };

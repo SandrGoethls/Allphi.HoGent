@@ -109,7 +109,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 City = "Zele",
                 HouseNumber = "400",
                 PostalCode = "4000NA",
-                RegisterNumber = 444555,
+                RegisterNumber = "444555",
                 Street = "Kortstraat",
                 TypeOfDriverLicense = TypeOfDriverLicense.B
             };
@@ -142,7 +142,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 City = "Bijgewerkte",
                 HouseNumber = "Bijgewerkt",
                 PostalCode = "Bijgewerkt",
-                RegisterNumber = 2222333,
+                RegisterNumber = "2222333",
                 Street = "Bijgewerkt",
                 TypeOfDriverLicense = TypeOfDriverLicense.D
             };

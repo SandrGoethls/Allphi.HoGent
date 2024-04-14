@@ -4,6 +4,7 @@ using AllPhi.HoGent.Datalake.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllPhi.HoGent.Datalake.Data.Migrations
 {
     [DbContext(typeof(AllPhiDatalakeContext))]
-    partial class AllPhiDatalakeContextModelSnapshot : ModelSnapshot
+    [Migration("20240414175945_registerNumberToInt")]
+    partial class registerNumberToInt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

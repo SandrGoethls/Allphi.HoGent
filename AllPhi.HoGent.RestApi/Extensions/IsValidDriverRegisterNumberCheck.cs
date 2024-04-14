@@ -2,7 +2,7 @@
 {
     public static class IsValidDriverRegisterNumberCheck
     {
-        public static bool IsValidDriverRegisterNumber(int registerNumber)
+        public static bool IsValidDriverRegisterNumber(string registerNumber)
         {
             if (registerNumber.Length != 11 || !IsDatePartValid(registerNumber.Substring(0, 6)))
             {
@@ -20,7 +20,7 @@
             return (97 - (numberToCheck % 97)) == controlNumber;
         }
 
-        private bool IsDatePartValid(string datePart)
+        private static bool IsDatePartValid(string datePart)
         {
             // Check if the string has the correct format for YYMMDD
             if (datePart.Length != 6)

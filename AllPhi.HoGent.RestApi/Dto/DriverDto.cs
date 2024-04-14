@@ -19,7 +19,7 @@ namespace AllPhi.HoGent.RestApi.Dto
 
         public string PostalCode { get; set; } = string.Empty;
 
-        public int RegisterNumber { get; set; }
+        public string RegisterNumber { get; set; } = string.Empty;
 
         public TypeOfDriverLicense TypeOfDriverLicense { get; set; }
 
