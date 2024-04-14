@@ -27,6 +27,7 @@
     private bool _vehicleUpdated = false;
     private bool _vehicleDeleted = false;
 
+    private bool _showDeleteConfirmation = false;
     private bool _showSendConfirmation = false;
     private bool _error = false;
     private bool _addNewFuelCard = false;
@@ -113,4 +114,31 @@
             _error = true;
         }
     }
+
+    private async Task DeleteVehicle(VehicleDto vehicleDto)
+    {
+        try
+        {
+            if (vehicleDto is not null)
+            {
+                await _vehicleService.DeleteVehicleAsync(vehicleDto.Id);
+
+                _showSendConfirmation = true;
+                _vehicleDeleted = true;
+
+                _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+            _showDeleteConfirmation = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorTitle = " Oei, er ging iets verkeerd tijdens het verwijderen";
+            ErrorMessage = "Excuses! Er ging iets verkeerd tijdens het verwijderen.";
+            _error = true;
+            _showDeleteConfirmation = false;
+        }
+    }
+
+
 }

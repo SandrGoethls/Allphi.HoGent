@@ -74,5 +74,19 @@ namespace AllPhi.HoGent.Blazor.Services
                 throw;
             }
         }
+
+        public async Task<bool> DeleteVehicleAsync(Guid vehicleId)
+        {
+            var response = await _httpClient.DeleteAsync($"api/vehicles/deletevehicle/{vehicleId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error deleting vehicle: {errorResponse}");
+                return false;
+            }
+
+            return true;
+        }
     }
 }
