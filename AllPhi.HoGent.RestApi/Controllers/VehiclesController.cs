@@ -47,7 +47,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             var vehicleListDto = new VehicleListDto
             {
                 VehicleDtos = MapToVehicleListDto(vehicles),
-                TotalItems = count
+                TotalItems = count 
             };
             return Ok(vehicleListDto);
         }

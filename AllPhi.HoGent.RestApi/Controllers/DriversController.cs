@@ -57,7 +57,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
                 return BadRequest("Driver with this register number already exists");
             }
 
-            if (!IsValidDriverRegisterNumberCheck.IsValidDriverRegisterNumber(driverDto.RegisterNumber))
+            if (IsValidDriverRegisterNumberCheck.IsValidDriverRegisterNumber(driverDto.RegisterNumber))
             {
                 return BadRequest("The provided register number is not valid.");
             }

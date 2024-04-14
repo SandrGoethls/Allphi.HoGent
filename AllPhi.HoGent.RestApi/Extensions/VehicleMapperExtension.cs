@@ -6,7 +6,7 @@ namespace AllPhi.HoGent.RestApi.Extensions
 {
     public static class VehicleMapperExtension
     {
-        
+
         internal static VehicleDto MapToVehicleDto(Vehicle vehicle)
         {
             return new VehicleDto
