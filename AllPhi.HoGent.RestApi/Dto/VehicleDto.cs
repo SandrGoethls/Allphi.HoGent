@@ -1,4 +1,5 @@
-﻿using AllPhi.HoGent.Datalake.Data.Models.Enums;
+﻿using AllPhi.HoGent.Datalake.Data.Models;
+using AllPhi.HoGent.Datalake.Data.Models.Enums;
 
 namespace AllPhi.HoGent.RestApi.Dto
 {
@@ -21,5 +22,6 @@ namespace AllPhi.HoGent.RestApi.Dto
         public NumberOfDoors NumberOfDoors { get; set; }
 
         public Status Status { get; set; } = Status.Active;
+        public List<Driver>? Drivers { get; set; }
     }
 }

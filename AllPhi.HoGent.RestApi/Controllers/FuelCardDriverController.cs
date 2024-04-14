@@ -5,6 +5,7 @@ using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using static AllPhi.HoGent.RestApi.Extensions.FuelCardDriverMapperExtension;
 
 namespace AllPhi.HoGent.RestApi.Controllers
 {
@@ -21,10 +22,17 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getallfuelcarddrivers")]
-        public async Task<IActionResult> GetAllFuelCardDrivers([FromQuery] string sortBy, [FromQuery] bool isAscending, [FromQuery] Pagination pagination)
+        public async Task<ActionResult<FuelCardDriverListDto>> GetAllFuelCardDrivers([FromQuery] string sortBy, [FromQuery] bool isAscending, [FromQuery] Pagination pagination)
         {
-            var (fuelCardDriverVehicles, count) = await _fuelCardDriverStore.GetAllFuelCardDriverAsync(sortBy, isAscending, pagination);
-            return Ok(new { fuelCardDriverVehicles, count });
+            var (fuelCardDrivers, count) = await _fuelCardDriverStore.GetAllFuelCardDriverAsync(sortBy, isAscending, pagination);
+            if (fuelCardDrivers == null)
+            {
+                return NotFound();
+            }
+            var fuelCardDriverListDto = new FuelCardDriverListDto();
+            fuelCardDriverListDto.Equals(MapToFuelCardDriverListDto(fuelCardDrivers));
+
+            return Ok(fuelCardDriverListDto);
         }
 
         [HttpGet("getdriverwithfuelcards/{driverId}")]
@@ -55,24 +63,6 @@ namespace AllPhi.HoGent.RestApi.Controllers
             return Ok();
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public FuelCardDriverDto MapToFuelCardDriverDto(FuelCardDriver fuelCardDriver)
-        {
-            return new FuelCardDriverDto
-            {
-                DriverId = fuelCardDriver.DriverId,
-                FuelCardId = fuelCardDriver.FuelCardId
-            };
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public FuelCardDriverListDto MapToFuelCardDriverListDto(List<FuelCardDriver> fuelCardDrivers)
-        {
-            return new FuelCardDriverListDto
-            {
-                FuelCardDriverDtos = fuelCardDrivers.Select(MapToFuelCardDriverDto).ToList(),
-                TotalItems = fuelCardDrivers.Count
-            };
-        }
+        
     }
 }

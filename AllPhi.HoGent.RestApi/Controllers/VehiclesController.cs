@@ -4,6 +4,8 @@ using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using static AllPhi.HoGent.RestApi.Extensions.VehicleMapperExtension;
+
 
 namespace AllPhi.HoGent.RestApi.Controllers
 {
@@ -15,13 +17,14 @@ namespace AllPhi.HoGent.RestApi.Controllers
         private readonly IVehicleStore _vehicleStore;
         private readonly IDriverVehicleStore _driverVehicleStore;
 
-        public VehiclesController(IVehicleStore vehicleStore)
+        public VehiclesController(IVehicleStore vehicleStore, IDriverVehicleStore driverVehicleStore)
         {
             _vehicleStore = vehicleStore;
+            _driverVehicleStore = driverVehicleStore;
         }
 
         [HttpGet("getvehiclebyid/{vehicleId}")]
-        public async Task<IActionResult> GetVehicleById(Guid vehicleId)
+        public async Task<ActionResult<VehicleDto>> GetVehicleById(Guid vehicleId)
         {
             Vehicle vehicle = await _vehicleStore.GetVehicleByIdAsync(vehicleId);
             if (vehicle == null)
@@ -32,9 +35,9 @@ namespace AllPhi.HoGent.RestApi.Controllers
             return Ok(vehicleDto);
         }
 
-        // [HttpGet("getvehicleincludeddriversbydriverid/{vehicleId}")]
+        
         [HttpGet("getallvehicles")]
-        public async Task<IActionResult> GetAllVehicles()
+        public async Task<ActionResult<VehicleListDto>> GetAllVehicles()
         {
             var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync();
             if (vehicles == null)
@@ -47,15 +50,17 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpPost("addvehicle")]
-        public async Task<IActionResult> AddVehicle(Vehicle vehicle)
+        public async Task<IActionResult> AddVehicle(VehicleDto vehicleDto)
         {
+            Vehicle vehicle = MapToVehicle(vehicleDto);
             await _vehicleStore.AddVehicle(vehicle);
             return Ok();
         }
 
         [HttpPost("updatevehicle")]
-        public async Task<IActionResult> UpdateVehicle(Vehicle vehicle)
+        public async Task<IActionResult> UpdateVehicle(VehicleDto vehicleDto)
         {
+            Vehicle vehicle = MapToVehicle(vehicleDto);
             await _vehicleStore.UpdateVehicle(vehicle);
             return Ok();
         }
@@ -68,9 +73,9 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getvehiclebydriverid/{driverId}")]
-        public async Task<IActionResult> GetVehicleByDriverId(Guid driverId)
+        public async Task<ActionResult<VehicleListDto>> GetVehicleByDriverId(Guid driverId)
         {
-            var vehicles = await _driverVehicleStore.GetDriverWithConnectedVehicleByDriverId(driverId);
+            List<DriverVehicle> vehicles = await _driverVehicleStore.GetDriverWithConnectedVehicleByDriverId(driverId);
             if (vehicles == null)
             {
                 return NotFound();
@@ -85,31 +90,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             return Ok(vehicleListDto);
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
-        private VehicleDto MapToVehicleDto(Vehicle vehicle)
-        {
-            return new VehicleDto
-            {
-                Id = vehicle.Id,
-                ChassisNumber = vehicle.ChassisNumber,
-                LicensePlate = vehicle.LicensePlate,
-                CarBrand = vehicle.CarBrand,
-                FuelType = vehicle.FuelType,
-                TypeOfCar = vehicle.TypeOfCar,
-                Color = vehicle.VehicleColor,
-                NumberOfDoors = vehicle.NumberOfDoors,
-                Status = vehicle.Status
-            };
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        private VehicleListDto MapToVehicleListDto(List<Vehicle> vehicles, int count)
-        {
-            return new VehicleListDto
-            {
-                VehicleDtos = vehicles.Select(MapToVehicleDto).ToList(),
-                TotalItems = count
-            };
-        }
+        //[HttpGet("getvehicleincludeddriversbydriverid/{vehicleId}")]
+        
     }
 }
