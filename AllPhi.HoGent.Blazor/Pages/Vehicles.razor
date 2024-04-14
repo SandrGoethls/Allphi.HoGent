@@ -140,5 +140,34 @@
         }
     }
 
+    private async Task UpdateSelectedUser()
+    {
+        try
+        {
+            if (_selectedVehicleDto is not null)
+            {
+                var updatedvehicle = await _vehicleService.UpdateVehicleAsync(_selectedVehicleDto);
+                var (statusRelatedDrivers, statusMessageRelatedDrivers) = await _driverVehicleService.UpdateVehicleWithDrivers(_selectedVehicleDto.Id, _checkedDriver.Select(x => x.Id).ToList());
+
+                if (!updatedvehicle || !statusRelatedDrivers)
+                {
+                    ErrorTitle = " Oei, er ging iets verkeerd tijdens het updaten.";
+                    ErrorMessage = statusMessageRelatedDrivers;
+                    _error = true;
+                }
+                else
+                    _vehicleUpdated = true;
+
+                _showSendConfirmation = true;
+                _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorTitle = " Oei, er ging iets verkeerd tijdens het bijwerken";
+            ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het bijwerken. Error: {ex.Message}";
+            _error = true;
+        }
+    }
 
 }

@@ -88,5 +88,22 @@ namespace AllPhi.HoGent.Blazor.Services
 
             return true;
         }
+
+        public async Task<bool> UpdateVehicleAsync(VehicleDto vehicleDto)
+        {
+            var json = JsonConvert.SerializeObject(vehicleDto);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"api/vehicles/updatevehicle", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error updating vehicle: {errorResponse}");
+                return false;
+            }
+
+            return true;
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace AllPhi.HoGent.Blazor.Services
         Task<bool> DeleteVehicleAsync(Guid vehicleId);
         Task<VehicleListDto> GetAllVehicleAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] int pageNumber, [Optional] int pageSize);
         Task<VehicleDto> GetVehicleByIdAsync(Guid vehicleId);
+        Task<bool> UpdateVehicleAsync(VehicleDto vehicleDto);
     }
 }
