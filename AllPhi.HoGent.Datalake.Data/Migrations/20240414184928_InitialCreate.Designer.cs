@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllPhi.HoGent.Datalake.Data.Migrations
 {
     [DbContext(typeof(AllPhiDatalakeContext))]
-    [Migration("20240414175945_registerNumberToInt")]
-    partial class registerNumberToInt
+    [Migration("20240414184928_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,6 +34,9 @@ namespace AllPhi.HoGent.Datalake.Data.Migrations
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
