@@ -23,23 +23,14 @@ namespace AllPhi.HoGent.RestApi.Extensions
             };
         }
 
-
-        internal static List<VehicleDto> MapToVehicleListDto(List<Vehicle> vehicles)
+        
+        internal static VehicleListDto MapToVehicleListDto(List<Vehicle> vehicles, int count)
         {
-            return vehicles.Select(v => new VehicleDto
+            return new VehicleListDto
             {
-
-                Id = v.Id,
-                ChassisNumber = v.ChassisNumber,
-                LicensePlate = v.LicensePlate,
-                CarBrand = v.CarBrand,
-                FuelType = v.FuelType,
-                TypeOfCar = v.TypeOfCar,
-                Color = v.VehicleColor,
-                NumberOfDoors = v.NumberOfDoors,
-                Status = v.Status
-
-            }).ToList();
+                VehicleDtos = vehicles.Select(MapToVehicleDto).ToList(),
+                TotalItems = count
+            };
         }
 
         internal static Vehicle MapToVehicle(VehicleDto vehicleDto)
