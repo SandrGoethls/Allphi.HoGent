@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /AllPhi.HoGent.RestApi/appsettings.Development.json
 /AllPhi.HoGent.RestApi/appsettings.Development.json
+/AllPhi.HoGent.Blazor/appsettings.json
+/AllPhi.HoGent.Datalake.Data/appsettings.json
+/AllPhi.HoGent.RestApi/appsettings.json

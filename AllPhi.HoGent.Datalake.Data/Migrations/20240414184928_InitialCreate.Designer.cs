@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllPhi.HoGent.Datalake.Data.Migrations
 {
     [DbContext(typeof(AllPhiDatalakeContext))]
+<<<<<<<< HEAD:AllPhi.HoGent.Datalake.Data/Migrations/20240414190756_DayOfBirth.Designer.cs
     [Migration("20240414190756_DayOfBirth")]
     partial class DayOfBirth
+========
+    [Migration("20240414184928_InitialCreate")]
+    partial class InitialCreate
+>>>>>>>> develop:AllPhi.HoGent.Datalake.Data/Migrations/20240414184928_InitialCreate.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

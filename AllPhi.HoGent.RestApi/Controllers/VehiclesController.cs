@@ -44,9 +44,12 @@ namespace AllPhi.HoGent.RestApi.Controllers
             {
                 return NotFound();
             }
-            List<VehicleListDto> vehicleListDtos = new List<VehicleListDto>();
-            vehicleListDtos.Add(MapToVehicleListDto(vehicles, count));
-            return Ok(vehicleListDtos);
+            var vehicleListDto = new VehicleListDto
+            {
+                VehicleDtos = MapToVehicleListDto(vehicles),
+                TotalItems = count
+            };
+            return Ok(vehicleListDto);
         }
 
         [HttpPost("addvehicle")]
