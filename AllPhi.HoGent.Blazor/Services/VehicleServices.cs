@@ -32,6 +32,12 @@ namespace AllPhi.HoGent.Blazor.Services
                 throw new HttpRequestException($"Error fetching Vehicles: {response.ReasonPhrase}");
             }
 
+            var contentType = response.Content.Headers.ContentType;
+            if (contentType == null || !contentType.MediaType.Equals("application/json"))
+            {
+                throw new Exception("Expected JSON response but received: " + contentType?.MediaType);
+            }
+
             var responseContent = await response.Content.ReadAsStringAsync();
             var vehiclesDto = JsonConvert.DeserializeObject<VehicleListDto>(responseContent);
             return vehiclesDto ?? new VehicleListDto();
