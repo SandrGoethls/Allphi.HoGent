@@ -51,6 +51,201 @@
     }
 </style>
 
+<div class="row m-2">
+    <div class="col-md-12 mb-3 wizard-steps">
+        @for (int i = 0; i < 5; i++)
+        {
+            var step = i; // Tijdelijke variabele
+            <div class="wizard-item">
+                <span class="wizard-step @(step <= (int)currentStep ? "wizard-step-active" : "wizard-step-inactive")" @onclick="(step == 0 || _readyForNext) ? () => AttemptToGoToStep(step) : null ">
+                    <i class="@GetIconClass(step)"></i>
+                </span>
+                @if (i < 4) // Voeg geen lijn toe na het laatste icoon
+                {
+                    <div class="wizard-line @(step < (int)currentStep ? "wizard-line-active" : "")"></div>
+                }
+            </div>
+        }
+    </div>
+
+
+    @if (currentStep == WizardStep.VehicleDetail_1)
+    {
+        <div class="col-md-12 mb-3">
+            <p class="klantenportaal-info-add-new-user">
+                Voer de chassisnummer en nummerplaat in om een nieuwe wagen toe te voegen.
+                Deze essentiële informatie is nodig om verder te gaan.
+                Klik op 'Volgende' na het invullen van de gegevens om de registratie voort te zetten.
+                <br />
+                <br />
+                Uw nauwkeurigheid zorgt voor een vlotte onboarding.
+            </p>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex required-field-mark" for="chassisnumber">Chassisnummer:</label>
+            <input class="form-input-select" name="chassisnumber" @oninput="@((e) => OnInput(e, "chassisnumber"))" id="chassisnumber" @bind="SelectedChassisNumber" />
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex required-field-mark" for="licenseplate">Nummerplaat:</label>
+            <input class="form-input-select" name="licenseplate" @oninput="@((e) => OnInput(e, "licenseplate"))" id="licenseplate" @bind="SelectedLicensePlate" />
+        </div>
+    }
+    else if (currentStep == WizardStep.VehicleDetail_2)
+    {
+        <div class="col-md-12 mb-3">
+            <p class="klantenportaal-info-add-new-user">
+                Selecteer de gewenste wagen merk, brandstof en de wagen type voor de nieuwe wagen.
+                <br />
+                <br />
+                Kies zorgvuldig en ga verder met 'Volgende'.
+            </p>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex form-titles" for="carbrand">Wagen merk:</label>
+            <select class="form-input-select" id="carbrand" @bind="@SelectedCarBrand">
+                @foreach (var carBrand in Enum.GetValues(typeof(CarBrand)))
+                {
+                    <option value="@carBrand">@(((CarBrand)carBrand))</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex required-field-mark form-titles" for="fueltype">Brandstof:</label>
+            <select class="form-input-select" id="fueltype" @bind="@SelectedFuelType">
+                @foreach (var fuelType in Enum.GetValues(typeof(FuelType)))
+                {
+                    <option value="@fuelType">@(((FuelType)fuelType))</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex required-field-mark form-titles" for="typeofcar">Wagen type:</label>
+            <select class="form-input-select" id="typeofcar" @bind="@SelectedTypeOfCar">
+                @foreach (var typeOfCar in Enum.GetValues(typeof(TypeOfCar)))
+                {
+                    <option value="@typeOfCar">@(((TypeOfCar)typeOfCar))</option>
+                }
+            </select>
+        </div>
+    }
+    else if (currentStep == WizardStep.VehicleDetail_3)
+    {
+        <div class="col-md-12 mb-3">
+            <p class="klantenportaal-info-add-new-user">
+                Selecteer de gewenste kleur, aantal deuren en de status voor de nieuwe wagen.
+                <br />
+                <br />
+                Maak een weloverwogen keuze en klik op 'Volgende' om verder te gaan.
+            </p>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex required-field-mark form-titles" for="color">Kleur:</label>
+            <select class="form-input-select" id="color" @bind="@SelectedVehicleColor">
+                @foreach (var color in Enum.GetValues(typeof(VehicleColor)))
+                {
+                    <option value="@color">@(((VehicleColor)color))</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex form-titles" for="numberofdoors">Aantal deuren:</label>
+            <select class="form-input-select" id="numberofdoors" @bind="@SelectedNumberOfDoors">
+                @foreach (var numberOfDoors in Enum.GetValues(typeof(NumberOfDoors)))
+                {
+                    <option value="@numberOfDoors">@(((NumberOfDoors)numberOfDoors))</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label class="d-flex form-titles" for="status">Status:</label>
+            <select class="form-input-select" id="status" @bind="SelectedStatus">
+                <option selected value="@Status.Active">Actief</option>
+                <option value="@Status.Deactive">Niet actief</option>
+            </select>
+        </div>
+    }
+    else if (currentStep == WizardStep.RelatedDrivers)
+    {
+        <div class="col-md-12 mb-3">
+            <p class="klantenportaal-info-add-new-user">
+                Kies uit de beschikbare bestuurder die aan uw bedrijf zijn gekoppeld.
+                Elke geselecteerde bestuurder kan de nieuwe kaart inzien en beheren.
+                U kunt meerdere bestuurder selecteren om toegang te geven aan meerdere bestuurders.
+                <br />
+                <br />
+                Vink de relevante bestuurder aan en ga verder met 'Volgende' om de instellingen te bevestigen.
+            </p>
+        </div>
+        <div class="col-md-12 mb-3">
+            <label>Gekoppelde Drivers:</label>
+            @foreach (var driver in Drivers)
+            {
+                <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? "tabel-row-selected" : "")"
+                     @onclick="(() => CheckDriverChanged(driver))">
+                    <label class="pointer-cursor">@driver.FirstName @driver.LastName</label>
+                    <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
+                </div>
+            }
+        </div>
+    }
+    else if (currentStep == WizardStep.Review)
+    {
+        <div class="col-md-12 mb-3">
+            <p class="klantenportaal-info-add-new-user">
+                U bevindt zich nu in de laatste fase van het wagenstoevoegingsproces.
+                Gelieve zorgvuldig alle door u gemaakte keuzes en instellingen te herzien.
+                Controleer de wagen informatie, Chassisnummer, Nummerplaat en geselecteerde bestuurders.
+                Na bevestiging zal de nieuwe kaart worden aangemaakt.
+                <br />
+                <br />
+                Druk op 'Opslaan' om te bevestigen.
+                U heeft altijd de mogelijkheid om later wijzigingen aan te brengen en de instellingen van de wagen bij te werken.
+            </p>
+        </div>
+        <div class="col-md-6 mb-3">
+            <p class="review">Chassisnummer: <span>@SelectedChassisNumber</span></p>
+            <p class="review">Nummerplaat: <span>@SelectedLicensePlate</span></p>
+            <p class="review">Wagen merk: <span>@SelectedCarBrand</span></p>
+            <p class="review">Brandstof: <span>@SelectedFuelType</span></p>
+            <p class="review">Wagen type: <span>@SelectedTypeOfCar</span></p>
+            <p class="review">Kleur: <span>@SelectedVehicleColor</span></p>
+            <p class="review">Aantal deuren: <span>@SelectedNumberOfDoors</span></p>
+            <p class="review">Status: <span>@SelectedStatus</span></p>
+        </div>
+        <div class="col-md-6 mb-3">
+            <p class="review">Geselecteerde bestuurders:</p>
+            @foreach (var driver in _checkedDriver)
+            {
+                <p class="review">- <span>@driver.FirstName @driver.LastName</span></p>
+            }
+
+        </div>
+    }
+</div>
+
+<div class="d-flex m-2">
+    @if (currentStep != WizardStep.VehicleDetail_1)
+    {
+        <button type="button" class="btn buttons-succes m-2" @onclick="GoToPreviousStep">Vorige</button>
+    }
+
+    @if (currentStep != WizardStep.Review)
+    {
+        @if (!_readyForNext)
+        {
+            <button type="button" disabled class="btn btn-disabled  m-2">Volgende</button>
+        }
+        else
+        {
+            <button type="button" class="btn buttons-succes m-2" @onclick="GoToNextStep">Volgende</button>
+        }
+    }
+    else
+    {
+        <button type="button" class="btn buttons-succes m-2" @onclick="HandleSave">Opslaan</button>
+    }
+</div>
+
 @using AllPhi.HoGent.Blazor.Dto.Enums
 @using AllPhi.HoGent.Blazor.Dto
 
