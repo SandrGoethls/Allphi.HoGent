@@ -170,4 +170,37 @@
         }
     }
 
+    private void CheckFuelCardChanged(DriverDto driverDto)
+    {
+        if (_checkedDriver.Contains(driverDto))
+            _checkedDriver.Remove(driverDto);
+        else
+            _checkedDriver.Add(driverDto);
+    }
+
+    private async Task SortTable(string columnName)
+    {
+        _isLoading = true;
+        if (columnName == _currentSortColumn)
+            _isSortAscending = !_isSortAscending;
+        else
+        {
+            _currentSortColumn = columnName;
+            _isSortAscending = true;
+        }
+        await LoadVehicleListDto();
+        _isLoading = false;
+    }
+
+    private async Task HandlePage(int page)
+    {
+        _pageNumber  = page;
+        await LoadVehicleListDto();
+    }
+
+    private async Task HandleItemsPerPageChanged(int itemsPerPage)
+    {
+        _pageSize = itemsPerPage;
+        await LoadVehicleListDto();
+    }
 }
