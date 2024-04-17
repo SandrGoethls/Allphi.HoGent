@@ -177,15 +177,22 @@
             </p>
         </div>
         <div class="col-md-12 mb-3">
-            <label>Gekoppelde Drivers:</label>
-            @foreach (var driver in Drivers)
+            <label>Beschikbare Drivers:</label>
+
+            @if (Drivers != null && Drivers.Any())
             {
+                @foreach (var driver in Drivers)
+                {
                 <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? "tabel-row-selected" : "")"
                      @onclick="(() => CheckDriverChanged(driver))">
                     <label class="pointer-cursor">@driver.FirstName @driver.LastName</label>
                     <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
                 </div>
+                }
+            }else {
+                <p>Geen bestuurder beschikbaar</p>
             }
+            
         </div>
     }
     else if (currentStep == WizardStep.Review)

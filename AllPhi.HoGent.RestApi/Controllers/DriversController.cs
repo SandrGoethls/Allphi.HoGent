@@ -28,10 +28,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         public async Task<ActionResult<(List<DriverDto>, int)>> GetAllDrivers([Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
             var (drivers, count) = await _driverStore.GetAllDriversAsync(sortBy, isAscending, pagination);
-            if (drivers == null || !drivers.Any())
-            {
-                return NotFound("No drivers found");
-            }
+            
 
             DriverListDto driverListDtos = MapToDriverListDto(drivers, count);
             return Ok(driverListDtos);

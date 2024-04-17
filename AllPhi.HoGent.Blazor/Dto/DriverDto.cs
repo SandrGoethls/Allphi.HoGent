@@ -18,7 +18,7 @@ namespace AllPhi.HoGent.Blazor.Dto
 
         public string PostalCode { get; set; } = string.Empty;
 
-        public int RegisterNumber { get; set; }
+        public string RegisterNumber { get; set; }
 
         public TypeOfDriverLicense TypeOfDriverLicense { get; set; }
 

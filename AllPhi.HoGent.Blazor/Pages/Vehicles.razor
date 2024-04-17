@@ -27,47 +27,53 @@ else
                     </div>
                 </div>
 
-                <div class="table-responsive ">
-                    <table class="table tabel-design">
-                        <thead>
-                            <tr>
-                                <th style="width:0px;"></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("chassisnumber")'>Chassisnummer <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("licenseplate")'>Nummerplaat <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("carbrand")'>Wagen merk <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("fueltype")'>Brandstof <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("typeofcar")'>Type wagen <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("color")'>Kleur <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("numberofdoors")'>Aantal deuren <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var vehicle in _vehicleListDto.VehicleDtos)
-                            {
-                                <tr class="pointer-cursor tabel-row-design @((vehicle == _selectedVehicleDto) ? " tabel-row-selected" : "" )" @onclick="(() => SelectVehicle(vehicle))">
-                                    <td class="align-middle border-start"><span class="fas fa-car-side"></span></td>
-                                    <td>@vehicle.ChassisNumber</td>
-                                    <td>@vehicle.LicensePlate</td>
-                                    <td>@vehicle.CarBrand</td>
-                                    <td>@vehicle.FuelType</td>
-                                    <td>@vehicle.TypeOfCar</td>
-                                    <td>@vehicle.Color</td>
-                                    <td>@vehicle.NumberOfDoors</td>
-                                    <td>@vehicle.Status</td>
+                @if (!_addNewVehicle || _vehicleAdded)
+                {
+                    <div class="table-responsive ">
+                        <table class="table tabel-design">
+                            <thead>
+                                <tr>
+                                    <th style="width:0px;"></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("chassisnumber")'>Chassisnummer <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("licenseplate")'>Nummerplaat <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("carbrand")'>Wagen merk <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("fueltype")'>Brandstof <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("typeofcar")'>Type wagen <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("color")'>Kleur <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("numberofdoors")'>Aantal deuren <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row">
-                    <PaginationComponent CurrentPage="@_pageNumber"
-                                         TotalPages="@_totalPages"
-                                         ItemsPerPage="@_pageSize"
-                                         OnPageChanged="HandlePageChanged"
-                                         OnItemsPerPageChanged="HandleItemsPerPageChanged" />
+                            </thead>
+                            <tbody>
+                                @foreach (var vehicle in _vehicleListDto.VehicleDtos)
+                                {
+                                    <tr class="pointer-cursor tabel-row-design @((vehicle == _selectedVehicleDto) ? " tabel-row-selected" : "" )" @onclick="(() => SelectVehicle(vehicle))">
+                                        <td class="align-middle border-start"><span class="fas fa-car-side"></span></td>
+                                        <td>@vehicle.ChassisNumber</td>
+                                        <td>@vehicle.LicensePlate</td>
+                                        <td>@vehicle.CarBrand</td>
+                                        <td>@vehicle.FuelType</td>
+                                        <td>@vehicle.TypeOfCar</td>
+                                        <td>@vehicle.Color</td>
+                                        <td>@vehicle.NumberOfDoors</td>
+                                        <td>@vehicle.Status</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
 
-                </div>
+                    <div class="row">
+                        <PaginationComponent CurrentPage="@_pageNumber"
+                                             TotalPages="@_totalPages"
+                                             ItemsPerPage="@_pageSize"
+                                             OnPageChanged="HandlePageChanged"
+                                             OnItemsPerPageChanged="HandleItemsPerPageChanged" />
+
+                    </div>
+                }
+
+
             </div>
 
             @if (_showSendConfirmation)
@@ -157,7 +163,7 @@ else
             }
             else
             {
-                @if (_addNewFuelCard)
+                @if (_addNewVehicle)
                 {
                     <div class="wizard-table usermanagement-table-size">
                         <div class="d-flex justify-content-between p-1">
@@ -168,7 +174,7 @@ else
                             <div class="d-flex justify-content-around flex-wrap">
                                 <div class="row w-100">
                                     <div class="col-md-12" style="">
-                                        <VehicleWizardForm OnSave="@((x) => SaveNewUser(x))" Drivers="@_driverListDto.DriverDtos" />
+                                        <VehicleWizardForm OnSave="@((x) => SaveNewUser(x))" Drivers="@_driverListDto?.DriverDtos" />
                                     </div>
                                 </div>
                             </div>
@@ -324,7 +330,7 @@ else
     private bool _showDeleteConfirmation = false;
     private bool _showSendConfirmation = false;
     private bool _error = false;
-    private bool _addNewFuelCard = false;
+    private bool _addNewVehicle = false;
     private bool _selectedVehicle = false;
 
     public string ErrorTitle { get; set; } = string.Empty;
@@ -340,7 +346,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await LoadVehicleListDto();
-        // _driverListDto = await _driverService.GetAllDriversAsync();
+        _driverListDto = await _driverService.GetAllDriversAsync();
         _isLoading = false;
     }
 
@@ -355,7 +361,7 @@ else
         SetBoolDefault();
 
         _selectedVehicle = false;
-        _addNewFuelCard = true;
+        _addNewVehicle = true;
     }
 
     private void SetBoolDefault()
@@ -372,7 +378,7 @@ else
         _checkedDriver = v.SelectMany(x => x.Select(x => x).ToList()).ToList();
         _showSendConfirmation = false;
         _selectedVehicle = true;
-        _addNewFuelCard = false;
+        _addNewVehicle = false;
         _vehicleAdded = false;
         _vehicleUpdated = false;
         _vehicleDeleted = false;
