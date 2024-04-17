@@ -3,6 +3,7 @@
 @using AllPhi.HoGent.Blazor.Components
 @using AllPhi.HoGent.Blazor.Services
 @using AllPhi.HoGent.Blazor.Dto
+@using AllPhi.HoGent.Blazor.Dto.Enums
 
 @inject IDriverServices _driverService
 @inject IVehicleServices _vehicleService
@@ -14,6 +15,299 @@
 {
     <LoadingSpinner IsLoading="@_isLoading" />
 }
+else
+{
+    <div class="row mb-5">
+        <div class="d-flex flex-wrap">
+            <div class="main-table">
+                <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                    <h3>Wagens</h3>
+                    <div class="d-flex button-mobile-ui">
+                        <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Wagens toevoegen</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive ">
+                    <table class="table tabel-design">
+                        <thead>
+                            <tr>
+                                <th style="width:0px;"></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("chassisnumber")'>Chassisnummer <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("licenseplate")'>Nummerplaat <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("carbrand")'>Wagen merk <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("fueltype")'>Brandstof <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("typeofcar")'>Type wagen <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("color")'>Kleur <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("numberofdoors")'>Aantal deuren <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var vehicle in _vehicleListDto.VehicleDtos)
+                            {
+                                <tr class="pointer-cursor tabel-row-design @((vehicle == _selectedVehicleDto) ? " tabel-row-selected" : "" )" @onclick="(() => SelectVehicle(vehicle))">
+                                    <td class="align-middle border-start"><span class="fas fa-car-side"></span></td>
+                                    <td>@vehicle.ChassisNumber</td>
+                                    <td>@vehicle.LicensePlate</td>
+                                    <td>@vehicle.CarBrand</td>
+                                    <td>@vehicle.FuelType</td>
+                                    <td>@vehicle.TypeOfCar</td>
+                                    <td>@vehicle.Color</td>
+                                    <td>@vehicle.NumberOfDoors</td>
+                                    <td>@vehicle.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <PaginationComponent CurrentPage="@_pageNumber"
+                                         TotalPages="@_totalPages"
+                                         ItemsPerPage="@_pageSize"
+                                         OnPageChanged="HandlePageChanged"
+                                         OnItemsPerPageChanged="HandleItemsPerPageChanged" />
+
+                </div>
+            </div>
+
+            @if (_showSendConfirmation)
+            {
+                <div class="main-table">
+                    @if (_vehicleAdded)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-check-circle text-success me-3" data-feather="check-circle"></span>Succesvol toegevoegd</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Bedankt!<br />
+                                        Bestuurder is succesvol toegevoegd.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (_vehicleUpdated)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-check-circle text-success me-3" data-feather="check-circle"></span>Succesvol bijgewerkt</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Bedankt!<br />
+                                        Bestuurder is succesvol bijgewerkt.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (_vehicleDeleted)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-check-circle text-success me-3" data-feather="check-circle"></span>Succesvol verwijderd</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Bedankt!<br />
+                                        Bestuurder is succesvol verwijderd.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (_error)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-times-circle text-danger me-3"></span>@ErrorTitle</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        @ErrorMessage<br />
+                                        Gelieve contact op te nemem met onze support via <a href="/">support@allphi.be</a>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-times-circle text-danger me-3"></span> Oei, er ging iets verkeerd</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Excuses! Er ging iets verkeerd.<br />
+                                        Gelieve contact op te nemem met onze support via <a href="/">support@allphi.be</a>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                @if (_addNewFuelCard)
+                {
+                    <div class="wizard-table usermanagement-table-size">
+                        <div class="d-flex justify-content-between p-1">
+                            <h3>Nieuwe wagen</h3>
+                        </div>
+
+                        <div class="usermanagement-table-responsive border p-1 d-flex justify-content-around">
+                            <div class="d-flex justify-content-around flex-wrap">
+                                <div class="row w-100">
+                                    <div class="col-md-12" style="">
+                                        <VehicleWizardForm OnSave="@((x) => SaveNewUser(x))" Drivers="@_driverListDto.DriverDtos" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (_selectedVehicle)
+                {
+                    <div class="update-table">
+                        <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                            <h3>Geselecteerde wagen</h3>
+                            <div class="d-flex button-mobile-ui">
+                                <button type="submit" class="btn btn buttons-succes m-2" form="driver-form">Wagen opslaan</button>
+                                <button type="button" class="btn btn buttons-danger m-2" @onclick="() => _showDeleteConfirmation = true">Wagen verwijderen</button>
+                            </div>
+                        </div>
+
+                        <div class="form-border p-1">
+                            <form class="d-flex justify-content-around flex-wrap" id="driver-form" @onsubmit="@UpdateSelectedUser">
+                                <div class="row w-100">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="chasisnumber">Chassisnummer:</label>
+                                        <input class="form-input-select" id="chasisnumber" @bind="_selectedVehicleDto.ChassisNumber" />
+                                        @if (string.IsNullOrEmpty(_selectedVehicleDto?.ChassisNumber))
+                                        {
+                                            <p class="text-danger" style="font-size: 0.9rem;">ChassisNumber is verplicht</p>
+                                        }
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="lastName">Nummerplaat:</label>
+                                        <input class="form-input-select" id="lastName" @bind="_selectedVehicleDto.LicensePlate" />
+                                        @if (string.IsNullOrEmpty(_selectedVehicleDto.LicensePlate))
+                                        {
+                                            <p class="text-danger" style="font-size: 0.9rem;">Nummerplaat is verplicht</p>
+                                        }
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="carbrand">wagen merk:</label>
+                                        <select class="form-input-select" id="carbrand" @bind="@_selectedVehicleDto.CarBrand">
+                                            @foreach (var carBrand in Enum.GetValues(typeof(CarBrand)))
+                                            {
+                                                <option value="@carBrand">@(((CarBrand)carBrand))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="fueltype">Brandstof:</label>
+                                        <select class="form-input-select" id="fueltype" @bind="@_selectedVehicleDto.FuelType">
+                                            @foreach (var fuelType in Enum.GetValues(typeof(FuelType)))
+                                            {
+                                                <option value="@fuelType">@(((FuelType)fuelType))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="typeofcar">Wagen type:</label>
+                                        <select class="form-input-select" id="typeofcar" @bind="@_selectedVehicleDto.TypeOfCar">
+                                            @foreach (var typeOfCar in Enum.GetValues(typeof(TypeOfCar)))
+                                            {
+                                                <option value="@typeOfCar">@(((TypeOfCar)typeOfCar))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="color">Kleur:</label>
+                                        <select class="form-input-select" id="color" @bind="@_selectedVehicleDto.Color">
+                                            @foreach (var color in Enum.GetValues(typeof(VehicleColor)))
+                                            {
+                                                <option value="@color">@(((VehicleColor)color))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex form-titles" for="numberofdoors">Aantal deuren:</label>
+                                        <select class="form-input-select" id="numberofdoors" @bind="@_selectedVehicleDto.NumberOfDoors">
+                                            @foreach (var numberOfDoors in Enum.GetValues(typeof(NumberOfDoors)))
+                                            {
+                                                <option value="@numberOfDoors">@(((NumberOfDoors)numberOfDoors))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex form-titles" for="status">Status:</label>
+                                        <select class="form-input-select" id="status" @bind="@_selectedVehicleDto.Status">
+                                            @foreach (var status in Enum.GetValues(typeof(Status)))
+                                            {
+                                                <option value="@status">@(((Status)status))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-titles">Gekoppelde bestuurders:</label>
+                                        @foreach (var driver in _driverListDto.DriverDtos)
+                                        {
+                                            <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? " tabel-row-selected" : "" )"
+                                                 @onclick="@(() => CheckFuelCardChanged(driver))">
+                                                <label class="pointer-cursor">@driver.FirstName @driver.RegisterNumber</label>
+                                                <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-7">
+                        <div class="d-flex justify-content-between p-1">
+                            <h4 id="animatedText" style="color: #54a2d5;">Selecteer een wagen of klik op 'wagen toevoegen'</h4>
+                        </div>
+                    </div>
+                }
+
+            }
+
+        </div>
+    </div>
+}
+
+<DialogContainer Visible="_showDeleteConfirmation">
+    <div class="modal d-flex justify-content-center align-items-center">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verwijderen</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Bent u zeker dat u de tankkaart wilt verwijderen?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => _showDeleteConfirmation = false">Neen</button>
+                    <button type="button" class="btn btn-primary" @onclick="async () => { await DeleteVehicle(_selectedVehicleDto); }">Ja</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</DialogContainer>
 
 @code {
     private VehicleListDto? _vehicleListDto;
@@ -170,4 +464,43 @@
         }
     }
 
+    private void CheckFuelCardChanged(DriverDto driverDto)
+    {
+        if (_checkedDriver.Contains(driverDto))
+            _checkedDriver.Remove(driverDto);
+        else
+            _checkedDriver.Add(driverDto);
+    }
+
+    private async Task SortTable(string columnName)
+    {
+        _isLoading = true;
+        if (columnName == _currentSortColumn)
+            _isSortAscending = !_isSortAscending;
+        else
+        {
+            _currentSortColumn = columnName;
+            _isSortAscending = true;
+        }
+        await LoadVehicleListDto();
+        _isLoading = false;
+    }
+
+    private async Task HandlePageChanged(int page)
+    {
+        _pageNumber = page;
+        await LoadVehicleListDto();
+    }
+
+    private async Task HandlePage(int page)
+    {
+        _pageNumber = page;
+        await LoadVehicleListDto();
+    }
+
+    private async Task HandleItemsPerPageChanged(int itemsPerPage)
+    {
+        _pageSize = itemsPerPage;
+        await LoadVehicleListDto();
+    }
 }

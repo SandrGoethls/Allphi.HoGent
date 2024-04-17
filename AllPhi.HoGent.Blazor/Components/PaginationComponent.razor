@@ -1,0 +1,139 @@
+﻿<style>
+    .btn-pagination {
+        background-color: #2099c6;
+        color: #fff;
+        border: none;
+        transition: transform 0.4s ease;
+    }
+
+        .btn-pagination:hover {
+            background-color: #2099c6;
+            border: none;
+            transform: scale(1.1);
+            color: white !important;
+        }
+
+        .btn-pagination:focus {
+            background-color: #2099c6;
+            color: #fff;
+            border: none;
+            outline: none;
+        }
+
+    .b-pagination {
+        color: #2099c6;
+        height: min-content;
+    }
+
+    .btn-pagination-style {
+        background-color: #2099c6;
+        border: none;
+    }
+
+        .btn-pagination-style:hover {
+            background-color: #2099c6;
+        }
+
+        .btn-pagination-style:focus {
+            background-color: #2099c6;
+            outline: none;
+        }
+
+        .btn-pagination-style:disabled {
+            background-color: #2099c62b;
+            outline: none;
+        }
+
+    .btn-items-per-page {
+        border: 1px solid black;
+        color: black;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1px;
+    }
+
+    .form-label {
+        padding-left: 0.5rem !important;
+        line-height: 1.2;
+        text-transform: uppercase;
+        margin-bottom: 0;
+    }
+</style>
+
+
+<div class="d-flex justify-content-start">
+    <div class="d-flex justify-content-center mb-0 mt-2">
+        <p>Pagina @CurrentPage van @TotalPages </p>
+    </div>
+</div>
+<div class="d-flex flex-between-center justify-content-between">
+    <div class="d-flex justify-content-start b-pagination">
+        @for (var i = StartPage; i <= EndPage; i++)
+        {
+            var pageNumber = i;
+            if (i == CurrentPage)
+            {
+                <span class="px-2"><b class="b-pagination">@i</b></span>
+            }
+            else
+            {
+                <button type="button" class="px-2 btn btn-sm btn-primary btn-pagination" @onclick="() => SetPage(pageNumber)">@i</button>
+            }
+        }
+    </div>
+    <div class="d-flex align-items-end">
+        <div>
+            <label class="form-label" for="ddlSetRowsPerPage">Items per page</label>
+            <div class="dropdown" id="ddlSetRowsPerPage">
+                <select class="form-select btn btn-items-per-page px-4 px-3 mr-3 dropdown-toggle w-100" value="@ItemsPerPage" @onchange="@(e => ChangeItemsPerPage(int.Parse(e.Value?.ToString() ?? "0")))">
+                    <option selected class="dropdown-item" value="5">5</option>
+                    <option class="dropdown-item" value="10">10</option>
+                    <option class="dropdown-item" value="15">15</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-primary ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage - 1)" disabled="@((CurrentPage <= 1))">Previous</button>
+        <button class="btn btn-primary px-4 ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage + 1)" disabled="@((CurrentPage >= TotalPages))">Next</button>
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter] public int CurrentPage { get; set; }
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public int ItemsPerPage { get; set; } = 5;
+
+    private int StartPage;
+    private int EndPage;
+
+    [Parameter] public EventCallback<int> OnPageChanged { get; set; }
+    [Parameter] public EventCallback<int> OnItemsPerPageChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        // Bereken StartPage en EndPage, bijvoorbeeld tonen van 5 opeenvolgende pagina's
+        int pageWindow = 5;
+        StartPage = Math.Max(1, CurrentPage - pageWindow / 2);
+        EndPage = Math.Min(TotalPages, StartPage + pageWindow - 1);
+
+        // Aanpassing als we bij de laatste pagina's zijn en het venster kleiner is dan 5
+        if (EndPage - StartPage < pageWindow - 1)
+        {
+            StartPage = Math.Max(1, EndPage - pageWindow + 1);
+        }
+    }
+
+    private async Task SetPage(int page)
+    {
+        if (page < 1 || page > TotalPages) return; // Voorkom ongeldige paginawaarden
+        await OnPageChanged.InvokeAsync(page);
+    }
+
+    private void ChangeItemsPerPage(int itemsPerPage)
+    {
+        OnItemsPerPageChanged.InvokeAsync(itemsPerPage);
+    }
+}
