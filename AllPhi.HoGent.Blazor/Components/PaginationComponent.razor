@@ -63,6 +63,43 @@
 </style>
 
 
+<div class="d-flex justify-content-start">
+    <div class="d-flex justify-content-center mb-0 mt-2">
+        <p>Pagina @CurrentPage van @TotalPages </p>
+    </div>
+</div>
+<div class="d-flex flex-between-center justify-content-between">
+    <div class="d-flex justify-content-start b-pagination">
+        @for (var i = StartPage; i <= EndPage; i++)
+        {
+            var pageNumber = i;
+            if (i == CurrentPage)
+            {
+                <span class="px-2"><b class="b-pagination">@i</b></span>
+            }
+            else
+            {
+                <button type="button" class="px-2 btn btn-sm btn-primary btn-pagination" @onclick="() => SetPage(pageNumber)">@i</button>
+            }
+        }
+    </div>
+    <div class="d-flex align-items-end">
+        <div>
+            <label class="form-label" for="ddlSetRowsPerPage">Items per page</label>
+            <div class="dropdown" id="ddlSetRowsPerPage">
+                <select class="form-select btn btn-items-per-page px-4 px-3 mr-3 dropdown-toggle w-100" value="@ItemsPerPage" @onchange="@(e => ChangeItemsPerPage(int.Parse(e.Value?.ToString() ?? "0")))">
+                    <option selected class="dropdown-item" value="5">5</option>
+                    <option class="dropdown-item" value="10">10</option>
+                    <option class="dropdown-item" value="15">15</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-primary ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage - 1)" disabled="@((CurrentPage <= 1))">Previous</button>
+        <button class="btn btn-primary px-4 ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage + 1)" disabled="@((CurrentPage >= TotalPages))">Next</button>
+    </div>
+</div>
+
+
 
 @code {
     [Parameter] public int CurrentPage { get; set; }
