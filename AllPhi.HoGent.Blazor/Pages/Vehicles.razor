@@ -16,6 +16,25 @@
     <LoadingSpinner IsLoading="@_isLoading" />
 }
 
+<DialogContainer Visible="_showDeleteConfirmation">
+    <div class="modal d-flex justify-content-center align-items-center">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verwijderen</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Bent u zeker dat u de tankkaart wilt verwijderen?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => _showDeleteConfirmation = false">Neen</button>
+                    <button type="button" class="btn btn-primary" @onclick="async () => { await DeleteVehicle(_selectedVehicleDto); }">Ja</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</DialogContainer>
+
 @code {
     private VehicleListDto? _vehicleListDto;
     private DriverListDto? _driverListDto;
