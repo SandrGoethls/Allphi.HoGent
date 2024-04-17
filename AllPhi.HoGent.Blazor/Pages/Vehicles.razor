@@ -168,7 +168,7 @@ else
                             <div class="d-flex justify-content-around flex-wrap">
                                 <div class="row w-100">
                                     <div class="col-md-12" style="">
-                                        <VehicleWizardForm OnSave="@((x) => SaveNewUser(x))" Drivers="@_driverListDto.DriverDtos" />
+                                        <VehicleWizardForm OnSave="@((x) => SaveNewUser(x))" Drivers="@_driverListDto?.DriverDtos" />
                                     </div>
                                 </div>
                             </div>
