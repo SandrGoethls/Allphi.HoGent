@@ -1,19 +1,41 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>AllPhi.HoGent.Blazor</PageTitle>
+<PageTitle>AllPhi</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@*<MudThemeProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />*@
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+    }
+
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+</style>
+
+
+
+<div class="main-content">
+    <Header />
+    <div class="main-padding">
+        <div class="row">
+            <div class="d-flex flex-wrap">
+                <div class="menu-content">
+                    <NavMenu />
+                </div>
+
+                <div class="body-content">
+                    @Body
+                </div>
+            </div>
+
         </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    </div>
+    <Footer></Footer>
 </div>
