@@ -155,4 +155,16 @@
         }
         IsFormValid();
     }
+
+    private string GetIconClass(int step) => step switch
+    {
+        0 => "fas fa-user-edit",
+        1 => "fas fa-user-tag",
+        2 => "fas fa-user-check",
+        3 => "fas fa-list",
+        4 => "fas fa-check-circle",
+        _ => ""
+    };
+
+
 }
