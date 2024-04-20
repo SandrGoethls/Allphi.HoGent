@@ -133,7 +133,8 @@
 
                 var (statusRelatedFuelCards, statusMessageRelatedFuelCards) = await _fuelCardDriverService.UpdateDriverWithFuelCards(driverDto.Id, driverDto.FuelCardDtos.Select(x => x.Id).ToList());
 
-                var (statusRelatedVehicles, statusMessageRelatedVehicles) = await _driverVehicleService.UpdateDriverWithVehicles(driverDto.Id, driverDto.VehicleDtos.Select(x => x.Id).ToList());
+                var (statusRelatedVehicles, statusMessageRelatedVehicles) = await _driverVehicleService.UpdateDriverWithVehicles(driverDto.Id, driverDto.VehicleDtos.Select(x => x.Id)
+                                                                                                                                                                    .ToList());
 
                 if (!status || !statusRelatedFuelCards || !statusRelatedVehicles)
                 {
