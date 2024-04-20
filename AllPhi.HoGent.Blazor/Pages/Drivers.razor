@@ -52,6 +52,7 @@
     private bool _selectedDriver = false;
     private bool _addNewFuelCard = false;
     private bool _showSendConfirmation = false;
+    private bool _showDeleteConfirmation = false;
     private bool _error = false;
 
     protected override async Task OnInitializedAsync()
@@ -97,7 +98,7 @@
         _checkedVehicle = a.SelectMany(x => x.Select(x => x).ToList()).ToList();
 
         _showSendConfirmation = false;
-        _selectedDriver = true;
+               _selectedDriver = true;
         _addNewFuelCard = false;
         _driverAdded = false;
         _driverUpdated = false;
@@ -135,6 +136,31 @@
             ErrorTitle = " Oei, er ging iets verkeerd tijdens het toevoegen.";
             ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het toevoegen. Error: {ex.Message}";
             _error = true;
+        }
+    }
+
+    private async Task DeleteDriver(DriverDto driverDto)
+    {
+        try
+        {
+            if (driverDto is not null)
+            {
+                await _driverService.DeleteDriverAsync(driverDto.Id);
+
+                _showSendConfirmation = true;
+                _driverDeleted = true;
+
+                _driverListDto = await _driverService.GetAllDriversAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+            _showDeleteConfirmation = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorTitle = " Oei, er ging iets verkeerd tijdens het verwijderen";
+            ErrorMessage = "Excuses! Er ging iets verkeerd tijdens het verwijderen.";
+            _error = true;
+            _showDeleteConfirmation = false;
         }
     }
 }

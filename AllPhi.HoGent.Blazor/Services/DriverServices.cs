@@ -61,5 +61,19 @@ namespace AllPhi.HoGent.Blazor.Services
                 throw;
             }
         }
+
+        public async Task<bool> DeleteDriverAsync(Guid driverId)
+        {
+            var response = await _httpClient.DeleteAsync($"api/drivers/deletedriver/{driverId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error deleting driver: {errorResponse}");
+                return (false);
+            }
+
+            return true;
+        }
     }
 }
