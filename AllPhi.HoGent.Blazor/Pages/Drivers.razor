@@ -34,6 +34,10 @@
     private int _pageNumber = 1;
     private int _totalPages;
 
+    private bool _selectedDriver = false;
+    private bool _addNewFuelCard = false;
+    private bool _showSendConfirmation = false;
+    private bool _error = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,5 +54,17 @@
         _totalPages = (int)Math.Ceiling((double)_vehicleListDto.TotalItems / _pageSize);
     }
 
+    private void AddNewDriver()
+    {
+        SetBoolDefault();
 
+        _selectedDriver = false;
+        _addNewFuelCard = true;
+    }
+
+    private void SetBoolDefault()
+    {
+        _showSendConfirmation = false;
+        _error = false;
+    }
 }
