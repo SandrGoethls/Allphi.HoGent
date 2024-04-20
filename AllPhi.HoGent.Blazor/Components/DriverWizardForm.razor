@@ -53,4 +53,54 @@
 
 @code {
 
+    public enum WizardStep
+    {
+        DriverDetails,
+        DriverAdress,
+        Status,
+        Related,
+        Review
+    }
+
+    private bool _readyForNext = false;
+
+    private WizardStep currentStep = WizardStep.DriverDetails;
+
+
+    public string SelectedFirstName { get; set; } = string.Empty;
+    public string SelectedLastName { get; set; } = string.Empty;
+    public int SelectedRegisternumber { get; set; }
+
+    public string SelectedStreet { get; set; } = string.Empty;
+    public string SelectedHouseNumber { get; set; } = string.Empty;
+    public string SelectedCity { get; set; } = string.Empty;
+    public string SelectedPostalCode { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsFormValid();
+    }
+
+    private void IsFormValid()
+    {
+        if (currentStep == WizardStep.DriverDetails)
+        {
+            if (string.IsNullOrEmpty(SelectedFirstName) ||
+                string.IsNullOrEmpty(SelectedLastName) ||
+                string.IsNullOrEmpty(SelectedRegisternumber.ToString()))
+                _readyForNext = false;
+            else
+                _readyForNext = true;
+        }
+        else if (currentStep == WizardStep.DriverAdress)
+        {
+            if (string.IsNullOrEmpty(SelectedStreet) ||
+                string.IsNullOrEmpty(SelectedHouseNumber) ||
+                string.IsNullOrEmpty(SelectedCity) ||
+                string.IsNullOrEmpty(SelectedPostalCode))
+                _readyForNext = false;
+            else
+                _readyForNext = true;
+        }
+    }
 }
