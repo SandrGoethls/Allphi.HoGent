@@ -166,5 +166,20 @@
         _ => ""
     };
 
+    void GoToPreviousStep()
+    {
+        if (currentStep > WizardStep.DriverDetails)
+        {
+            currentStep--;
+        }
+    }
 
+    void GoToNextStep()
+    {
+        if (currentStep < WizardStep.Review)
+        {
+            currentStep++;
+        }
+        IsFormValid();
+    }
 }
