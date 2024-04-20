@@ -6,6 +6,10 @@
 @using AllPhi.HoGent.Blazor.Components
 
 @inject IDriverServices _driverService
+@inject IVehicleServices _vehicleService
+@inject IFuelCardServices _fuelCardService
+
+
 
 <PageTitle>Drivers</PageTitle>
 
@@ -20,9 +24,8 @@
 
     private bool _isLoading = true;
 
-    private FuelCardDriverDto? _fuelCardListDto;
+    private FuelCardListDto? _fuelCardListDto;
     private VehicleListDto? _vehicleListDto;
-
     private DriverListDto? _driverListDto;
 
     private bool _isSortAscending = true;
@@ -32,9 +35,13 @@
     private int _totalPages;
 
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        _fuelCardListDto = await _fuelCardService.GetAllFuelCardsAsync();
+        _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
+
+        await LoadDriverListDto();
+        _isLoading = false;
     }
 
     private async Task LoadDriverListDto()
@@ -42,4 +49,6 @@
         _driverListDto = await _driverService.GetAllDriversAsync(_currentSortColumn, _isSortAscending, _pageNumber, _pageSize);
         _totalPages = (int)Math.Ceiling((double)_vehicleListDto.TotalItems / _pageSize);
     }
+
+
 }
