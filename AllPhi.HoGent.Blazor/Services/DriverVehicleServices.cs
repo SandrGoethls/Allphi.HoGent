@@ -61,5 +61,22 @@ namespace AllPhi.HoGent.Blazor.Services
 
             return (true, "Updated succesfully");
         }
+
+        public async Task<(bool, string message)> UpdateDriverWithVehicles(Guid driverId, List<Guid> vehicleGuids)
+        {
+            var json = JsonConvert.SerializeObject(vehicleGuids);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"api/drivervehicle/updatedrivervehiclesbydriverid/{driverId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error updating driver: {errorResponse}");
+                return (false, errorResponse);
+            }
+
+            return (true, "Updated succesfully");
+        }
     }
 }

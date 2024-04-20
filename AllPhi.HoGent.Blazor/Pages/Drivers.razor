@@ -42,6 +42,9 @@
     private int _pageNumber = 1;
     private int _totalPages;
 
+    public string ErrorTitle { get; set; } = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
+
     private bool _driverAdded = false;
     private bool _driverUpdated = false;
     private bool _driverDeleted = false;
@@ -99,5 +102,39 @@
         _driverAdded = false;
         _driverUpdated = false;
         _driverDeleted = false;
+    }
+
+    private async Task SaveNewUser(DriverDto driverDto)
+    {
+        try
+        {
+            if (driverDto is not null)
+            {
+                var (status, statusMessage) = await _driverService.AddFDriverAsync(driverDto);
+
+                var (statusRelatedFuelCards, statusMessageRelatedFuelCards) = await _fuelCardDriverService.UpdateDriverWithFuelCards(driverDto.Id, driverDto.FuelCardDtos.Select(x => x.Id).ToList());
+
+                var (statusRelatedVehicles, statusMessageRelatedVehicles) = await _driverVehicleService.UpdateDriverWithVehicles(driverDto.Id, driverDto.VehicleDtos.Select(x => x.Id).ToList());
+
+                if (!status || !statusRelatedFuelCards || !statusRelatedVehicles)
+                {
+                    ErrorTitle = " Oei, er ging iets verkeerd tijdens het toevoegen.";
+                    ErrorMessage = statusMessage;
+                    _error = true;
+                }
+                else
+                    _driverAdded = true;
+
+                _showSendConfirmation = true;
+                _driverListDto = await _driverService.GetAllDriversAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorTitle = " Oei, er ging iets verkeerd tijdens het toevoegen.";
+            ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het toevoegen. Error: {ex.Message}";
+            _error = true;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AllPhi.HoGent.Blazor.Dto;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Web;
 
 namespace AllPhi.HoGent.Blazor.Services
@@ -35,6 +36,5 @@ namespace AllPhi.HoGent.Blazor.Services
             var fuelCardsDto = JsonConvert.DeserializeObject<FuelCardListDto>(responseContent);
             return fuelCardsDto ?? new FuelCardListDto();
         }
-
     }
 }

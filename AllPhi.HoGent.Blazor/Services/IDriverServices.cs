@@ -5,6 +5,7 @@ namespace AllPhi.HoGent.Blazor.Services
 {
     public interface IDriverServices
     {
+        Task<(bool, string message)> AddFDriverAsync(DriverDto driverDto);
         Task<DriverListDto> GetAllDriversAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] int pageNumber, [Optional] int pageSize);
     }
 }
