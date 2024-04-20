@@ -1,0 +1,45 @@
+﻿@page "/drivers"
+
+@using AllPhi.HoGent.Blazor.Services
+@using AllPhi.HoGent.Blazor.Dto
+@using AllPhi.HoGent.Blazor.Dto.Enums
+@using AllPhi.HoGent.Blazor.Components
+
+@inject IDriverServices _driverService
+
+<PageTitle>Drivers</PageTitle>
+
+@if (_isLoading)
+{
+    <LoadingSpinner IsLoading="@_isLoading" />
+}
+
+
+
+@code {
+
+    private bool _isLoading = true;
+
+    private FuelCardDriverDto? _fuelCardListDto;
+    private VehicleListDto? _vehicleListDto;
+
+    private DriverListDto? _driverListDto;
+
+    private bool _isSortAscending = true;
+    private string _currentSortColumn = "date";
+    private int _pageSize = 5;
+    private int _pageNumber = 1;
+    private int _totalPages;
+
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task LoadDriverListDto()
+    {
+        _driverListDto = await _driverService.GetAllDriversAsync(_currentSortColumn, _isSortAscending, _pageNumber, _pageSize);
+        _totalPages = (int)Math.Ceiling((double)_vehicleListDto.TotalItems / _pageSize);
+    }
+}
