@@ -198,4 +198,20 @@
             _error = true;
         }
     }
+
+    private void CheckFuelCardChanged(FuelCardDto fuelCardDto)
+    {
+        if (_checkedfuelCard.Contains(fuelCardDto))
+            _checkedfuelCard.Remove(fuelCardDto);
+        else
+            _checkedfuelCard.Add(fuelCardDto);
+    }
+
+    private void CheckVehicleChanged(VehicleDto vehicleDto)
+    {
+        if (_checkedVehicle.Contains(vehicleDto))
+            _checkedVehicle.Remove(vehicleDto);
+        else
+            _checkedVehicle.Add(vehicleDto);
+    }
 }
