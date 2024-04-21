@@ -206,4 +206,16 @@
             _checkedVehicles.Add(vehicleDto);
     }
 
+    private void GoToStep(int step)
+    {
+        currentStep = (WizardStep)step;
+    }
+
+    private void AttemptToGoToStep(int step)
+    {
+        if (_readyForNext || step < (int)currentStep)
+        {
+            GoToStep(step);
+        }
+    }
 }
