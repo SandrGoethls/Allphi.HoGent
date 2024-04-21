@@ -33,9 +33,13 @@ namespace AllPhi.HoGent.Datalake.Data.Store
             {
                 "id" => isAscending ? vehiclesQuery.OrderBy(x => x.Id) : vehiclesQuery.OrderByDescending(x => x.Id),
                 "chassisnumber" => isAscending ? vehiclesQuery.OrderBy(x => x.ChassisNumber) : vehiclesQuery.OrderByDescending(x => x.ChassisNumber),
-                "color" => isAscending ? vehiclesQuery.OrderBy(x => x.VehicleColor) : vehiclesQuery.OrderByDescending(x => x.VehicleColor),
-                "carband" => isAscending ? vehiclesQuery.OrderBy(x => x.CarBrand) : vehiclesQuery.OrderByDescending(x => x.CarBrand),
                 "licenseplate" => isAscending ? vehiclesQuery.OrderBy(x => x.LicensePlate) : vehiclesQuery.OrderByDescending(x => x.LicensePlate),
+                "carbrand" => isAscending ? vehiclesQuery.OrderBy(x => x.CarBrand) : vehiclesQuery.OrderByDescending(x => x.CarBrand),
+                "fueltype" => isAscending ? vehiclesQuery.OrderBy(x => x.FuelType) : vehiclesQuery.OrderByDescending(x => x.FuelType),
+                "typeofcar" => isAscending ? vehiclesQuery.OrderBy(x => x.TypeOfCar) : vehiclesQuery.OrderByDescending(x => x.TypeOfCar),
+                "color" => isAscending ? vehiclesQuery.OrderBy(x => x.VehicleColor) : vehiclesQuery.OrderByDescending(x => x.VehicleColor),
+                "numberofdoors" => isAscending ? vehiclesQuery.OrderBy(x => x.NumberOfDoors) : vehiclesQuery.OrderByDescending(x => x.NumberOfDoors),
+                "status" => isAscending ? vehiclesQuery.OrderBy(x => x.Status) : vehiclesQuery.OrderByDescending(x => x.Status),
                 _ => vehiclesQuery
             };
 

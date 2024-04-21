@@ -4,6 +4,8 @@
 @using AllPhi.HoGent.Blazor.Services
 @using AllPhi.HoGent.Blazor.Dto
 @using AllPhi.HoGent.Blazor.Dto.Enums
+@using AllPhi.HoGent.Datalake.Data.Helpers
+@using AllPhi.HoGent.Blazor.Extansions
 
 @inject IDriverServices _driverService
 @inject IVehicleServices _vehicleService
@@ -11,26 +13,64 @@
 
 <PageTitle>Vehicles</PageTitle>
 
+<style>
+    .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .main-table {
+        width: inherit;
+    }
+
+    .update-table {
+        /*padding-top: 100px;*/
+    }
+
+
+    .scrollable-driver-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .tabel-row-design:hover {
+        background-color: rgba(33,150,243,0.058823529411764705) !important;
+    }
+
+    table tbody .eentest :hover {
+        background-color: rgba(33,150,243,0.058823529411764705) !important;
+    }
+</style>
+
 @if (_isLoading)
 {
     <LoadingSpinner IsLoading="@_isLoading" />
 }
 else
 {
-    <div class="row mb-5">
-        <div class="d-flex flex-wrap">
+
+
+    <div class="row mb-5 table-page">
+        <div class="">
             <div class="main-table">
-                <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                <div class="d-flex justify-content-between p-2 flex-column" style="background-color: white; margin-bottom: 39px;">
                     <h3>Wagens</h3>
                     <div class="d-flex button-mobile-ui">
-                        <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Wagens toevoegen</button>
+                        @if (_showAllCars)
+                        {
+                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Wagens toevoegen</button>
+                        }
+                        else if (!_showAllCars)
+                        {
+                            <button type="button" class="btn buttons-succes m-2" @onclick="ShowAllCars">Toon alle wagens</button>
+                        }
                     </div>
                 </div>
 
-                @if (!_addNewVehicle || _vehicleAdded)
+                @if (_showAllCars)
                 {
-                    <div class="table-responsive ">
-                        <table class="table tabel-design">
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="margin: 0;">
                             <thead>
                                 <tr>
                                     <th style="width:0px;"></th>
@@ -42,22 +82,29 @@ else
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("color")'>Kleur <span class="fa fa-sort"></span></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("numberofdoors")'>Aantal deuren <span class="fa fa-sort"></span></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
+                                    <th></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach (var vehicle in _vehicleListDto.VehicleDtos)
+                            <tbody class="">
+                                @if (_vehicleListDto != null && _vehicleListDto.VehicleDtos.Any())
                                 {
-                                    <tr class="pointer-cursor tabel-row-design @((vehicle == _selectedVehicleDto) ? " tabel-row-selected" : "" )" @onclick="(() => SelectVehicle(vehicle))">
-                                        <td class="align-middle border-start"><span class="fas fa-car-side"></span></td>
-                                        <td>@vehicle.ChassisNumber</td>
-                                        <td>@vehicle.LicensePlate</td>
-                                        <td>@vehicle.CarBrand</td>
-                                        <td>@vehicle.FuelType</td>
-                                        <td>@vehicle.TypeOfCar</td>
-                                        <td>@vehicle.Color</td>
-                                        <td>@vehicle.NumberOfDoors</td>
-                                        <td>@vehicle.Status</td>
-                                    </tr>
+                                    @foreach (var vehicle in _vehicleListDto.VehicleDtos)
+                                    {
+                                        <tr class="pointer-cursor">
+                                            <td class="align-middle border-start" @onclick="(() => SelectVehicle(vehicle))"><span class="fas fa-car-side"></span></td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.ChassisNumber</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.LicensePlate</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.CarBrand</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.FuelType</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.TypeOfCar</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.Color</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.NumberOfDoors</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.Status</td>
+                                            <td @onclick="() => _showDeleteConfirmation = true">
+                                                <span type="button" class="fa fa-trash-can" @onclick="() => _showDeleteConfirmation = true" style="color: #cf5256"></span>
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -76,7 +123,7 @@ else
 
             </div>
 
-            @if (_showSendConfirmation)
+            @if (_showSendConfirmation && !_showAllCars)
             {
                 <div class="main-table">
                     @if (_vehicleAdded)
@@ -89,7 +136,7 @@ else
                                 <div>
                                     <p>
                                         Bedankt!<br />
-                                        Bestuurder is succesvol toegevoegd.
+                                        Wagen is succesvol toegevoegd.
                                     </p>
                                 </div>
                             </div>
@@ -105,7 +152,7 @@ else
                                 <div>
                                     <p>
                                         Bedankt!<br />
-                                        Bestuurder is succesvol bijgewerkt.
+                                        Wagen is succesvol bijgewerkt.
                                     </p>
                                 </div>
                             </div>
@@ -121,7 +168,7 @@ else
                                 <div>
                                     <p>
                                         Bedankt!<br />
-                                        Bestuurder is succesvol verwijderd.
+                                        Wagen is succesvol verwijderd.
                                     </p>
                                 </div>
                             </div>
@@ -170,7 +217,7 @@ else
                             <h3>Nieuwe wagen</h3>
                         </div>
 
-                        <div class="usermanagement-table-responsive border p-1 d-flex justify-content-around">
+                        <div class="usermanagement-table-responsive border p-1  justify-content-around" style="background-color:white;">
                             <div class="d-flex justify-content-around flex-wrap">
                                 <div class="row w-100">
                                     <div class="col-md-12" style="">
@@ -184,15 +231,15 @@ else
                 else if (_selectedVehicle)
                 {
                     <div class="update-table">
-                        <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                        <div class="d-flex justify-content-between p-1 flex-column ">
                             <h3>Geselecteerde wagen</h3>
                             <div class="d-flex button-mobile-ui">
-                                <button type="submit" class="btn btn buttons-succes m-2" form="driver-form">Wagen opslaan</button>
-                                <button type="button" class="btn btn buttons-danger m-2" @onclick="() => _showDeleteConfirmation = true">Wagen verwijderen</button>
+                                <button type="submit" class="btn btn buttons-succes m-2" form="driver-form">Wijziging opslaan</button>
+                                @*<button type="button" class="btn btn buttons-danger m-2" @onclick="() => _showDeleteConfirmation = true">Wagen verwijderen</button>*@
                             </div>
                         </div>
 
-                        <div class="form-border p-1">
+                        <div class=" p-1" style="background-color: white;">
                             <form class="d-flex justify-content-around flex-wrap" id="driver-form" @onsubmit="@UpdateSelectedUser">
                                 <div class="row w-100">
                                     <div class="col-md-6 mb-3">
@@ -214,7 +261,7 @@ else
                                     <div class="col-md-6 mb-3">
                                         <label class="d-flex required-field-mark form-titles" for="carbrand">wagen merk:</label>
                                         <select class="form-input-select" id="carbrand" @bind="@_selectedVehicleDto.CarBrand">
-                                            @foreach (var carBrand in Enum.GetValues(typeof(CarBrand)))
+                                            @foreach (var carBrand in Enum.GetValues(typeof(CarBrand)).Cast<CarBrand>().OrderBy(x => x.ToString()))
                                             {
                                                 <option value="@carBrand">@(((CarBrand)carBrand))</option>
                                             }
@@ -223,7 +270,7 @@ else
                                     <div class="col-md-6 mb-3">
                                         <label class="d-flex required-field-mark form-titles" for="fueltype">Brandstof:</label>
                                         <select class="form-input-select" id="fueltype" @bind="@_selectedVehicleDto.FuelType">
-                                            @foreach (var fuelType in Enum.GetValues(typeof(FuelType)))
+                                            @foreach (var fuelType in Enum.GetValues(typeof(FuelType)).Cast<FuelType>().OrderBy(x => x.ToString()))
                                             {
                                                 <option value="@fuelType">@(((FuelType)fuelType))</option>
                                             }
@@ -232,7 +279,7 @@ else
                                     <div class="col-md-6 mb-3">
                                         <label class="d-flex required-field-mark form-titles" for="typeofcar">Wagen type:</label>
                                         <select class="form-input-select" id="typeofcar" @bind="@_selectedVehicleDto.TypeOfCar">
-                                            @foreach (var typeOfCar in Enum.GetValues(typeof(TypeOfCar)))
+                                            @foreach (var typeOfCar in Enum.GetValues(typeof(TypeOfCar)).Cast<TypeOfCar>().OrderBy(x => x.ToString()))
                                             {
                                                 <option value="@typeOfCar">@(((TypeOfCar)typeOfCar))</option>
                                             }
@@ -241,7 +288,7 @@ else
                                     <div class="col-md-6 mb-3">
                                         <label class="d-flex required-field-mark form-titles" for="color">Kleur:</label>
                                         <select class="form-input-select" id="color" @bind="@_selectedVehicleDto.Color">
-                                            @foreach (var color in Enum.GetValues(typeof(VehicleColor)))
+                                            @foreach (var color in Enum.GetValues(typeof(VehicleColor)).Cast<VehicleColor>().OrderBy(x => x.ToString()))
                                             {
                                                 <option value="@color">@(((VehicleColor)color))</option>
                                             }
@@ -250,9 +297,9 @@ else
                                     <div class="col-md-6 mb-3">
                                         <label class="d-flex form-titles" for="numberofdoors">Aantal deuren:</label>
                                         <select class="form-input-select" id="numberofdoors" @bind="@_selectedVehicleDto.NumberOfDoors">
-                                            @foreach (var numberOfDoors in Enum.GetValues(typeof(NumberOfDoors)))
+                                            @foreach (var numberOfDoors in NumberOfDoorsExtensions.GetAllDoorDescriptions())
                                             {
-                                                <option value="@numberOfDoors">@(((NumberOfDoors)numberOfDoors))</option>
+                                                <option value="@numberOfDoors.Key">@numberOfDoors.Value</option>
                                             }
                                         </select>
                                     </div>
@@ -267,12 +314,17 @@ else
                                     </div>
                                     <div class="col-md-12 mb-3">
                                         <label class="form-titles">Gekoppelde bestuurders:</label>
-                                        @foreach (var driver in _driverListDto.DriverDtos)
+                                        @if (_driverListDto != null && _driverListDto.DriverDtos.Any())
                                         {
-                                            <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? " tabel-row-selected" : "" )"
-                                                 @onclick="@(() => CheckFuelCardChanged(driver))">
-                                                <label class="pointer-cursor">@driver.FirstName @driver.RegisterNumber</label>
-                                                <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
+                                            <div class="scrollable-driver-list">
+                                                @foreach (var driver in _driverListDto.DriverDtos.OrderBy(x => x.FirstName))
+                                                {
+                                                    <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? " tabel-row-selected" : "" )"
+                                                         @onclick="@(() => CheckFuelCardChanged(driver))">
+                                                        <label class="pointer-cursor">@driver.FirstName @driver.RegisterNumber</label>
+                                                        <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     </div>
@@ -332,6 +384,7 @@ else
     private bool _error = false;
     private bool _addNewVehicle = false;
     private bool _selectedVehicle = false;
+    private bool _showAllCars = true;
 
     public string ErrorTitle { get; set; } = string.Empty;
     public string ErrorMessage { get; set; } = string.Empty;
@@ -352,7 +405,8 @@ else
 
     private async Task LoadVehicleListDto()
     {
-        _vehicleListDto = await _vehicleService.GetAllVehicleAsync(_currentSortColumn, _isSortAscending, _pageNumber, _pageSize);
+        Pagination pagination = new Pagination(_pageNumber, _pageSize);
+        _vehicleListDto = await _vehicleService.GetAllVehicleAsync(_currentSortColumn, _isSortAscending, pagination);
         _totalPages = (int)Math.Ceiling((double)_vehicleListDto.TotalItems / _pageSize);
     }
 
@@ -362,6 +416,7 @@ else
 
         _selectedVehicle = false;
         _addNewVehicle = true;
+        _showAllCars = false;
     }
 
     private void SetBoolDefault()
@@ -372,6 +427,8 @@ else
 
     private async Task SelectVehicle(VehicleDto selectedVehicle)
     {
+        _isLoading = true;
+
         _selectedVehicleDto = selectedVehicle;
         _driverVehicleDtos = (await _driverVehicleService.GetVehicleWithConnectedDriversByVehicleId(_selectedVehicleDto.Id)).Item1;
         var v = _driverVehicleDtos.Select(x => _driverListDto.DriverDtos.Where(r => x.DriverId == r.Id).ToList()).ToList();
@@ -382,10 +439,15 @@ else
         _vehicleAdded = false;
         _vehicleUpdated = false;
         _vehicleDeleted = false;
+        _showAllCars = false;
+
+        _isLoading = false;
     }
 
     private async Task SaveNewUser(VehicleDto vehicleDto)
     {
+        _isLoading = true;
+
         try
         {
             if (vehicleDto is not null)
@@ -403,7 +465,7 @@ else
                     _vehicleAdded = true;
 
                 _showSendConfirmation = true;
-                _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
+                await LoadVehicleListDto();
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -413,10 +475,13 @@ else
             ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het toevoegen. Error: {ex.Message}";
             _error = true;
         }
+
+        _isLoading = false;
     }
 
     private async Task DeleteVehicle(VehicleDto vehicleDto)
     {
+        _isLoading = true;
         try
         {
             if (vehicleDto is not null)
@@ -426,7 +491,7 @@ else
                 _showSendConfirmation = true;
                 _vehicleDeleted = true;
 
-                _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
+                await LoadVehicleListDto();
                 await InvokeAsync(StateHasChanged);
             }
             _showDeleteConfirmation = false;
@@ -438,10 +503,13 @@ else
             _error = true;
             _showDeleteConfirmation = false;
         }
+
+        _isLoading = false;
     }
 
     private async Task UpdateSelectedUser()
     {
+        _isLoading = true;
         try
         {
             if (_selectedVehicleDto is not null)
@@ -459,7 +527,7 @@ else
                     _vehicleUpdated = true;
 
                 _showSendConfirmation = true;
-                _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
+                await LoadVehicleListDto();
             }
         }
         catch (Exception ex)
@@ -468,6 +536,8 @@ else
             ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het bijwerken. Error: {ex.Message}";
             _error = true;
         }
+
+        _isLoading = false;
     }
 
     private void CheckFuelCardChanged(DriverDto driverDto)
@@ -494,19 +564,32 @@ else
 
     private async Task HandlePageChanged(int page)
     {
+        _isLoading = true;
         _pageNumber = page;
         await LoadVehicleListDto();
+        _isLoading = false;
     }
 
     private async Task HandlePage(int page)
     {
+        _isLoading = true;
         _pageNumber = page;
         await LoadVehicleListDto();
+        _isLoading = false;
     }
 
     private async Task HandleItemsPerPageChanged(int itemsPerPage)
     {
+        _isLoading = true;
         _pageSize = itemsPerPage;
         await LoadVehicleListDto();
+        _isLoading = false;
+    }
+
+    private void ShowAllCars()
+    {
+        _showAllCars = true;
+        _addNewVehicle = false;
+        _selectedVehicle = false;
     }
 }

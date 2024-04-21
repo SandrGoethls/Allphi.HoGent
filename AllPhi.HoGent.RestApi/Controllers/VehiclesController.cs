@@ -1,9 +1,11 @@
-﻿using AllPhi.HoGent.Datalake.Data.Models;
+﻿using AllPhi.HoGent.Datalake.Data.Helpers;
+using AllPhi.HoGent.Datalake.Data.Models;
 using AllPhi.HoGent.Datalake.Data.Store;
 using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Runtime.InteropServices;
 using static AllPhi.HoGent.RestApi.Extensions.VehicleMapperExtension;
 
 
@@ -37,9 +39,15 @@ namespace AllPhi.HoGent.RestApi.Controllers
 
         
         [HttpGet("getallvehicles")]
-        public async Task<ActionResult<VehicleListDto>> GetAllVehicles()
+        public async Task<ActionResult<VehicleListDto>> GetAllVehicles([FromQuery] [Optional] string? sortBy, [FromQuery] [Optional] bool isAscending, [FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync();
+            Pagination? pagination = null;
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                pagination = new Pagination ( pageNumber.Value, pageSize.Value );
+            }
+
+            var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync(sortBy, isAscending, pagination);
             if (vehicles == null)
             {
                 return NotFound();

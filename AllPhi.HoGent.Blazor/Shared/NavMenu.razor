@@ -1,7 +1,22 @@
-﻿<div style="width: 220px;" class="py-3">
-    <div class="rounded text-info my-2">
+﻿@inject NavigationManager NavManager
+
+<style>
+    a {
+        color: #000000c4 !important;
+    }
+
+    @@media (min-width:300px) and (max-width:1344px) 
+    {
+        .rounded {
+            margin-top: 97px;
+        }
+    }
+
+</style>
+
+<div style="width: 220px;" class="">
+    <div class="rounded text-info p-2" style="background-color:white;">
         <h6 class="px-4">Menu</h6>
-        <p class="px-4 text-secondary">List</p>
         <hr class="my-2" />
         <a class="icon-color d-block text-decoration-none px-4 py-2 @(_selectedLink == "home" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("home")' href="/home">
             <i class="fa-solid fa-house fa-xl"></i> Home
@@ -23,9 +38,15 @@
 @code {
     private string _selectedLink = "home";
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _selectedLink = NavManager.ToBaseRelativePath(NavManager.Uri);
+    }
+
     private void SelectLink(string linkName)
     {
         _selectedLink = linkName;
-        StateHasChanged();
+        //NavManager.NavigateTo($"/{linkName}", forceLoad: true);
     }
 }

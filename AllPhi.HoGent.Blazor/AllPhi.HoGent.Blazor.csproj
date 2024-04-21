@@ -7,7 +7,62 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\lib\Chart.js\**" />
+    <Compile Remove="wwwroot\lib\datatables-bs5\**" />
+    <Compile Remove="wwwroot\lib\datatables-buttons-bs5\**" />
+    <Compile Remove="wwwroot\lib\datatables-buttons\**" />
+    <Compile Remove="wwwroot\lib\datatables-responsive-bs5\**" />
+    <Compile Remove="wwwroot\lib\datatables-responsive\**" />
+    <Compile Remove="wwwroot\lib\datatables\**" />
+    <Compile Remove="wwwroot\lib\easy-pie-chart\**" />
+    <Content Remove="wwwroot\lib\Chart.js\**" />
+    <Content Remove="wwwroot\lib\datatables-bs5\**" />
+    <Content Remove="wwwroot\lib\datatables-buttons-bs5\**" />
+    <Content Remove="wwwroot\lib\datatables-buttons\**" />
+    <Content Remove="wwwroot\lib\datatables-responsive-bs5\**" />
+    <Content Remove="wwwroot\lib\datatables-responsive\**" />
+    <Content Remove="wwwroot\lib\datatables\**" />
+    <Content Remove="wwwroot\lib\easy-pie-chart\**" />
+    <EmbeddedResource Remove="wwwroot\lib\Chart.js\**" />
+    <EmbeddedResource Remove="wwwroot\lib\datatables-bs5\**" />
+    <EmbeddedResource Remove="wwwroot\lib\datatables-buttons-bs5\**" />
+    <EmbeddedResource Remove="wwwroot\lib\datatables-buttons\**" />
+    <EmbeddedResource Remove="wwwroot\lib\datatables-responsive-bs5\**" />
+    <EmbeddedResource Remove="wwwroot\lib\datatables-responsive\**" />
+    <EmbeddedResource Remove="wwwroot\lib\datatables\**" />
+    <EmbeddedResource Remove="wwwroot\lib\easy-pie-chart\**" />
+    <None Remove="wwwroot\lib\Chart.js\**" />
+    <None Remove="wwwroot\lib\datatables-bs5\**" />
+    <None Remove="wwwroot\lib\datatables-buttons-bs5\**" />
+    <None Remove="wwwroot\lib\datatables-buttons\**" />
+    <None Remove="wwwroot\lib\datatables-responsive-bs5\**" />
+    <None Remove="wwwroot\lib\datatables-responsive\**" />
+    <None Remove="wwwroot\lib\datatables\**" />
+    <None Remove="wwwroot\lib\easy-pie-chart\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\Chart.js\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\datatables-bs5\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\datatables-buttons-bs5\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\datatables-buttons\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\datatables-responsive-bs5\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\datatables-responsive\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\datatables\**" />
+    <TypeScriptCompile Remove="wwwroot\lib\easy-pie-chart\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllPhi.HoGent.Datalake.Data\AllPhi.HoGent.Datalake.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\" />
   </ItemGroup>
 
 </Project>

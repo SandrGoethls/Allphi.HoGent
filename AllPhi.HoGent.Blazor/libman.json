@@ -5,6 +5,30 @@
     {
       "library": "font-awesome@6.5.1",
       "destination": "wwwroot/font-awesome/"
+    },
+    {
+      "library": "Chart.js@4.4.1",
+      "destination": "wwwroot/lib/Chart.js/"
+    },
+    {
+      "library": "easy-pie-chart@2.1.6",
+      "destination": "wwwroot/lib/easy-pie-chart/"
+    },
+    {
+      "library": "datatables@1.10.21",
+      "destination": "wwwroot/lib/datatables/"
+    },
+    {
+      "library": "datatables-buttons@3.0.2",
+      "destination": "wwwroot/lib/datatables-buttons/"
+    },
+    {
+      "library": "datatables-responsive@3.0.2",
+      "destination": "wwwroot/lib/datatables-responsive/"
+    },
+    {
+      "library": "jquery@3.7.1",
+      "destination": "wwwroot/lib/jquery/"
     }
   ]
 }

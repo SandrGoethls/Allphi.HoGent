@@ -1,4 +1,7 @@
-﻿
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using AllPhi.HoGent.Blazor.Extansions
+
 <style>
     .review {
         font-weight: bolder;
@@ -48,6 +51,12 @@
 
     .wizard-step-inactive {
         color: gray;
+    }
+
+    @@media (min-width:300px) and (max-width:1344px){
+        .wizard-steps {
+            font-size: larger;
+        }
     }
 </style>
 
@@ -103,7 +112,7 @@
         <div class="col-md-12 mb-3">
             <label class="d-flex form-titles" for="carbrand">Wagen merk:</label>
             <select class="form-input-select" id="carbrand" @bind="@SelectedCarBrand">
-                @foreach (var carBrand in Enum.GetValues(typeof(CarBrand)))
+                @foreach (var carBrand in Enum.GetValues(typeof(CarBrand)).Cast<CarBrand>().OrderBy(x => x.ToString()))
                 {
                     <option value="@carBrand">@(((CarBrand)carBrand))</option>
                 }
@@ -112,7 +121,7 @@
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="fueltype">Brandstof:</label>
             <select class="form-input-select" id="fueltype" @bind="@SelectedFuelType">
-                @foreach (var fuelType in Enum.GetValues(typeof(FuelType)))
+                @foreach (var fuelType in Enum.GetValues(typeof(FuelType)).Cast<FuelType>().OrderBy(x => x.ToString()))
                 {
                     <option value="@fuelType">@(((FuelType)fuelType))</option>
                 }
@@ -121,7 +130,7 @@
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="typeofcar">Wagen type:</label>
             <select class="form-input-select" id="typeofcar" @bind="@SelectedTypeOfCar">
-                @foreach (var typeOfCar in Enum.GetValues(typeof(TypeOfCar)))
+                @foreach (var typeOfCar in Enum.GetValues(typeof(TypeOfCar)).Cast<TypeOfCar>().OrderBy(x => x.ToString()))
                 {
                     <option value="@typeOfCar">@(((TypeOfCar)typeOfCar))</option>
                 }
@@ -141,7 +150,7 @@
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="color">Kleur:</label>
             <select class="form-input-select" id="color" @bind="@SelectedVehicleColor">
-                @foreach (var color in Enum.GetValues(typeof(VehicleColor)))
+                @foreach (var color in Enum.GetValues(typeof(VehicleColor)).Cast<VehicleColor>().OrderBy(x => x.ToString()))
                 {
                     <option value="@color">@(((VehicleColor)color))</option>
                 }
@@ -150,9 +159,9 @@
         <div class="col-md-12 mb-3">
             <label class="d-flex form-titles" for="numberofdoors">Aantal deuren:</label>
             <select class="form-input-select" id="numberofdoors" @bind="@SelectedNumberOfDoors">
-                @foreach (var numberOfDoors in Enum.GetValues(typeof(NumberOfDoors)))
+                @foreach (var numberOfDoors in NumberOfDoorsExtensions.GetAllDoorDescriptions())
                 {
-                    <option value="@numberOfDoors">@(((NumberOfDoors)numberOfDoors))</option>
+                    <option value="@numberOfDoors.Key">@numberOfDoors.Value</option>
                 }
             </select>
         </div>
@@ -181,18 +190,20 @@
 
             @if (Drivers != null && Drivers.Any())
             {
-                @foreach (var driver in Drivers)
+                @foreach (var driver in Drivers.OrderBy(x => x.FirstName))
                 {
-                <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? "tabel-row-selected" : "")"
-                     @onclick="(() => CheckDriverChanged(driver))">
-                    <label class="pointer-cursor">@driver.FirstName @driver.LastName</label>
-                    <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
-                </div>
+                    <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? "tabel-row-selected" : "")"
+                         @onclick="(() => CheckDriverChanged(driver))">
+                        <label class="pointer-cursor">@driver.FirstName @driver.LastName</label>
+                        <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
+                    </div>
                 }
-            }else {
+            }
+            else
+            {
                 <p>Geen bestuurder beschikbaar</p>
             }
-            
+
         </div>
     }
     else if (currentStep == WizardStep.Review)
@@ -295,18 +306,18 @@
     private async Task HandleSave()
     {
         var vehicle = new VehicleDto
-            {
-                Id = Guid.NewGuid(),
-                ChassisNumber = SelectedChassisNumber,
-                LicensePlate = SelectedLicensePlate,
-                CarBrand = SelectedCarBrand,
-                Color = SelectedVehicleColor,
-                FuelType = SelectedFuelType,
-                NumberOfDoors = SelectedNumberOfDoors,
-                TypeOfCar = SelectedTypeOfCar,
-                Status = SelectedStatus,
-                DriversDto = _checkedDriver,
-            };
+        {
+            Id = Guid.NewGuid(),
+            ChassisNumber = SelectedChassisNumber,
+            LicensePlate = SelectedLicensePlate,
+            CarBrand = SelectedCarBrand,
+            Color = SelectedVehicleColor,
+            FuelType = SelectedFuelType,
+            NumberOfDoors = SelectedNumberOfDoors,
+            TypeOfCar = SelectedTypeOfCar,
+            Status = SelectedStatus,
+            DriversDto = _checkedDriver,
+        };
 
         await OnSave.InvokeAsync(vehicle);
     }

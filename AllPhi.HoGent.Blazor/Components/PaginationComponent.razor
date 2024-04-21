@@ -60,6 +60,16 @@
         text-transform: uppercase;
         margin-bottom: 0;
     }
+
+    @@media (min-width:300px) and (max-width:1200px) {
+        .pagination-row {
+            flex-direction: column;
+        }
+
+        .b-pagination {
+            margin-bottom: 32px;
+        }
+    }
 </style>
 
 
@@ -68,18 +78,18 @@
         <p>Pagina @CurrentPage van @TotalPages </p>
     </div>
 </div>
-<div class="d-flex flex-between-center justify-content-between">
+<div class="d-flex flex-between-center justify-content-between pagination-row">
     <div class="d-flex justify-content-start b-pagination">
         @for (var i = StartPage; i <= EndPage; i++)
         {
             var pageNumber = i;
             if (i == CurrentPage)
             {
-                <span class="px-2"><b class="b-pagination">@i</b></span>
+                <span class="px-2 mx-1"><b class="b-pagination">@i</b></span>
             }
             else
             {
-                <button type="button" class="px-2 btn btn-sm btn-primary btn-pagination" @onclick="() => SetPage(pageNumber)">@i</button>
+                <button type="button" class="px-2 mx-1 btn btn-sm btn-primary btn-pagination" @onclick="() => SetPage(pageNumber)">@i</button>
             }
         }
     </div>
@@ -94,8 +104,10 @@
                 </select>
             </div>
         </div>
-        <button class="btn btn-primary ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage - 1)" disabled="@((CurrentPage <= 1))">Previous</button>
-        <button class="btn btn-primary px-4 ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage + 1)" disabled="@((CurrentPage >= TotalPages))">Next</button>
+        <div class="d-flex">
+            <button class="btn btn-primary ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage - 1)" disabled="@((CurrentPage <= 1))">Previous</button>
+            <button class="btn btn-primary px-4 ms-2 btn-pagination-style" @onclick="() => SetPage(CurrentPage + 1)" disabled="@((CurrentPage >= TotalPages))">Next</button>
+        </div>
     </div>
 </div>
 
