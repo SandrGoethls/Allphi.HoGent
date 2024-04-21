@@ -108,7 +108,7 @@
         _selectedDriverDto = selectedDriver;
 
         _fuelCardDriverDtos = (await _fuelCardDriverService.GetDriverWithConnectedFuelCardsByDriverId(_selectedDriverDto.Id)).Item1;
-        var v = _fuelCardDriverDtos.Select(x => _fuelCardListDto.FuelCards.Where(r => x.FuelCardId == r.Id).ToList()).ToList();
+        var v = _fuelCardDriverDtos.Select(x => _fuelCardListDto.FuelCardDtos.Where(r => x.FuelCardId == r.Id).ToList()).ToList();
         _checkedfuelCard = v.SelectMany(x => x.Select(x => x).ToList()).ToList();
 
         _driverVehicleDtos = (await _driverVehicleService.GetDriverWithConnectedVehiclesByDriverId(_selectedDriverDto.Id)).Item1;
