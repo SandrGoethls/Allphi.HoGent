@@ -1,0 +1,69 @@
+﻿@page "/"
+
+@using AllPhi.HoGent.Blazor.Components
+@using AllPhi.HoGent.Blazor.Services
+@using AllPhi.HoGent.Blazor.Dto
+@using AllPhi.HoGent.Blazor.Dto.Enums
+
+@inject IDriverServices _driverServices
+@inject IVehicleServices _vehicleServices
+@inject IFuelCardServices _fuelCardServices
+@inject IFuelCardDriverServices _fuelCardDriverServices
+@inject IDriverVehicleServices _driverVehicleServices
+
+<PageTitle>Dashboard</PageTitle>
+@if (_isLoading)
+{
+    <LoadingSpinner IsLoading="@_isLoading" />
+}
+else
+{
+    <Container>
+        <Row>
+            <Col>
+            <h1>Dashboard</h1>
+
+        </Row>
+        <Row>
+            <Col>
+            <h2>Drivers</h2>
+            <p>Number of drivers: @_driverListDto.TotalItems</p>
+            <p>Number of active drivers: @_driverListDto.DriverDtos.Count(d => d.Status == Status.Active)</p>
+            <p>Number of inactive drivers: @_driverListDto.DriverDtos.Count(d => d.Status == Status.Deactive)</p>
+
+            <Col>
+            <h2>Vehicles</h2>
+            <p>Number of vehicles: @_vehicleListDto.TotalItems</p>
+            <p>Number of active vehicles: @_vehicleListDto.VehicleDtos.Count(v => v.Status == Status.Active)</p>
+            <p>Number of inactive vehicles: @_vehicleListDto.VehicleDtos.Count(v => v.Status == Status.Deactive)</p>
+
+            <Col>
+            <h2>Fuel cards</h2>
+            <p>Number of fuel cards: 10</p>
+            <p>Number of active fuel cards: 5</p>
+            <p>Number of inactive fuel cards: 5</p>
+
+        </Row>
+    </Container>
+}
+
+
+@code {
+    private VehicleListDto? _vehicleListDto;
+    private DriverListDto? _driverListDto;
+    private FuelCardListDto? _fuelCardListDto;
+    private List<DriverVehicleDto> _driverVehicles = new List<DriverVehicleDto>();
+    private List<FuelCardDriverDto> _fuelCardDrivers = new List<FuelCardDriverDto>();
+
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _driverListDto = await _driverServices.GetAllDriversAsync();
+        _vehicleListDto = await _vehicleServices.GetAllVehicleAsync();
+        // _fuelCardListDto = await _fuelCardServices.GetAllFuelCardsAsync();
+        // _driverVehicles = await _driverVehicleServices.GetAllDriverVehiclesAsync();
+        // _fuelCardDrivers = await _fuelCardDriverServices.GetAllFuelCardDriversAsync();
+        _isLoading = false;
+    }
+}
