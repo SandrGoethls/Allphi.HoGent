@@ -58,7 +58,7 @@ else
                     <div class="d-flex button-mobile-ui">
                         @if (_showAllCars)
                         {
-                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Wagens toevoegen</button>
+                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Wagen toevoegen</button>
                         }
                         else if (!_showAllCars)
                         {
@@ -98,7 +98,7 @@ else
                                             <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.FuelType</td>
                                             <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.TypeOfCar</td>
                                             <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.Color</td>
-                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.NumberOfDoors</td>
+                                            <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.NumberOfDoors.GetDescription()</td>
                                             <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.Status</td>
                                             <td @onclick="() => _showDeleteConfirmation = true">
                                                 <span type="button" class="fa fa-trash-can" @onclick="() => _showDeleteConfirmation = true" style="color: #cf5256"></span>

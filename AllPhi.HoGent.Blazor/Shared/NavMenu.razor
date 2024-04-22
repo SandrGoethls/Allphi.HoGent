@@ -18,7 +18,7 @@
     <div class="rounded text-info p-2" style="background-color:white;">
         <h6 class="px-4">Menu</h6>
         <hr class="my-2" />
-        <a class="icon-color d-block text-decoration-none px-4 py-2 @(_selectedLink == "Dashboard" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("dashboard")' href="/">
+        <a class="icon-color d-block text-decoration-none px-4 py-2 @(_selectedLink == "dashboard" || _selectedLink == "" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("dashboard")' href="/">
             <i class="fa-solid fa-house fa-xl"></i> Dashboard
         </a>
         <a class="icon-color d-block text-decoration-none px-4 py-2 @(_selectedLink == "fuelcards" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("fuelcards")' href="#">
@@ -36,7 +36,7 @@
 
 
 @code {
-    private string _selectedLink = "home";
+    private string _selectedLink = "dashboard";
 
     protected override void OnInitialized()
     {
