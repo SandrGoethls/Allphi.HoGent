@@ -225,3 +225,10 @@ body, html {
     padding-right: 0;
     padding-left: 0;
 }
+
+.main-content {
+    background-color: #e9eff1;
+    background-image: url('../../images/backgroundTriangles.png');
+    background-size: cover;
+}
+
