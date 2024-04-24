@@ -6,6 +6,20 @@
 @using AllPhi.HoGent.Blazor.Dto
 @using AllPhi.HoGent.Blazor.Dto.Enums
 
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Interop
+
+
+
+
+
 @inject IDriverServices _driverServices
 @inject IVehicleServices _vehicleServices
 @inject IFuelCardServices _fuelCardServices
@@ -19,52 +33,92 @@
 }
 else
 {
-    <Container>
-        <Row>
-            <Col>
-            <h1>Dashboard</h1>
-
-        </Row>
-        <Row>
-            <Col>
-            <h2>Drivers</h2>
-            <p>Number of drivers: @_driverListDto.TotalItems</p>
-            <p>Number of active drivers: @_driverListDto.DriverDtos.Count(d => d.Status == Status.Active)</p>
-            <p>Number of inactive drivers: @_driverListDto.DriverDtos.Count(d => d.Status == Status.Deactive)</p>
-
-            <Col>
-            <h2>Vehicles</h2>
-            <p>Number of vehicles: @_vehicleListDto.TotalItems</p>
-            <p>Number of active vehicles: @_vehicleListDto.VehicleDtos.Count(v => v.Status == Status.Active)</p>
-            <p>Number of inactive vehicles: @_vehicleListDto.VehicleDtos.Count(v => v.Status == Status.Deactive)</p>
-
-            <Col>
-            <h2>Fuel cards</h2>
-            <p>Number of fuel cards: 10</p>
-            <p>Number of active fuel cards: 5</p>
-            <p>Number of inactive fuel cards: 5</p>
-
-        </Row>
-    </Container>
+     <div class="block block-rounded">
+        <div class="block-header">
+            <h3 class="block-title">Dashboard Analytics</h3>
+        </div>
+        <div class="block-content">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Drivers</h4>
+                    <Chart Config="@_driversChartConfig" Width="200" Height="200" />
+                </div>
+                <div class="col-md-4">
+                    <h4>Vehicles</h4>
+                    <Chart Config="@_vehiclesChartConfig" Width="200" Height="200" />
+                </div>
+                <div class="col-md-4">
+                    <h4>Fuel Cards</h4>
+                    <Chart Config="@_fuelCardsChartConfig" Width="200" Height="200" />
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 
 @code {
-    private VehicleListDto? _vehicleListDto;
-    private DriverListDto? _driverListDto;
-    private FuelCardListDto? _fuelCardListDto;
-    private List<DriverVehicleDto> _driverVehicles = new List<DriverVehicleDto>();
-    private List<FuelCardDriverDto> _fuelCardDrivers = new List<FuelCardDriverDto>();
 
-    private bool _isLoading = true;
+    
+
+    private bool _isLoading = true; 
+    private PieConfig _driversChartConfig;
+    private PieConfig _vehiclesChartConfig;
+    private PieConfig _fuelCardsChartConfig;
 
     protected override async Task OnInitializedAsync()
     {
-        _driverListDto = await _driverServices.GetAllDriversAsync();
-        _vehicleListDto = await _vehicleServices.GetAllVehicleAsync();
-        // _fuelCardListDto = await _fuelCardServices.GetAllFuelCardsAsync();
-        // _driverVehicles = await _driverVehicleServices.GetAllDriverVehiclesAsync();
-        // _fuelCardDrivers = await _fuelCardDriverServices.GetAllFuelCardDriversAsync();
-        _isLoading = false;
+        await Task.Run(() => InitializeCharts());
+        _isLoading = false; 
+    }
+
+    private void InitializeCharts()
+    {
+        _driversChartConfig = GetChartConfig("Drivers", new int[] { 30, 70 }, new string[] { "#FF6384", "#36A2EB" });
+        _vehiclesChartConfig = GetChartConfig("Vehicles", new int[] { 50, 50 }, new string[] { "#FFCE56", "#FF6384" });
+        _fuelCardsChartConfig = GetChartConfig("Fuel Cards", new int[] { 85, 15 }, new string[] { "#36A2EB", "#FFCE56" });
+    }
+
+    private PieConfig GetChartConfig(string label, int[] data, string[] backgroundColors)
+    {
+        var config = new PieConfig(true)
+            {
+                
+                
+                Options = new PieOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                   
+                    {
+                        Display = true,
+                        Text = label + " Distribution"
+                    }
+                }
+            };
+
+
+
+        config.Data.Labels.Clear();  
+        foreach (var status in new[] { "Active", "Inactive" })  
+        {
+            config.Data.Labels.Add(status);
+        }
+
+        var dataset = new PieDataset<int>(data)
+            {
+                BackgroundColor = new[]
+            {
+            ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+            ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+            ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+            ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+        }
+            };
+
+        config.Data.Datasets.Add(dataset);
+
+        return config;
     }
 }
+

@@ -13,7 +13,10 @@
     <link href="~/css/site.css" rel="stylesheet" />
     <link href="~/font-awesome/css/all.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital@0;1&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Space+Mono&family=Work+Sans:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="images/AllphiLogoSymbolTransparant.png" type="image/svg">
     <link rel="stylesheet" id="css-main" href="./css/oneui.css">
 
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
@@ -35,6 +38,10 @@
 
     <script src="_framework/blazor.server.js"></script>
     <script src="~/font-awesome/js/all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+    <!-- This is the glue between Blazor and Chart.js -->
+    <script src="_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
 
     <script src="~/js/oneui.app.min.js"></script>
     <script src="~/lib/jquery/jquery.js"></script>
