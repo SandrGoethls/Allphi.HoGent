@@ -1,0 +1,24 @@
+﻿@page "/fuelcards"
+
+@using AllPhi.HoGent.Blazor.Services
+@using AllPhi.HoGent.Blazor.Dto
+@using AllPhi.HoGent.Blazor.Components
+
+@inject IFuelCardServices _fuelCardService
+@inject IDriverServices _driverService
+@inject IVehicleServices _vehicleService
+@inject IFuelCardDriverServices _fuelCardDriverService
+@inject IDriverVehicleServices _driverVehicleService
+
+<PageTitle>FuelCards</PageTitle>
+
+
+@if (_isLoading)
+{
+    <LoadingSpinner IsLoading="@_isLoading" />
+}
+
+@code {
+    private bool _isLoading = true;
+}
+

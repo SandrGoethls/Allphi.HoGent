@@ -1,4 +1,5 @@
 ﻿using AllPhi.HoGent.Datalake.Data.Models;
+using AllPhi.HoGent.RestApi.Controllers;
 using AllPhi.HoGent.RestApi.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,13 +25,23 @@ namespace AllPhi.HoGent.RestApi.Extensions
         }
 
         
-        public static DriverListDto MapToDriverListDto(List<Driver> drivers, int count)
+        public static List<DriverDto> MapToDriverListDto(List<Driver> drivers)
         {
-            return new DriverListDto
+            return drivers.Select(d => new DriverDto
             {
-                DriverDtos = drivers.Select(MapToDriverDto).ToList(),
-                TotalItems = count
-            };
+                Id = d.Id,
+                FirstName = d.FirstName,
+                LastName = d.LastName,
+                City = d.City,
+                Street = d.Street,
+                HouseNumber = d.HouseNumber,
+                PostalCode = d.PostalCode,
+                RegisterNumber = d.RegisterNumber,
+                TypeOfDriverLicense = d.TypeOfDriverLicense,
+                Status = d.Status
+
+            }).ToList();
+            
         }
 
        public static Driver MapToDriver(DriverDto driverDto)

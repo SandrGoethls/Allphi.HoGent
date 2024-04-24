@@ -43,8 +43,11 @@ namespace AllPhi.HoGent.RestApi.Controllers
             {
                 return NotFound();
             }
-            List<FuelCardListDto> fuelCardListDtos = new List<FuelCardListDto>();
-            fuelCardListDtos.Add(MapToFuelCardListDto(fuelCards, count));
+            var fuelCardListDtos = new FuelCardListDto
+            {
+                FuelCardDtos = MapToFuelCardListDto(fuelCards),
+                TotalItems = count
+            };
             return Ok(fuelCardListDtos);
         }
 

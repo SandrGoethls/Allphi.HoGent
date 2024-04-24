@@ -30,7 +30,11 @@ namespace AllPhi.HoGent.RestApi.Controllers
             var (drivers, count) = await _driverStore.GetAllDriversAsync(sortBy, isAscending, pagination);
             
 
-            DriverListDto driverListDtos = MapToDriverListDto(drivers, count);
+            var driverListDtos =  new DriverListDto
+            {
+                DriverDtos = MapToDriverListDto(drivers),
+                TotalItems = count
+            };
             return Ok(driverListDtos);
         }
 

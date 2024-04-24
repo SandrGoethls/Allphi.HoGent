@@ -27,13 +27,23 @@ namespace AllPhi.HoGent.RestApi.Extensions
         }
 
         
-        public static FuelCardListDto MapToFuelCardListDto(List<FuelCard> fuelCards, int count)
+        public static List<FuelCardDto> MapToFuelCardListDto(List<FuelCard> fuelCards)
         {
-            return new FuelCardListDto
+            return fuelCards.Select(f => new FuelCardDto
             {
-                FuelCards = fuelCards.Select(MapToFuelCardDto).ToList(),
-                TotalItems = count
-            };
+                Id = f.Id,
+                Pin = f.Pin,
+                CardNumber = f.CardNumber,
+                ValidityDate = f.ValidityDate,
+                FuelCardFuelTypesDto = f.FuelCardFuelTypes.Select(f => new FuelCardFuelTypeDto
+                {
+                    FuelType = f.FuelType,
+                    FuelCardId = f.FuelCardId,
+                    Id = f.Id
+                }).ToList(),
+                Drivers = f.Drivers,
+                Status = f.Status
+            }).ToList();
 
         }
 
