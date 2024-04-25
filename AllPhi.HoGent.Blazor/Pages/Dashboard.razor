@@ -20,11 +20,11 @@
 
 
 
-@inject IDriverServices _driverServices
-@inject IVehicleServices _vehicleServices
-@inject IFuelCardServices _fuelCardServices
-@inject IFuelCardDriverServices _fuelCardDriverServices
-@inject IDriverVehicleServices _driverVehicleServices
+@inject IDriverServices _driverService
+@inject IVehicleServices _vehicleService
+@inject IFuelCardServices _fuelCardService
+@inject IFuelCardDriverServices _fuelCardDriverService
+@inject IDriverVehicleServices _driverVehicleService
 
 <PageTitle>Dashboard</PageTitle>
 @if (_isLoading)
@@ -33,23 +33,26 @@
 }
 else
 {
-     <div class="block block-rounded">
+    <div class="block block-rounded h-100">
         <div class="block-header">
             <h3 class="block-title">Dashboard Analytics</h3>
         </div>
         <div class="block-content">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3 card mx-5 ">
                     <h4>Drivers</h4>
-                    <Chart Config="@_driversChartConfig" Width="200" Height="200" />
+                    <p>Total : @_driverListDto.TotalItems</p>
+                    <Chart Config="@_driversChartConfig" Width="50" Height="50" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3 card mx-5 ">
                     <h4>Vehicles</h4>
-                    <Chart Config="@_vehiclesChartConfig" Width="200" Height="200" />
+                    <p>Total : @_vehicleListDto.TotalItems</p>
+                    <Chart Config="@_vehiclesChartConfig" Width="50" Height="50" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3 card mx-5">
                     <h4>Fuel Cards</h4>
-                    <Chart Config="@_fuelCardsChartConfig" Width="200" Height="200" />
+                    <p>Total : @_fuelCardListDto.TotalItems</p>
+                    <Chart Config="@_fuelCardsChartConfig" Width="50" Height="50" />
                 </div>
             </div>
         </div>
@@ -59,37 +62,62 @@ else
 
 @code {
 
-    
+    private FuelCardListDto? _fuelCardListDto;
+    private VehicleListDto? _vehicleListDto;
+    private DriverListDto? _driverListDto;
+    private DriverVehicleListDto? _driverVehicleListDto;
 
-    private bool _isLoading = true; 
+
+    private bool _isLoading = true;
     private PieConfig _driversChartConfig;
     private PieConfig _vehiclesChartConfig;
     private PieConfig _fuelCardsChartConfig;
 
     protected override async Task OnInitializedAsync()
     {
+        _fuelCardListDto = await _fuelCardService.GetAllFuelCardsAsync();
+        _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
+        _driverListDto = await _driverService.GetAllDriversAsync();
+        _driverVehicleListDto = await _driverVehicleService.GetAllDriverVehicleAsync();
+
         await Task.Run(() => InitializeCharts());
-        _isLoading = false; 
+        _isLoading = false;
     }
 
     private void InitializeCharts()
     {
-        _driversChartConfig = GetChartConfig("Drivers", new int[] { 30, 70 }, new string[] { "#FF6384", "#36A2EB" });
-        _vehiclesChartConfig = GetChartConfig("Vehicles", new int[] { 50, 50 }, new string[] { "#FFCE56", "#FF6384" });
-        _fuelCardsChartConfig = GetChartConfig("Fuel Cards", new int[] { 85, 15 }, new string[] { "#36A2EB", "#FFCE56" });
+        // For Drivers
+        int driversAssignedToVehicles = _driverVehicleListDto.DriverVehicleDtos.Select(dv => dv.DriverId).Distinct().Count();
+        int driversNotAssignedToVehicles = _driverListDto.TotalItems - driversAssignedToVehicles;
+
+        _driversChartConfig = GetChartConfig("Drivers", new int[] { driversNotAssignedToVehicles, driversAssignedToVehicles }, new string[] { "#e74c3c", "#2ecc71" }, 1);
+
+        // For Vehicles
+        int vehiclesWithDrivers = _driverVehicleListDto.DriverVehicleDtos.Select(dv => dv.VehicleId).Distinct().Count();
+        int vehiclesWithoutDrivers = _vehicleListDto.TotalItems - vehiclesWithDrivers;
+
+        _vehiclesChartConfig = GetChartConfig("Vehicles", new int[] { vehiclesWithoutDrivers, vehiclesWithDrivers }, new string[] { "#f1faee", "#f4a261" }, 2);
+
+        // For Fuel Cards
+        int fuelCardsWithDrivers = _fuelCardListDto.FuelCardDtos.Count(fc => fc.DriverDtos != null && fc.DriverDtos.Any());
+        int fuelCardsWithoutDrivers = _fuelCardListDto.TotalItems - fuelCardsWithDrivers;
+
+        _fuelCardsChartConfig = GetChartConfig("Fuel Cards", new int[] { fuelCardsWithoutDrivers, fuelCardsWithDrivers }, new string[] { "#457b9d", "#1d3557" }, 3);
     }
 
-    private PieConfig GetChartConfig(string label, int[] data, string[] backgroundColors)
+
+
+    private PieConfig GetChartConfig(string label, int[] data, string[] backgroundColors, int chart)
     {
         var config = new PieConfig(true)
             {
-                
-                
+
+
                 Options = new PieOptions
                 {
                     Responsive = true,
                     Title = new OptionsTitle
-                   
+
                     {
                         Display = true,
                         Text = label + " Distribution"
@@ -97,23 +125,38 @@ else
                 }
             };
 
-
-
-        config.Data.Labels.Clear();  
-        foreach (var status in new[] { "Active", "Inactive" })  
+        if (chart == 1)
         {
-            config.Data.Labels.Add(status);
+            config.Data.Labels.Clear();
+            foreach (var status in new[] { "Available Drivers", "Drivers assigned to vehicle" })
+            {
+                config.Data.Labels.Add(status);
+            }
         }
+
+        if (chart == 2)
+        {
+            config.Data.Labels.Clear();
+            foreach (var status in new[] { "Available Vehicles", "Vehicles assigned to drivers" })
+            {
+                config.Data.Labels.Add(status);
+            }
+        }
+
+        if (chart == 3)
+        {
+            config.Data.Labels.Clear();
+            foreach (var status in new[] { "Available Fuelcards", "Fuel assigned to drivers" })
+            {
+                config.Data.Labels.Add(status);
+            }
+        }
+
 
         var dataset = new PieDataset<int>(data)
             {
-                BackgroundColor = new[]
-            {
-            ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
-            ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
-            ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
-            ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
-        }
+                BackgroundColor = backgroundColors,
+
             };
 
         config.Data.Datasets.Add(dataset);
