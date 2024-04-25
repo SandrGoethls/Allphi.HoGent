@@ -23,7 +23,7 @@
         <a class="icon-color d-block text-decoration-none px-4 py-4 @(_selectedLink == "dashboard" || _selectedLink == "" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("dashboard")' href="/">
             <i class="fa-solid fa-house fa-xl"></i> Dashboard
         </a>
-        <a class="icon-color d-block text-decoration-none px-4 py-4 @(_selectedLink == "fuelcards" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("fuelcards")' href="#">
+        <a class="icon-color d-block text-decoration-none px-4 py-4 @(_selectedLink == "fuelcards" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("fuelcards")' href="/fuelcards">
             <i class="fas fa-gas-pump fa-xl"></i> Tankkaarten
         </a>
         <a class="icon-color d-block text-decoration-none px-4 py-4 @(_selectedLink == "drivers" ? "selected-grow" : "hover-grow")" @onclick='() => SelectLink("drivers")' href="/drivers">
