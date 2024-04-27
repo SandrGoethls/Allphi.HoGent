@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllPhi.HoGent.Testing", "Al
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllPhi.HoGent.RestApi", "AllPhi.HoGent.RestApi\AllPhi.HoGent.RestApi.csproj", "{D3A59DFA-D3C9-4EA2-8DE7-066420EB6D54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegisterNumberGenerator", "RegisterNumberGenerator\RegisterNumberGenerator.csproj", "{391C61C5-298F-487D-95DD-6DBBF62BFE26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D3A59DFA-D3C9-4EA2-8DE7-066420EB6D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3A59DFA-D3C9-4EA2-8DE7-066420EB6D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3A59DFA-D3C9-4EA2-8DE7-066420EB6D54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{391C61C5-298F-487D-95DD-6DBBF62BFE26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{391C61C5-298F-487D-95DD-6DBBF62BFE26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{391C61C5-298F-487D-95DD-6DBBF62BFE26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{391C61C5-298F-487D-95DD-6DBBF62BFE26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
