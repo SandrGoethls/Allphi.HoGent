@@ -21,6 +21,8 @@ namespace AllPhi.HoGent.RestApi.Dto
 
         public string RegisterNumber { get; set; } = string.Empty;
 
+        public DateTime DateOfBirth { get; set; }
+
         public TypeOfDriverLicense TypeOfDriverLicense { get; set; }
 
         public Status Status { get; set; } = Status.Active;

@@ -37,23 +37,51 @@ else
         <div class="block-header">
             <h3 class="block-title">Dashboard Analytics</h3>
         </div>
-        <div class="block-content">
+        <div class="block-content space-y-6">
             <div class="row">
-                <div class="col-md-3 card mx-5 ">
+                <div class="col-md-3 card mx-5 p-4 ">
                     <h4>Drivers</h4>
                     <p>Total : @_driverListDto.TotalItems</p>
                     <Chart Config="@_driversChartConfig" Width="50" Height="50" />
                 </div>
-                <div class="col-md-3 card mx-5 ">
+                <div class="col-md-3 card mx-5 p-4 ">
                     <h4>Vehicles</h4>
                     <p>Total : @_vehicleListDto.TotalItems</p>
                     <Chart Config="@_vehiclesChartConfig" Width="50" Height="50" />
                 </div>
-                <div class="col-md-3 card mx-5">
+                <div class="col-md-3 card mx-5 p-4">
                     <h4>Fuel Cards</h4>
                     <p>Total : @_fuelCardListDto.TotalItems</p>
                     <Chart Config="@_fuelCardsChartConfig" Width="50" Height="50" />
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 card mx-5 p-4 ">
+                    <h4>Upcoming Birthdays</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Driver</th>
+                                <th>Birthday</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var driver in _driverUpcomingBirthday)
+                            {
+                                <tr>
+                                    <td>@driver.FirstName @driver.LastName</td>
+                                    <td>@driver.DateOfBirth.ToString("dd-MM-yyyy")</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -73,6 +101,8 @@ else
     private PieConfig _vehiclesChartConfig;
     private PieConfig _fuelCardsChartConfig;
 
+    private List<DriverDto> _driverUpcomingBirthday;
+
     protected override async Task OnInitializedAsync()
     {
         _fuelCardListDto = await _fuelCardService.GetAllFuelCardsAsync();
@@ -80,8 +110,32 @@ else
         _driverListDto = await _driverService.GetAllDriversAsync();
         _driverVehicleListDto = await _driverVehicleService.GetAllDriverVehicleAsync();
 
-        await Task.Run(() => InitializeCharts());
+        await Task.Run(() =>
+        {
+            GetUpcomingBirthdays();
+            InitializeCharts();
+        });
         _isLoading = false;
+    }
+
+    private void GetUpcomingBirthdays()
+    {
+        if (_driverListDto != null && _driverListDto.DriverDtos != null)
+        {
+            var today = DateTime.Now;
+            var todayPlus10Days = DateTime.Now.AddDays(10);
+            _driverUpcomingBirthday = _driverListDto.DriverDtos
+                .Where(d =>
+                    (new DateTime(today.Year, d.DateOfBirth.Month, d.DateOfBirth.Day) >= today &&
+                    new DateTime(today.Year, d.DateOfBirth.Month, d.DateOfBirth.Day) <= todayPlus10Days) ||
+                    (d.DateOfBirth.Month == 12 && d.DateOfBirth.Day <= todayPlus10Days.Day - 365)
+                ).ToList();
+        }
+        else
+        {
+            _driverUpcomingBirthday = new List<DriverDto>();
+        }
+
     }
 
     private void InitializeCharts()
