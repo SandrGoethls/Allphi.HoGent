@@ -80,9 +80,61 @@ else
                     </table>
 
                 </div>
+                <div class="col-md-3 card mx-5 p-4 ">
+                    <h4>Upcomming vehicle inspection</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Licence plate</th>
+                                <th>Inspection date</th>
 
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var vehicle in _vehicleUpcomingInspection)
+                            {
+                                <tr>
+                                    <td>@vehicle.LicensePlate </td>
+                                    <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="col-md-3 card mx-5 p-4 ">
+                    <h4>Expiring fuelcards</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Card number</th>
+                                <th>Expires on</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var fuelcard in _fuelCardUpcomingValidity)
+                            {
+                                <tr>
+                                    <td>@fuelcard.CardNumber </td>
+                                    <td>@fuelcard.ValidityDate.ToString("dd-MM-yyyy")</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
 
             </div>
+
+
+
+
+
         </div>
     </div>
 }
@@ -102,6 +154,8 @@ else
     private PieConfig _fuelCardsChartConfig;
 
     private List<DriverDto> _driverUpcomingBirthday;
+    private List<FuelCardDto> _fuelCardUpcomingValidity;
+    private List<VehicleDto> _vehicleUpcomingInspection;
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,9 +167,31 @@ else
         await Task.Run(() =>
         {
             GetUpcomingBirthdays();
+            GetUpcomingVehicleInspections();
+            GetUpcomingValidityFuelCards();
             InitializeCharts();
         });
         _isLoading = false;
+    }
+
+    private void GetUpcomingVehicleInspections()
+    {
+        if (_vehicleListDto != null && _vehicleListDto.VehicleDtos != null)
+        {
+            var today = DateTime.Now;
+            var todayPlus10Days = DateTime.Now.AddDays(30);
+            _vehicleUpcomingInspection = _vehicleListDto.VehicleDtos
+                .Where(d =>
+                    (new DateTime(today.Year, d.InspectionDate.Month, d.InspectionDate.Day) >= today &&
+                    new DateTime(today.Year, d.InspectionDate.Month, d.InspectionDate.Day) <= todayPlus10Days) ||
+                    (d.InspectionDate.Month == 12 && d.InspectionDate.Day <= todayPlus10Days.Day - 365)
+                ).ToList();
+        }
+        else
+        {
+            _vehicleUpcomingInspection = new List<VehicleDto>();
+        }
+
     }
 
     private void GetUpcomingBirthdays()
@@ -134,6 +210,26 @@ else
         else
         {
             _driverUpcomingBirthday = new List<DriverDto>();
+        }
+
+    }
+
+    private void GetUpcomingValidityFuelCards()
+    {
+        if (_fuelCardListDto != null && _fuelCardListDto.FuelCardDtos != null)
+        {
+            var today = DateTime.Now;
+            var todayPlus10Days = DateTime.Now.AddDays(30);
+            _fuelCardUpcomingValidity = _fuelCardListDto.FuelCardDtos
+                .Where(d =>
+                    (new DateTime(today.Year, d.ValidityDate.Month, d.ValidityDate.Day) >= today &&
+                    new DateTime(today.Year, d.ValidityDate.Month, d.ValidityDate.Day) <= todayPlus10Days) ||
+                    (d.ValidityDate.Month == 12 && d.ValidityDate.Day <= todayPlus10Days.Day - 365)
+                ).ToList();
+        }
+        else
+        {
+            _fuelCardUpcomingValidity = new List<FuelCardDto>();
         }
 
     }

@@ -22,6 +22,9 @@ namespace AllPhi.HoGent.RestApi.Dto
         public NumberOfDoors NumberOfDoors { get; set; }
 
         public Status Status { get; set; } = Status.Active;
+
+        public DateTime InspectionDate { get; set; }
+
         public List<Driver>? Drivers { get; set; }
     }
 }

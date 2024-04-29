@@ -19,7 +19,8 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 TypeOfCar = vehicle.TypeOfCar,
                 Color = vehicle.VehicleColor,
                 NumberOfDoors = vehicle.NumberOfDoors,
-                Status = vehicle.Status
+                Status = vehicle.Status,
+                InspectionDate = vehicle.InspectionDate
             };
         }
 
@@ -37,7 +38,8 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 TypeOfCar = v.TypeOfCar,
                 Color = v.VehicleColor,
                 NumberOfDoors = v.NumberOfDoors,
-                Status = v.Status
+                Status = v.Status,
+                InspectionDate = v.InspectionDate
 
             }).ToList();
         }
@@ -54,7 +56,9 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 TypeOfCar = vehicleDto.TypeOfCar,
                 VehicleColor = vehicleDto.Color,
                 NumberOfDoors = vehicleDto.NumberOfDoors,
-                Status = vehicleDto.Status
+                Status = vehicleDto.Status,
+                InspectionDate = vehicleDto.InspectionDate
+                
             };
         }
     }
