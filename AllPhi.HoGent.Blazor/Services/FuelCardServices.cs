@@ -36,5 +36,29 @@ namespace AllPhi.HoGent.Blazor.Services
             var fuelCardsDto = JsonConvert.DeserializeObject<FuelCardListDto>(responseContent);
             return fuelCardsDto ?? new FuelCardListDto();
         }
+
+        public async Task<(bool, string message)> AddFuelCardAsync(FuelCardDto fuelCardDto)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(fuelCardDto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("api/fuelcards/addfuelcard", content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorResponse = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error adding fuel card: {errorResponse}");
+                    return (false, errorResponse);
+                }
+
+                return (true, "Added succesfully");
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

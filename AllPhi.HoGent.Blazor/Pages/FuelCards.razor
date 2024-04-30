@@ -43,6 +43,9 @@
     private List<DriverDto> _checkedDriver = new();
     private List<FuelCardDriverDto> _fuelCardDriverDtos = new();
 
+    public string ErrorTitle { get; set; } = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
+
 
 
     protected override async Task OnInitializedAsync()
@@ -87,6 +90,38 @@
         _fuelCardUpdated = false;
         _fuelCardDeleted = false;
         _error = false;
+    }
+
+    private async Task SaveNewUser(FuelCardDto fuelCardDto)
+    {
+        try
+        {
+            if (fuelCardDto is not null)
+            {
+                var (status, statusMessage) = await _fuelCardService.AddFuelCardAsync(fuelCardDto);
+
+                var (statusRelatedDrivers, statusMessageRelatedDrivers) = await _fuelCardDriverService.UpdateFuelCardDriverAsync(fuelCardDto.Id, fuelCardDto.DriverDtos.Select(x => x.Id).ToList());
+
+                if (!status)
+                {
+                    ErrorTitle = " Oei, er ging iets verkeerd tijdens het toevoegen.";
+                    ErrorMessage = statusMessage;
+                    _error = true;
+                }
+                else
+                    _fuelCardAdded = true;
+
+                _showSendConfirmation = true;
+                await LoadFuelCardListDto();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorTitle = " Oei, er ging iets verkeerd tijdens het toevoegen.";
+            ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het toevoegen. Error: {ex.Message}";
+            _error = true;
+        }
     }
 }
 

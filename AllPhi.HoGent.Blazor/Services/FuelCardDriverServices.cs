@@ -62,5 +62,22 @@ namespace AllPhi.HoGent.Blazor.Services
 
             return (true, "Updated succesfully");
         }
+
+        public async Task<(bool, string message)> UpdateFuelCardDriverAsync(Guid fuelCardId, List<Guid> driverGuids)
+        {
+            var json = JsonConvert.SerializeObject(driverGuids);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"api/fuelcarddriver/updatefuelcarddrivers/{fuelCardId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error updating fuel card: {errorResponse}");
+                return (false, errorResponse);
+            }
+
+            return (true, "Updated succesfully");
+        }
     }
 }
