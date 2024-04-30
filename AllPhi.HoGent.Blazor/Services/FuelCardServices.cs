@@ -60,5 +60,19 @@ namespace AllPhi.HoGent.Blazor.Services
                 throw;
             }
         }
+
+        public async Task<bool> DeleteFuelCardAsync(Guid fuelCardId)
+        {
+            var response = await _httpClient.DeleteAsync($"api/fuelcards/deletefuelcard/{fuelCardId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error deleting fuel card: {errorResponse}");
+                return false;
+            }
+
+            return true;
+        }
     }
 }

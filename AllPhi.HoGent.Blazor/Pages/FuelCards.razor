@@ -36,6 +36,7 @@
     private bool _fuelCardDeleted = false;
 
     private bool _showSendConfirmation = false;
+    private bool _showDeleteConfirmation = false;
     private bool _fuelCardAdded = false;
     private bool _error = false;
 
@@ -92,6 +93,7 @@
         _error = false;
     }
 
+
     private async Task SaveNewUser(FuelCardDto fuelCardDto)
     {
         try
@@ -121,6 +123,61 @@
             ErrorTitle = " Oei, er ging iets verkeerd tijdens het toevoegen.";
             ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het toevoegen. Error: {ex.Message}";
             _error = true;
+        }
+    }
+
+    private async Task UpdateSelectedUser()
+    {
+        try
+        {
+            if (_selectedFuelCardDto is not null)
+            {
+                var updatedFuelCard = await _fuelCardService.UpdateFuelCardAsync(_selectedFuelCardDto);
+
+                var (statusRelatedDrivers, statusMessageRelatedDrivers) = await _fuelCardDriverService.UpdateFuelCardDriverAsync(_selectedFuelCardDto.Id, _checkedDriver.Select(x => x.Id).ToList());
+
+                if (!updatedFuelCard || !statusRelatedDrivers)
+                {
+                    ErrorTitle = " Oei, er ging iets verkeerd tijdens het updaten.";
+                    ErrorMessage = statusMessageRelatedDrivers;
+                    _error = true;
+                }
+                else
+                    _fuelCardUpdated = true;
+
+                _showSendConfirmation = true;
+                await LoadFuelCardListDto();
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorTitle = " Oei, er ging iets verkeerd tijdens het bijwerken";
+            ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het bijwerken. Error: {ex.Message}";
+            _error = true;
+        }
+    }
+    private async Task DeleteFuelCard(FuelCardDto fuelCardDto)
+    {
+        try
+        {
+            if (fuelCardDto is not null)
+            {
+                await _fuelCardService.DeleteFuelCardAsync(fuelCardDto.Id);
+
+                _showSendConfirmation = true;
+                _fuelCardDeleted = true;
+
+                await LoadFuelCardListDto();
+                await InvokeAsync(StateHasChanged);
+            }
+            _showDeleteConfirmation = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorTitle = " Oei, er ging iets verkeerd tijdens het verwijderen";
+            ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het verwijderen. Error: {ex.Message}";
+            _error = true;
+            _showDeleteConfirmation = false;
         }
     }
 }
