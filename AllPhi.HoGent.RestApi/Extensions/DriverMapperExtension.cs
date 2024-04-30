@@ -19,6 +19,7 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 HouseNumber = driver.HouseNumber,
                 PostalCode = driver.PostalCode,
                 RegisterNumber = driver.RegisterNumber,
+                DateOfBirth = driver.DateOfBirth,
                 TypeOfDriverLicense = driver.TypeOfDriverLicense,
                 Status = driver.Status
             };
@@ -37,6 +38,7 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 HouseNumber = d.HouseNumber,
                 PostalCode = d.PostalCode,
                 RegisterNumber = d.RegisterNumber,
+                DateOfBirth = d.DateOfBirth,
                 TypeOfDriverLicense = d.TypeOfDriverLicense,
                 Status = d.Status
 
@@ -56,6 +58,7 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 HouseNumber = driverDto.HouseNumber,
                 PostalCode = driverDto.PostalCode,
                 RegisterNumber = driverDto.RegisterNumber,
+                DateOfBirth = driverDto.DateOfBirth,
                 TypeOfDriverLicense = driverDto.TypeOfDriverLicense,
                 Status = driverDto.Status
             };

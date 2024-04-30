@@ -163,6 +163,9 @@ namespace AllPhi.HoGent.Datalake.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("InspectionDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LicensePlate")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

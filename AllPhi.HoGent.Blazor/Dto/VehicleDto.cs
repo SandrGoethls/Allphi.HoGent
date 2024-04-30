@@ -22,6 +22,8 @@ namespace AllPhi.HoGent.Blazor.Dto
 
         public Status Status { get; set; } = Status.Active;
 
+        public DateTime InspectionDate { get; set; }
+
         public List<DriverDto>? DriversDto { get; set; }
     }
 }

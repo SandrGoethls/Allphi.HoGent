@@ -19,13 +19,16 @@ namespace AllPhi.HoGent.RestApi.Extensions
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        public static FuelCardDriverListDto MapToFuelCardDriverListDto(List<FuelCardDriver> fuelCardDrivers)
+        public static List<FuelCardDriverDto> MapToFuelCardDriverListDto(List<FuelCardDriver> fuelCardDrivers)
         {
-            return new FuelCardDriverListDto
+            return fuelCardDrivers.Select(d => new FuelCardDriverDto
             {
-                FuelCardDriverDtos = fuelCardDrivers.Select(MapToFuelCardDriverDto).ToList(),
-                TotalItems = fuelCardDrivers.Count
-            };
+                DriverId = d.DriverId,
+                FuelCardId = d.FuelCardId,
+                Driver = d.Driver,
+                FuelCard = d.FuelCard
+            }).ToList();
+            
         }
     }
 }

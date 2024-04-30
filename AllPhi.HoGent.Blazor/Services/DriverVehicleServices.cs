@@ -1,6 +1,10 @@
 ﻿using AllPhi.HoGent.Blazor.Dto;
+using AllPhi.HoGent.Datalake.Data.Helpers;
+using AllPhi.HoGent.Datalake.Data.Models;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Web;
 
 namespace AllPhi.HoGent.Blazor.Services
 {
@@ -77,6 +81,33 @@ namespace AllPhi.HoGent.Blazor.Services
             }
 
             return (true, "Updated succesfully");
+        }
+
+        public async Task<DriverVehicleListDto> GetAllDriverVehicleAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
+        {
+            var queryString = HttpUtility.ParseQueryString(string.Empty);
+            if (!string.IsNullOrEmpty(sortBy)) queryString["sortBy"] = sortBy;
+            queryString["isAscending"] = isAscending.ToString();
+            if (pagination != null)
+            {
+                queryString["pageNumber"] = pagination.PageNumber.ToString();
+                queryString["pageSize"] = pagination.PageSize.ToString();
+            }
+
+            string url = $"api/drivervehicle/getalldrivervehicles?{queryString}";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"Error fetching driver vehicles: {response.ReasonPhrase}");
+            }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var driverVehiclesDto = JsonConvert.DeserializeObject<DriverVehicleListDto>(responseContent);
+            return driverVehiclesDto ?? new DriverVehicleListDto();
+
+            
         }
     }
 }

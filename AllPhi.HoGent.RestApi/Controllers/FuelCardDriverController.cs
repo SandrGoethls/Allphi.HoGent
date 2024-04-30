@@ -30,8 +30,11 @@ namespace AllPhi.HoGent.RestApi.Controllers
             {
                 return NotFound();
             }
-            var fuelCardDriverListDto = new FuelCardDriverListDto();
-            fuelCardDriverListDto.Equals(MapToFuelCardDriverListDto(fuelCardDrivers));
+            var fuelCardDriverListDto = new FuelCardDriverListDto
+            {
+                FuelCardDriverDtos = MapToFuelCardDriverListDto(fuelCardDrivers),
+                TotalItems = count
+            };
 
             return Ok(fuelCardDriverListDto);
         }

@@ -20,18 +20,22 @@ namespace AllPhi.HoGent.RestApi.Controllers
             _driverVehicleStore = driverVehicleStore;
         }
 
-        //[HttpGet("getalldrivervehicles")]
-        //public async Task<ActionResult<DriverVehicleListDto>> GetAllDriverVehicles()
-        //{
-        //    var (driverVehicles, count) = await _driverVehicleStore.GetAllDriverVehicleAsync();
-        //    if (driverVehicles == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    List<DriverVehicleListDto> driverVehicleListDtos = new List<DriverVehicleListDto>();
-        //    driverVehicleListDtos.Add(MapToDriverVehicleListDto(driverVehicles, count));
-        //    return Ok(driverVehicleListDtos);
-        //}
+        [HttpGet("getalldrivervehicles")]
+        public async Task<ActionResult<DriverVehicleListDto>> GetAllDriverVehicles()
+        {
+            var (driverVehicles, count) = await _driverVehicleStore.GetAllDriverVehicleAsync();
+            if (driverVehicles == null)
+            {
+                return NotFound();
+            }
+            
+            var driverVehicleListDtos = new DriverVehicleListDto
+            {
+                DriverVehicleDtos = MapToDriverVehicleListDto(driverVehicles),
+                TotalItems = count
+            };
+            return Ok(driverVehicleListDtos);
+        }
 
         //[HttpGet("getdriverwithvehiclesbydriverid/{driverId}")]
         //public async Task<ActionResult<DriverVehicleListDto>> GetDriverWithVehiclesByDriverId(Guid driverId)
