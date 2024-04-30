@@ -140,7 +140,10 @@
 
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="registernumber">Rijksregisternummer:</label>
-            <input class="form-input-select" type="number" name="registernumber" @oninput="@((e) => OnInput(e, "registernumber"))" id="registernumber" @bind="SelectedRegisternumber" />
+            <input class="form-input-select" type="text" name="registernumber"
+                   @onblur="ValidateNumber"
+                   @bind="SelectedRegisternumber" />
+            <span class="alert-danger">@ValidationMessage</span>
         </div>
     }
     else if (currentStep == WizardStep.DriverAdress)
@@ -342,6 +345,7 @@
     public string SelectedLastName { get; set; } = string.Empty;
     public DateTime SelectedBirthdate { get; set; }  = DateTime.Now;
     public string SelectedRegisternumber { get; set; }
+    public string ValidationMessage { get; set; } = string.Empty;
     public DateTime MinDate => DateTime.Now.AddYears(-100); 
     public DateTime MaxDate => DateTime.Now;
 
@@ -369,7 +373,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($"MinDate: {MinDate}, MaxDate: {MaxDate}");
+        
         IsFormValid();
     }
 
@@ -398,7 +402,10 @@
     {
         if (currentStep == WizardStep.DriverDetails)
         {
+
             bool isBirthdateValid = SelectedBirthdate >= MinDate && SelectedBirthdate <= MaxDate;
+            
+
             if (string.IsNullOrEmpty(SelectedFirstName) ||
             string.IsNullOrEmpty(SelectedLastName) ||
             string.IsNullOrEmpty(SelectedRegisternumber) ||
@@ -555,6 +562,20 @@
         inputValue = address.Thoroughfarename; // toon alleen de straatnaam in het inputveld
         isDropdownVisible = false;
         IsFormValid();
+    }
+
+private void ValidateNumber()
+    {
+        if (!ValidateRegisterNumber.IsValidDriverRegisterNumber(SelectedRegisternumber))
+        {
+            ValidationMessage = "Ongeldig rijksregisternummer. Controleer het nummer a.u.b";
+            _readyForNext = false;
+        }
+        else
+        {
+            ValidationMessage = string.Empty;
+            _readyForNext = true;
+        }
     }
 
 }
