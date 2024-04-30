@@ -20,60 +20,76 @@
 }
 else
 {
-    <div class="row mb-5">
-        <div class="d-flex flex-wrap">
+    <div class="row mb-5 table-page">
+        <div class="">
             <div class="main-table">
-                <div class="d-flex justify-content-between p-1 mb-5 flex-column">
-                    <h3>Bestuurderders</h3>
+                <div class="d-flex justify-content-between p-2 flex-column">
                     <div class="d-flex button-mobile-ui">
-                        <button type="button" class=" btn buttons-succes m-2" @onclick="AddNewDriver">Bestuurder toevoegen</button>
+                        @if (_showAllDrivers)
+                        {
+                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewDriver">Bestuurder toevoegen</button>
+                        }
+                        else if (!_showAllDrivers)
+                        {
+                            <button type="button" class="btn buttons-succes m-2" @onclick="ShowAllCars">Toon alle wagens</button>
+                        }
                     </div>
                 </div>
 
-                <div class="table-responsive ">
-                    <table class="table tabel-design">
-                        <thead>
-                            <tr>
-                                <th style="width:0px;"></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("firstname")'>Voornaam <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("lastname")'>Achternaam <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("city")'>Gemeente <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("street")'>Straat <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("housenumber")'>Huisnummer <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("registernumber")'>Rijksregisternummer <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("typeofdriverlicense")'>Rijbewijs <span class="fa fa-sort"></span></th>
-                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var driver in _driverListDto.DriverDtos)
-                            {
-                                <tr class="pointer-cursor tabel-row-design @((driver == _selectedDriverDto) ? "tabel-row-selected" : "")" @onclick="(() => SelectDriver(driver))">
-                                    <td class="align-middle border-start"><span class="fas fa-id-card"></span></td>
-                                    <td>@driver.FirstName</td>
-                                    <td>@driver.LastName</td>
-                                    <td>@driver.City</td>
-                                    <td>@driver.Street</td>
-                                    <td>@driver.HouseNumber</td>
-                                    <td>@driver.RegisterNumber</td>
-                                    <td>@driver.TypeOfDriverLicense</td>
-                                    <td>@driver.Status</td>
+                @if (_showAllDrivers)
+                {
+                    <div class="table-responsive ">
+                        <table class="table table-hover" style="margin: 0;">
+                            <thead>
+                                <tr>
+                                    <th style="width:0px;"></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("firstname")'>Voornaam <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("lastname")'>Achternaam <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("city")'>Gemeente <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("street")'>Straat <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("housenumber")'>Huisnummer <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("registernumber")'>Rijksregisternummer <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("typeofdriverlicense")'>Rijbewijs <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
+                                    <th></th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row">
-                    <PaginationComponent CurrentPage="@_pageNumber"
-                                         TotalPages="@_totalPages"
-                                         ItemsPerPage="@_pageSize"
-                                         OnPageChanged="HandlePageChanged"
-                                         OnItemsPerPageChanged="HandleItemsPerPageChanged" />
+                            </thead>
+                            <tbody>
+                                @if (_driverListDto != null && _driverListDto.DriverDtos.Any())
+                                {
+                                    @foreach (var driver in _driverListDto.DriverDtos)
+                                    {
+                                        <tr class="pointer-cursor">
+                                            <td class="align-middle border-start" @onclick="(() => SelectDriver(driver))"><span class="fas fa-id-card"></span></td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.FirstName</td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.LastName</td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.City</td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.Street</td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.HouseNumber</td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.RegisterNumber</td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.TypeOfDriverLicense</td>
+                                            <td @onclick="(() => SelectDriver(driver))">@driver.Status</td>
+                                            <td @onclick="() => _showDeleteConfirmation = true">
+                                                <span type="button" class="fa fa-trash-can" @onclick="() => _showDeleteConfirmation = true" style="color: #cf5256"></span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <PaginationComponent CurrentPage="@_pageNumber"
+                                             TotalPages="@_totalPages"
+                                             ItemsPerPage="@_pageSize"
+                                             OnPageChanged="HandlePageChanged"
+                                             OnItemsPerPageChanged="HandleItemsPerPageChanged" />
 
-                </div>
+                    </div>
+                }
             </div>
 
-            @if (_showSendConfirmation)
+            @if (_showSendConfirmation && !_showAllDrivers)
             {
                 <div class="main-table">
                     @if (_driverAdded)
@@ -160,15 +176,14 @@ else
             }
             else
             {
-
-                @if (_addNewFuelCard)
+                @if (_addNewDriver)
                 {
-                    <div class="wizard-table">
+                    <div class="wizard-table usermanagement-table-size">
                         <div class="d-flex justify-content-between p-1">
                             <h3>Nieuwe bestuurder</h3>
                         </div>
 
-                        <div class="usermanagement-table-responsive border p-1 d-flex justify-content-around">
+                        <div class="usermanagement-table-responsive border p-1 justify-content-around" style="background-color:white;">
                             <div class="d-flex justify-content-around flex-wrap">
                                 <div class="row w-100">
                                     <div class="col-md-12" style="">
@@ -182,15 +197,15 @@ else
                 else if (_selectedDriver)
                 {
                     <div class="update-table">
-                        <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                        <div class="d-flex justify-content-between p-1 flex-column">
                             <h3>Geselecteerde bestuurder</h3>
                             <div class="d-flex button-mobile-ui">
-                                <button type="submit" class="btn btn buttons-succes m-2" form="driver-form">Bestuurder opslaan</button>
-                                <button type="button" class="btn btn buttons-danger m-2" @onclick="() => _showDeleteConfirmation = true">Bestuurder verwijderen</button>
+                                <button type="submit" class="btn btn buttons-succes m-2" form="driver-form">Wijziging opslaan</button>
+                                @*<button type="button" class="btn btn buttons-danger m-2" @onclick="() => _showDeleteConfirmation = true">Bestuurder verwijderen</button>*@
                             </div>
                         </div>
 
-                        <div class="form-border p-1">
+                        <div class=" p-1" style="background-color: white;">
                             <form class="d-flex justify-content-around flex-wrap" id="driver-form" @onsubmit="@UpdateSelectedUser">
                                 <div class="row w-100">
                                     <div class="col-md-6 mb-3">
@@ -244,7 +259,7 @@ else
                                     <div class="col-md-6 mb-3">
                                         <label class="d-flex form-titles" for="gebruikersrol">Rijbewijs:</label>
                                         <select class="form-input-select" id="gebruikersrol" @bind="@_selectedDriverDto.TypeOfDriverLicense">
-                                            @foreach (var role in Enum.GetValues(typeof(TypeOfDriverLicense)))
+                                            @foreach (var role in Enum.GetValues(typeof(TypeOfDriverLicense)).Cast<TypeOfDriverLicense>().OrderBy(x => x.ToString()))
                                             {
                                                 <option value="@role">@(((TypeOfDriverLicense)role))</option>
                                             }
@@ -261,7 +276,7 @@ else
                                     <div class="col-md-6 mb-3">
                                         <label class="d-flex form-titles" for="gebruikersrol">Status:</label>
                                         <select class="form-input-select" id="gebruikersrol" @bind="@_selectedDriverDto.Status">
-                                            @foreach (var role in Enum.GetValues(typeof(Status)))
+                                            @foreach (var role in Enum.GetValues(typeof(Status)).Cast<Status>().OrderBy(x => x.ToString()))
                                             {
                                                 <option value="@role">@(((Status)role))</option>
                                             }
@@ -269,23 +284,33 @@ else
                                     </div>
                                     <div class="col-md-12 mb-3">
                                         <label class="form-titles">Gekoppelde tankkaarten:</label>
-                                        @foreach (var fuelCard in _fuelCardListDto.FuelCardDtos)
+                                        @if (_fuelCardListDto != null && _fuelCardListDto.FuelCardDtos.Any())
                                         {
-                                            <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedfuelCard.Contains(fuelCard) ? "tabel-row-selected" : "")"
-                                                 @onclick="@(() => CheckFuelCardChanged(fuelCard))">
-                                                <label class="pointer-cursor">@fuelCard.CardNumber @fuelCard.Pin</label>
-                                                <input class="pointer-cursor" checked="@(_checkedfuelCard.Contains(fuelCard))" type="checkbox" />
+                                            <div class="scrollable-driver-list">
+                                                @foreach (var fuelCard in _fuelCardListDto.FuelCardDtos.OrderBy(x => x.CardNumber))
+                                                {
+                                                    <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedfuelCard.Contains(fuelCard) ? "tabel-row-selected" : "")"
+                                                         @onclick="@(() => CheckFuelCardChanged(fuelCard))">
+                                                        <label class="pointer-cursor">@fuelCard.CardNumber @fuelCard.Pin</label>
+                                                        <input class="pointer-cursor" checked="@(_checkedfuelCard.Contains(fuelCard))" type="checkbox" />
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     </div>
                                     <div class="col-md-12 mb-3">
                                         <label class="form-titles">Gekoppelde bestuurders:</label>
-                                        @foreach (var vehicle in _vehicleListDto.VehicleDtos)
+                                        @if (_vehicleListDto != null && _vehicleListDto.VehicleDtos.Any())
                                         {
-                                            <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedVehicle.Contains(vehicle) ? "tabel-row-selected" : "")"
-                                                 @onclick="@(() => CheckVehicleChanged(vehicle))">
-                                                <label class="pointer-cursor">@vehicle.ChassisNumber @vehicle.LicensePlate</label>
-                                                <input class="pointer-cursor" checked="@(_checkedVehicle.Contains(vehicle))" type="checkbox" />
+                                            <div class="scrollable-driver-list">
+                                                @foreach (var vehicle in _vehicleListDto.VehicleDtos.OrderBy(x => x.ChassisNumber))
+                                                {
+                                                    <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedVehicle.Contains(vehicle) ? "tabel-row-selected" : "")"
+                                                         @onclick="@(() => CheckVehicleChanged(vehicle))">
+                                                        <label class="pointer-cursor">@vehicle.ChassisNumber @vehicle.LicensePlate</label>
+                                                        <input class="pointer-cursor" checked="@(_checkedVehicle.Contains(vehicle))" type="checkbox" />
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     </div>
@@ -357,10 +382,11 @@ else
     private bool _driverDeleted = false;
 
     private bool _selectedDriver = false;
-    private bool _addNewFuelCard = false;
+    private bool _addNewDriver = false;
     private bool _showSendConfirmation = false;
     private bool _showDeleteConfirmation = false;
     private bool _error = false;
+    private bool _showAllDrivers = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -382,7 +408,8 @@ else
         SetBoolDefault();
 
         _selectedDriver = false;
-        _addNewFuelCard = true;
+        _addNewDriver = true;
+        _showAllDrivers = false;
     }
 
     private void SetBoolDefault()
@@ -394,6 +421,8 @@ else
 
     private async Task SelectDriver(DriverDto selectedDriver)
     {
+        _isLoading = true;
+
         _selectedDriverDto = selectedDriver;
 
         _fuelCardDriverDtos = (await _fuelCardDriverService.GetDriverWithConnectedFuelCardsByDriverId(_selectedDriverDto.Id)).Item1;
@@ -406,14 +435,18 @@ else
 
         _showSendConfirmation = false;
         _selectedDriver = true;
-        _addNewFuelCard = false;
+        _addNewDriver = false;
         _driverAdded = false;
         _driverUpdated = false;
         _driverDeleted = false;
+        _showAllDrivers = false;
+
+        _isLoading = false;
     }
 
     private async Task SaveNewUser(DriverDto driverDto)
     {
+        _isLoading = true;
         try
         {
             if (driverDto is not null)
@@ -435,7 +468,7 @@ else
                     _driverAdded = true;
 
                 _showSendConfirmation = true;
-                _driverListDto = await _driverService.GetAllDriversAsync();
+                await LoadDriverListDto();
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -445,10 +478,13 @@ else
             ErrorMessage = $"Excuses! Er ging iets verkeerd tijdens het toevoegen. Error: {ex.Message}";
             _error = true;
         }
+
+        _isLoading = false;
     }
 
     private async Task DeleteDriver(DriverDto driverDto)
     {
+        _isLoading = true;
         try
         {
             if (driverDto is not null)
@@ -458,7 +494,7 @@ else
                 _showSendConfirmation = true;
                 _driverDeleted = true;
 
-                _driverListDto = await _driverService.GetAllDriversAsync();
+                await LoadDriverListDto();
                 await InvokeAsync(StateHasChanged);
             }
             _showDeleteConfirmation = false;
@@ -470,10 +506,13 @@ else
             _error = true;
             _showDeleteConfirmation = false;
         }
+
+        _isLoading = false;
     }
 
     private async Task UpdateSelectedUser()
     {
+        _isLoading = true;
         try
         {
             if (_selectedDriverDto is not null)
@@ -491,12 +530,10 @@ else
                     _error = true;
                 }
                 else
-                {
                     _driverDeleted = true;
 
-                    _showSendConfirmation = true;
-                    _driverListDto = await _driverService.GetAllDriversAsync();
-                }
+                _showSendConfirmation = true;
+                await LoadDriverListDto();
             }
         }
         catch (Exception ex)
@@ -505,6 +542,8 @@ else
             ErrorMessage = $"Excuses! Er ging iets mis tijdens het bewerken. Error: {ex.Message}";
             _error = true;
         }
+
+        _isLoading = false;
     }
 
     private void CheckFuelCardChanged(FuelCardDto fuelCardDto)
@@ -537,19 +576,30 @@ else
         }
 
         await LoadDriverListDto();
-
         _isLoading = false;
     }
 
     private async Task HandlePageChanged(int page)
     {
+        _isLoading = true;
         _pageNumber = page;
         await LoadDriverListDto();
+        _isLoading = false;
     }
 
     private async Task HandleItemsPerPageChanged(int itemsPerPage)
     {
+        _isLoading = true;
         _pageSize = itemsPerPage;
         await LoadDriverListDto();
+        _isLoading = false;
+    }
+
+    private void ShowAllCars()
+    {
+        _showAllDrivers = true;
+        _driverAdded = false;
+        _selectedDriver = false;
+        _addNewDriver = false;
     }
 }

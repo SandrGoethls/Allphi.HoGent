@@ -54,7 +54,6 @@ else
         <div class="">
             <div class="main-table">
                 <div class="d-flex justify-content-between p-2 flex-column">
-                    
                     <div class="d-flex button-mobile-ui">
                         @if (_showAllCars)
                         {
@@ -231,7 +230,7 @@ else
                 else if (_selectedVehicle)
                 {
                     <div class="update-table">
-                        <div class="d-flex justify-content-between p-1 flex-column ">
+                        <div class="d-flex justify-content-between p-1 flex-column">
                             <h3>Geselecteerde wagen</h3>
                             <div class="d-flex button-mobile-ui">
                                 <button type="submit" class="btn btn buttons-succes m-2" form="driver-form">Wijziging opslaan</button>
@@ -312,12 +311,18 @@ else
                                             }
                                         </select>
                                     </div>
-                                    <div class="col-md-12 mb-3">
-                                        <label class="form-titles">Gekoppelde bestuurders:</label>
-                                        @if (_driverListDto != null && _driverListDto.DriverDtos.Any())
+                                    <div class="col-md-12 mb-3 d-flex flex-wrap">
+                                        <label class="col-md-3 form-titles">Gekoppelde bestuurders:</label>
+                                        <div class="col-md-3" style="margin-right:15px; margin-bottom:5px;">
+                                            <input class="w-100" type="text" placeholder="Zoek bestuurder op naam" @bind="_searchNameTerm" @oninput="OnChangeName" />
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input class="w-100" type="number" placeholder="Zoek bestuurder rijksregister" @bind="_searchRegisterNumberTerm" @oninput="OnChangeRegister" />
+                                        </div>
+                                        @if (_filteredListDriverDto != null && _filteredListDriverDto.Any())
                                         {
-                                            <div class="scrollable-driver-list">
-                                                @foreach (var driver in _driverListDto.DriverDtos.OrderBy(x => x.FirstName))
+                                            <div class="col-md-12 scrollable-driver-list">
+                                                @foreach (var driver in _filteredListDriverDto.OrderBy(x => x.FirstName))
                                                 {
                                                     <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? " tabel-row-selected" : "" )"
                                                          @onclick="@(() => CheckFuelCardChanged(driver))">
@@ -375,6 +380,8 @@ else
     private List<DriverVehicleDto> _driverVehicleDtos = new();
     private List<DriverDto> _checkedDriver = new();
 
+    private IEnumerable<DriverDto> _filteredListDriverDto;
+
     private bool _vehicleAdded = false;
     private bool _vehicleUpdated = false;
     private bool _vehicleDeleted = false;
@@ -388,6 +395,12 @@ else
 
     public string ErrorTitle { get; set; } = string.Empty;
     public string ErrorMessage { get; set; } = string.Empty;
+
+    private string _searchNameTerm = string.Empty;
+    private string _searchRegisterNumberTerm = string.Empty;
+    private int _currentFilterVersion = 0;
+    private const int FilterDelay = 700;
+
 
     private bool _isSortAscending = true;
     private string _currentSortColumn = "date";
@@ -440,6 +453,8 @@ else
         _vehicleUpdated = false;
         _vehicleDeleted = false;
         _showAllCars = false;
+
+        _filteredListDriverDto = _driverListDto?.DriverDtos ?? new();
 
         _isLoading = false;
     }
@@ -592,4 +607,39 @@ else
         _addNewVehicle = false;
         _selectedVehicle = false;
     }
+
+    private async Task OnChangeName(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        _searchNameTerm = e.Value?.ToString() ?? string.Empty;
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+        {
+            var naam = _driverListDto?.DriverDtos.Where(x => x.FirstName.ToLower().Contains(_searchNameTerm.ToLower())).ToList();
+            if (naam != null && naam.Any())
+                _filteredListDriverDto = naam;
+            else
+                _filteredListDriverDto = _driverListDto?.DriverDtos ?? new();
+        }
+    }
+
+    private async Task OnChangeRegister(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        _searchRegisterNumberTerm = e.Value?.ToString() ?? string.Empty;
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+        {
+            var registerNumber = _driverListDto?.DriverDtos.Where(x => x.RegisterNumber.Contains(_searchRegisterNumberTerm)).ToList();
+             if (registerNumber != null && registerNumber.Any())
+                _filteredListDriverDto = registerNumber;
+            else
+                _filteredListDriverDto = _driverListDto?.DriverDtos ?? new();
+        }
+    }
+
 }

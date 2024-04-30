@@ -1,5 +1,8 @@
 ﻿@using AllPhi.HoGent.Blazor.Dto
 @using AllPhi.HoGent.Blazor.Dto.Enums
+@using AllPhi.HoGent.Blazor.Extensions
+@inject HttpClient _http
+@inject IJSRuntime JSRuntime
 
 @using Newtonsoft.Json
 @inject HttpClient _http
@@ -55,6 +58,41 @@
     .wizard-step-inactive {
         color: gray;
     }
+
+
+
+
+    .dropdown-container {
+        position: relative;
+        width: 300px;
+    }
+
+    .dropdown-input {
+        width: 100%;
+        padding: 1px 2px;
+        box-sizing: border-box;
+    }
+
+    .dropdown-list {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .dropdown-list li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+            .dropdown-list li:hover {
+                background-color: #f0f0f0;
+            }
 </style>
 
 <div class="row m-2">
@@ -112,8 +150,20 @@
             </p>
         </div>
         <div class="col-md-12 mb-3">
-            <label class="d-flex required-field-mark form-titles" for="street">Straat:</label>
-            <input class="form-input-select" type="text" name="street" @oninput="@((e) => OnInput(e, "street"))" id="street" @bind="SelectedStreet" />
+            <div @ref="container" class="dropdown-container" tabindex="0">
+                <input @bind="inputValue" @oninput="OnInputChanged" class="dropdown-input" placeholder="Zoek straat..." />
+                @if (isDropdownVisible && AddressSuggestions.Any())
+                {
+                    <ul class="dropdown-list">
+                        @foreach (var address in AddressSuggestions)
+                        {
+                            <li @onclick="() => SelectAddress(address)">
+                                @address.Thoroughfarename @address.Zipcode @address.Municipality
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
         </div>
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="housenumber">Huisnummer:</label>
@@ -121,11 +171,11 @@
         </div>
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="city">Gemeente:</label>
-            <input class="form-input-select" name="city" @oninput="@((e) => OnInput(e, "city"))" id="city" @bind="SelectedCity" />
+            <input class="form-input-select" name="city" id="city" disabled @bind="SelectedCity" />
         </div>
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="postalcode">Postcode:</label>
-            <input class="form-input-select" name="postalcode" @oninput="@((e) => OnInput(e, "postalcode"))" id="postalcode" @bind="SelectedPostalCode" />
+            <input class="form-input-select" name="postalcode" id="postalcode" disabled @bind="SelectedPostalCode" />
         </div>
     }
     else if (currentStep == WizardStep.Status)
@@ -262,6 +312,10 @@
 </div>
 
 @code {
+    private ElementReference container;
+    private string inputValue = "";
+    private bool isDropdownVisible;
+    private List<LocationModel.LocationResult> AddressSuggestions = new();
 
     public enum WizardStep
     {
@@ -285,6 +339,9 @@
     public string SelectedCity { get; set; } = string.Empty;
     public string SelectedPostalCode { get; set; } = string.Empty;
 
+    private int _currentFilterVersion = 0;
+    private const int FilterDelay = 700;
+
     public TypeOfDriverLicense TypeOfDriverLicense { get; set; } = TypeOfDriverLicense.B;
     public Status SelectedStatus { get; set; } = Status.Active;
     private List<VehicleDto> _checkedVehicles = new();
@@ -307,20 +364,20 @@
     private async Task HandleSave()
     {
         var driver = new DriverDto
-            {
-                Id = Guid.NewGuid(),
-                FirstName = SelectedFirstName,
-                LastName = SelectedLastName,
-                RegisterNumber = SelectedRegisternumber,
-                Street = SelectedStreet,
-                HouseNumber = SelectedHouseNumber,
-                City = SelectedCity,
-                PostalCode = SelectedPostalCode,
-                Status = SelectedStatus,
-                FuelCardDtos = _checkedFuelCards,
-                TypeOfDriverLicense = TypeOfDriverLicense,
-                VehicleDtos = _checkedVehicles
-            };
+        {
+            Id = Guid.NewGuid(),
+            FirstName = SelectedFirstName,
+            LastName = SelectedLastName,
+            RegisterNumber = SelectedRegisternumber,
+            Street = SelectedStreet,
+            HouseNumber = SelectedHouseNumber,
+            City = SelectedCity,
+            PostalCode = SelectedPostalCode,
+            Status = SelectedStatus,
+            FuelCardDtos = _checkedFuelCards,
+            TypeOfDriverLicense = TypeOfDriverLicense,
+            VehicleDtos = _checkedVehicles
+        };
         await OnSave.InvokeAsync(driver);
     }
 
@@ -330,7 +387,7 @@
         {
             if (string.IsNullOrEmpty(SelectedFirstName) ||
                 string.IsNullOrEmpty(SelectedLastName) ||
-                string.IsNullOrEmpty(SelectedRegisternumber.ToString()))
+                SelectedRegisternumber == null)
                 _readyForNext = false;
             else
                 _readyForNext = true;
@@ -350,23 +407,22 @@
     private void OnInput(ChangeEventArgs e, string field)
     {
         var v = e?.Value?.ToString();
-        if (!string.IsNullOrEmpty(v))
-        {
-            if (field == "firstname")
-                SelectedFirstName = e.Value.ToString();
-            else if (field == "lastname")
-                SelectedLastName = e.Value.ToString();
-            else if (field == "registernumber")
-                SelectedRegisternumber = e.Value.ToString();
-            else if (field == "street")
-                SelectedStreet = e.Value.ToString();
-            else if (field == "housenumber")
-                SelectedHouseNumber = e.Value.ToString();
-            else if (field == "city")
-                SelectedCity = e.Value.ToString();
-            else if (field == "postalcode")
-                SelectedPostalCode = e.Value.ToString();
-        }
+
+        if (field == "firstname")
+            SelectedFirstName = e?.Value?.ToString() ?? "";
+        else if (field == "lastname")
+            SelectedLastName = e?.Value?.ToString() ?? "";
+        else if (field == "registernumber")
+            SelectedRegisternumber = e?.Value?.ToString() ?? "";
+        else if (field == "street")
+            SelectedStreet = e?.Value?.ToString() ?? "";
+        else if (field == "housenumber")
+            SelectedHouseNumber = e?.Value?.ToString() ?? "";
+        else if (field == "city")
+            SelectedCity = e?.Value?.ToString() ?? "";
+        else if (field == "postalcode")
+            SelectedPostalCode = e?.Value?.ToString() ?? "";
+
         IsFormValid();
     }
 
@@ -425,4 +481,65 @@
             GoToStep(step);
         }
     }
+
+
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        inputValue = e.Value.ToString();
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+        {
+            if (!string.IsNullOrEmpty(inputValue))
+            {
+                await FetchAddressSuggestions(inputValue);
+                isDropdownVisible = true;
+                IsFormValid();
+            }
+            else
+            {
+                isDropdownVisible = false;
+                SelectedStreet = string.Empty;
+                SelectedPostalCode = string.Empty;
+                SelectedCity = string.Empty;
+                IsFormValid();
+            }
+        }
+    }
+
+    private async Task FetchAddressSuggestions(string street)
+    {
+        var response = await _http.GetAsync($"https://geo.api.vlaanderen.be/geolocation/Location?q={Uri.EscapeDataString(street)}&c=20");
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var data = JsonConvert.DeserializeObject<LocationModel.Root>(jsonResponse);
+                if (data != null && data.LocationResult != null)
+                {
+                    AddressSuggestions = data.LocationResult.ToList();
+                }
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine("JSON Parsing Error: " + ex.Message);
+                // Implementeer hier robuustere foutafhandeling
+            }
+        }
+    }
+
+    private void SelectAddress(LocationModel.LocationResult address)
+    {
+        SelectedStreet = address.Thoroughfarename;
+        SelectedPostalCode = address.Zipcode;
+        SelectedCity = address.Municipality;
+        inputValue = address.Thoroughfarename; // toon alleen de straatnaam in het inputveld
+        isDropdownVisible = false;
+        IsFormValid();
+    }
+
 }
