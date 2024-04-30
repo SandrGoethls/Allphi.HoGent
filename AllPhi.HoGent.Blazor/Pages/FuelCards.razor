@@ -30,6 +30,20 @@
     private bool _isSortAscending = false;
     private string _currentSortColumn = "date";
 
+    private bool _addNewFuelCard = false;
+    private bool _selectedFuelCard = false;
+    private bool _fuelCardUpdated = false;
+    private bool _fuelCardDeleted = false;
+
+    private bool _showSendConfirmation = false;
+    private bool _fuelCardAdded = false;
+    private bool _error = false;
+
+    private FuelCardDto _selectedFuelCardDto = new();
+    private List<DriverDto> _checkedDriver = new();
+    private List<FuelCardDriverDto> _fuelCardDriverDtos = new();
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,6 +56,37 @@
     {
         _fuelCardListDto = await _fuelCardService.GetAllFuelCardsAsync(_currentSortColumn, _isSortAscending, _pageNumber, _pageSize);
         _totalPages = (int)Math.Ceiling((double)_fuelCardListDto.TotalItems / _pageSize);
+    }
+
+    private void AddNewFuelCard()
+    {
+        SetBoolDefault();
+
+        _selectedFuelCard = false;
+        _addNewFuelCard = true;
+    }
+
+    private void SetBoolDefault()
+    {
+        _showSendConfirmation = false;
+        _fuelCardAdded = false;
+        _error = false;
+    }
+
+
+    private async Task SelectFuelCard(FuelCardDto selectedCard)
+    {
+        _selectedFuelCardDto = selectedCard;
+        _fuelCardDriverDtos = (await _fuelCardDriverService.GetFuelCardWithConnectedDriversByFuelCardId(_selectedFuelCardDto.Id)).Item1;
+        var v = _fuelCardDriverDtos.Select(x => _driverListDto.DriverDtos.Where(r => x.DriverId == r.Id).ToList()).ToList();
+        _checkedDriver = v.SelectMany(x => x.Select(x => x).ToList()).ToList();
+        _showSendConfirmation = false;
+        _selectedFuelCard = true;
+        _addNewFuelCard = false;
+        _fuelCardAdded = false;
+        _fuelCardUpdated = false;
+        _fuelCardDeleted = false;
+        _error = false;
     }
 }
 
