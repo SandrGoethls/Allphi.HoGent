@@ -20,5 +20,28 @@
 
 @code {
     private bool _isLoading = true;
+
+    private DriverListDto? _driverListDto;
+    private FuelCardListDto? _fuelCardListDto;
+
+    private int _pageNumber = 1;
+    private int _pageSize = 5;
+    private int _totalPages;
+    private bool _isSortAscending = false;
+    private string _currentSortColumn = "date";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFuelCardListDto();
+        _driverListDto = await _driverService.GetAllDriversAsync();
+        _isLoading = false;
+    }
+
+    private async Task LoadFuelCardListDto()
+    {
+        _fuelCardListDto = await _fuelCardService.GetAllFuelCardsAsync(_currentSortColumn, _isSortAscending, _pageNumber, _pageSize);
+        _totalPages = (int)Math.Ceiling((double)_fuelCardListDto.TotalItems / _pageSize);
+    }
 }
 
