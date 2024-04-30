@@ -132,6 +132,12 @@
             <label class="d-flex required-field-mark form-titles" for="lastname">Achternaam:</label>
             <input class="form-input-select" type="text" name="lastname" @oninput="@((e) => OnInput(e, "lastname"))" id="lastname" @bind="SelectedLastName" />
         </div>
+
+        <div class="col-md-12 mb-3">         
+            <label class="d-flex required-field-mark form-titles" for="geboortedatum">Geboortedatum:</label>
+            <input class="form-input-select" type="date" name="geboortedatum" id="geboortedatum" min="@MinDate" max="@MaxDate" @bind="SelectedBirthdate" />
+        </div>
+
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="registernumber">Rijksregisternummer:</label>
             <input class="form-input-select" type="number" name="registernumber" @oninput="@((e) => OnInput(e, "registernumber"))" id="registernumber" @bind="SelectedRegisternumber" />
@@ -151,6 +157,7 @@
         </div>
         <div class="col-md-12 mb-3">
             <div @ref="container" class="dropdown-container" tabindex="0">
+                <label class="d-flex required-field-mark form-titles" for="housenumber">Straat:</label>
                 <input @bind="inputValue" @oninput="OnInputChanged" class="dropdown-input" placeholder="Zoek straat..." />
                 @if (isDropdownVisible && AddressSuggestions.Any())
                 {
@@ -260,6 +267,7 @@
         <div class="col-md-6 mb-3">
             <p class="review">Voornaam: <span>@SelectedFirstName</span></p>
             <p class="review">Achternaam: <span>@SelectedLastName</span></p>
+            <p class="review">Geboortedatum: <span>@SelectedBirthdate</span></p>
             <p class="review">Rijksregisternummer: <span>@SelectedRegisternumber</span></p>
             <p class="review">Status: <span>@SelectedStatus</span></p>
             <p class="review">Straat: <span>@SelectedStreet</span></p>
@@ -332,7 +340,10 @@
 
     public string SelectedFirstName { get; set; } = string.Empty;
     public string SelectedLastName { get; set; } = string.Empty;
+    public DateTime SelectedBirthdate { get; set; }  = DateTime.Now;
     public string SelectedRegisternumber { get; set; }
+    public DateTime MinDate => DateTime.Now.AddYears(-100); 
+    public DateTime MaxDate => DateTime.Now;
 
     public string SelectedStreet { get; set; } = string.Empty;
     public string SelectedHouseNumber { get; set; } = string.Empty;
@@ -358,26 +369,28 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"MinDate: {MinDate}, MaxDate: {MaxDate}");
         IsFormValid();
     }
 
     private async Task HandleSave()
     {
         var driver = new DriverDto
-        {
-            Id = Guid.NewGuid(),
-            FirstName = SelectedFirstName,
-            LastName = SelectedLastName,
-            RegisterNumber = SelectedRegisternumber,
-            Street = SelectedStreet,
-            HouseNumber = SelectedHouseNumber,
-            City = SelectedCity,
-            PostalCode = SelectedPostalCode,
-            Status = SelectedStatus,
-            FuelCardDtos = _checkedFuelCards,
-            TypeOfDriverLicense = TypeOfDriverLicense,
-            VehicleDtos = _checkedVehicles
-        };
+            {
+                Id = Guid.NewGuid(),
+                FirstName = SelectedFirstName,
+                LastName = SelectedLastName,
+                DateOfBirth= SelectedBirthdate,
+                RegisterNumber = SelectedRegisternumber,
+                Street = SelectedStreet,
+                HouseNumber = SelectedHouseNumber,
+                City = SelectedCity,
+                PostalCode = SelectedPostalCode,
+                Status = SelectedStatus,
+                FuelCardDtos = _checkedFuelCards,
+                TypeOfDriverLicense = TypeOfDriverLicense,
+                VehicleDtos = _checkedVehicles
+            };
         await OnSave.InvokeAsync(driver);
     }
 
@@ -385,9 +398,11 @@
     {
         if (currentStep == WizardStep.DriverDetails)
         {
+            bool isBirthdateValid = SelectedBirthdate >= MinDate && SelectedBirthdate <= MaxDate;
             if (string.IsNullOrEmpty(SelectedFirstName) ||
-                string.IsNullOrEmpty(SelectedLastName) ||
-                SelectedRegisternumber == null)
+            string.IsNullOrEmpty(SelectedLastName) ||
+            string.IsNullOrEmpty(SelectedRegisternumber) ||
+            !isBirthdateValid)
                 _readyForNext = false;
             else
                 _readyForNext = true;
