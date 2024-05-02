@@ -99,7 +99,7 @@ else
                                             <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.Color</td>
                                             <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.NumberOfDoors.GetDescription()</td>
                                             <td @onclick="(() => SelectVehicle(vehicle))">@vehicle.Status</td>
-                                            <td @onclick="() => _showDeleteConfirmation = true">
+                                            <td @onclick="(() => SelectAndShowDelete(vehicle))">
                                                 <span type="button" class="fa fa-trash-can" @onclick="() => _showDeleteConfirmation = true" style="color: #cf5256"></span>
                                             </td>
                                         </tr>
@@ -438,6 +438,14 @@ else
         _error = false;
     }
 
+    private async Task SelectAndShowDelete(VehicleDto selectedVehicle)
+    {
+        await SelectVehicle(selectedVehicle);
+        ShowAllCars();
+        _showDeleteConfirmation = true;
+
+    }
+
     private async Task SelectVehicle(VehicleDto selectedVehicle)
     {
         _isLoading = true;
@@ -635,7 +643,7 @@ else
         if (version == _currentFilterVersion)
         {
             var registerNumber = _driverListDto?.DriverDtos.Where(x => x.RegisterNumber.Contains(_searchRegisterNumberTerm)).ToList();
-             if (registerNumber != null && registerNumber.Any())
+            if (registerNumber != null && registerNumber.Any())
                 _filteredListDriverDto = registerNumber;
             else
                 _filteredListDriverDto = _driverListDto?.DriverDtos ?? new();

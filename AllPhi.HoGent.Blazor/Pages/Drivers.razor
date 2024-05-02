@@ -31,7 +31,7 @@ else
                         }
                         else if (!_showAllDrivers)
                         {
-                            <button type="button" class="btn buttons-succes m-2" @onclick="ShowAllCars">Toon alle bestuurders</button>
+                            <button type="button" class="btn buttons-succes m-2" @onclick="ShowAllDrivers">Toon alle wagens</button>
                         }
                     </div>
                 </div>
@@ -69,7 +69,7 @@ else
                                             <td @onclick="(() => SelectDriver(driver))">@driver.RegisterNumber</td>
                                             <td @onclick="(() => SelectDriver(driver))">@driver.TypeOfDriverLicense</td>
                                             <td @onclick="(() => SelectDriver(driver))">@driver.Status</td>
-                                            <td @onclick="() => _showDeleteConfirmation = true">
+                                            <td @onclick="() => SelectAndShowDelete(driver)">
                                                 <span type="button" class="fa fa-trash-can" @onclick="() => _showDeleteConfirmation = true" style="color: #cf5256"></span>
                                             </td>
                                         </tr>
@@ -418,6 +418,14 @@ else
         _error = false;
     }
 
+    private async Task SelectAndShowDelete(DriverDto  driverDto)
+    {
+        await SelectDriver(driverDto);
+        ShowAllDrivers();
+        _showDeleteConfirmation = true;
+
+    }
+
 
     private async Task SelectDriver(DriverDto selectedDriver)
     {
@@ -595,7 +603,7 @@ else
         _isLoading = false;
     }
 
-    private void ShowAllCars()
+    private void ShowAllDrivers()
     {
         _showAllDrivers = true;
         _driverAdded = false;
