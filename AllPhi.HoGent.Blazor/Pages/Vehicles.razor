@@ -57,11 +57,11 @@ else
                     <div class="d-flex button-mobile-ui">
                         @if (_showAllCars)
                         {
-                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Wagen toevoegen</button>
+                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Voertuig toevoegen</button>
                         }
                         else if (!_showAllCars)
                         {
-                            <button type="button" class="btn buttons-succes m-2" @onclick="ShowAllCars">Toon alle wagens</button>
+                            <button type="button" class="btn buttons-succes m-2" @onclick="ShowAllCars">Toon alle Voertuigen</button>
                         }
                     </div>
                 </div>
@@ -75,9 +75,9 @@ else
                                     <th style="width:0px;"></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("chassisnumber")'>Chassisnummer <span class="fa fa-sort"></span></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("licenseplate")'>Nummerplaat <span class="fa fa-sort"></span></th>
-                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("carbrand")'>Wagen merk <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("carbrand")'>Merk <span class="fa fa-sort"></span></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("fueltype")'>Brandstof <span class="fa fa-sort"></span></th>
-                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("typeofcar")'>Type wagen <span class="fa fa-sort"></span></th>
+                                    <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("typeofcar")'>Type Voertuig <span class="fa fa-sort"></span></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("color")'>Kleur <span class="fa fa-sort"></span></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("numberofdoors")'>Aantal deuren <span class="fa fa-sort"></span></th>
                                     <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
@@ -135,7 +135,7 @@ else
                                 <div>
                                     <p>
                                         Bedankt!<br />
-                                        Wagen is succesvol toegevoegd.
+                                        Voertuig is succesvol toegevoegd.
                                     </p>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@ else
                                 <div>
                                     <p>
                                         Bedankt!<br />
-                                        Wagen is succesvol bijgewerkt.
+                                        Voertuig is succesvol bijgewerkt.
                                     </p>
                                 </div>
                             </div>
@@ -167,7 +167,7 @@ else
                                 <div>
                                     <p>
                                         Bedankt!<br />
-                                        Wagen is succesvol verwijderd.
+                                        Voertuig is succesvol verwijderd.
                                     </p>
                                 </div>
                             </div>
@@ -213,7 +213,7 @@ else
                 {
                     <div class="wizard-table usermanagement-table-size">
                         <div class="d-flex justify-content-between p-1">
-                            <h3>Nieuwe wagen</h3>
+                            <h3>Nieuw Voertuig</h3>
                         </div>
 
                         <div class="usermanagement-table-responsive border p-1  justify-content-around" style="background-color:white;">
@@ -231,7 +231,7 @@ else
                 {
                     <div class="update-table">
                         <div class="d-flex justify-content-between p-1 flex-column">
-                            <h3>Geselecteerde wagen</h3>
+                            <h3>Geselecteerd Voertuig</h3>
                             <div class="d-flex button-mobile-ui">
                                 <button type="submit" class="btn btn buttons-succes m-2" form="driver-form">Wijziging opslaan</button>
                                 @*<button type="button" class="btn btn buttons-danger m-2" @onclick="() => _showDeleteConfirmation = true">Wagen verwijderen</button>*@
@@ -258,7 +258,7 @@ else
                                         }
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="d-flex required-field-mark form-titles" for="carbrand">wagen merk:</label>
+                                        <label class="d-flex required-field-mark form-titles" for="carbrand">Voertuig merk:</label>
                                         <select class="form-input-select" id="carbrand" @bind="@_selectedVehicleDto.CarBrand">
                                             @foreach (var carBrand in Enum.GetValues(typeof(CarBrand)).Cast<CarBrand>().OrderBy(x => x.ToString()))
                                             {
@@ -276,7 +276,7 @@ else
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="d-flex required-field-mark form-titles" for="typeofcar">Wagen type:</label>
+                                        <label class="d-flex required-field-mark form-titles" for="typeofcar">Voertuig type:</label>
                                         <select class="form-input-select" id="typeofcar" @bind="@_selectedVehicleDto.TypeOfCar">
                                             @foreach (var typeOfCar in Enum.GetValues(typeof(TypeOfCar)).Cast<TypeOfCar>().OrderBy(x => x.ToString()))
                                             {
@@ -342,7 +342,7 @@ else
                 {
                     <div class="col-7">
                         <div class="d-flex justify-content-between p-1">
-                            <h4 id="animatedText" style="color: #54a2d5;">Selecteer een wagen of klik op 'wagen toevoegen'</h4>
+                            <h4 id="animatedText" style="color: #54a2d5;">Selecteer een Voertuig of klik op 'Voertuig toevoegen'</h4>
                         </div>
                     </div>
                 }

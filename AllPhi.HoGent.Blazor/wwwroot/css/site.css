@@ -234,8 +234,11 @@ body, html {
 
 .card h4 {
     text-align: center;
+    margin-bottom: 5px;
 }
 
 .card p {
     text-align: center;
+    margin-top: 0;
+    
 }
