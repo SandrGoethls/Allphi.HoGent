@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using AllPhi.HoGent.Blazor.Extensions
+@inherits LayoutComponentBase
 
 <PageTitle>AllPhi</PageTitle>
 
@@ -10,10 +11,10 @@
     body, html {
         height: 100%;
         margin: 0;
-        
     }
 
     .main-content {
+        position: relative; /* Needed for proper positioning of the pseudo-element */
         display: flex;
         flex-direction: column;
         min-height: 100vh;
@@ -21,12 +22,26 @@
         background-image: url('../../images/bg-lines-ladder-of-media-block.png');
         background-size: cover;
         opacity: 0.8;
-        
     }
+
+        .main-content.dark-mode::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay; adjust opacity as needed */
+            z-index: 1;
+        }
+
+        .main-content > * {
+            position: relative; /* Ensure that content layers above the pseudo-element */
+            z-index: 2;
+        }
 
     .body-content {
         padding-left: 30px;
-        
     }
 
     .menu-content {
@@ -125,17 +140,15 @@
 </style>
 
 
-<div id="page-container" class="sidebar-o sidebar-dark enable-page-overlay side-scroll page-header-fixed main-content-narrow side-trans-enabled">
+<div id="page-container" class="@GetPageContainerClasses()">
     <main id="main-container">
-        <div class="main-content">
+        <div class="main-content @GetThemeClass()">
             <Header />
             <div class="main-padding">
                 <a class="menu-toggle" @onclick="ToggleNavMenu"><span class="fa fa-bars"></span></a>
-                <div class="row py-3 sub-container" @onclick="CloseNavMenu">
-                    <div class="menu-content" style="@(_isNavMenuVisible ? "display:block;" : "")">
-                        <NavMenu />
-                    </div>
-                    <div class="body-content">
+                <div class="row py-3 sub-container @GetThemeClass()" @onclick="CloseNavMenu">
+                    <NavMenu ThemeClass="@GetThemeClass()" />
+                    <div class="body-content @GetThemeClass()">
                         @Body
                     </div>
                 </div>
@@ -146,7 +159,19 @@
 </div>
 
 @code {
+
     private bool _isNavMenuVisible = false;
+    @inject ThemeService ThemeService
+
+    protected override void OnInitialized()
+    {
+        ThemeService.OnChange += StateHasChanged;
+    }
+
+    private string GetPageContainerClasses() => ThemeService.IsDarkMode ? "sidebar-o sidebar-dark enable-page-overlay side-scroll page-header-fixed main-content-narrow side-trans-enabled dark-mode" : "sidebar-o sidebar-dark enable-page-overlay side-scroll page-header-fixed main-content-narrow side-trans-enabled light-mode";
+
+    private string GetThemeClass() => ThemeService.IsDarkMode ? "dark-mode" : "light-mode";
+    
 
     private void ToggleNavMenu()
     {

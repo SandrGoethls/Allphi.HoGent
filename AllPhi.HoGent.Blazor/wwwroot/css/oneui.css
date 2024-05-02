@@ -3858,7 +3858,7 @@ textarea.form-control-lg {
   --bs-dropdown-color: #dee2e6;
   --bs-dropdown-bg: #343a40;
   --bs-dropdown-border-color: #d2d9e2;
-  --bs-dropdown-box-shadow: ;
+  --bs-dropdown-box-shadow:black ;
   --bs-dropdown-link-color: #dee2e6;
   --bs-dropdown-link-hover-color: #fff;
   --bs-dropdown-divider-bg: #dfe3ea;
@@ -4534,7 +4534,7 @@ textarea.form-control-lg {
   --bs-card-border-width: var(--bs-border-width);
   --bs-card-border-color: #dde2e9;
   --bs-card-border-radius: 0.3rem;
-  --bs-card-box-shadow: ;
+  --bs-card-box-shadow: gray ;
   --bs-card-inner-border-radius: calc(0.3rem - (var(--bs-border-width)));
   --bs-card-cap-padding-y: 0.625rem;
   --bs-card-cap-padding-x: 1.25rem;
@@ -33505,7 +33505,7 @@ table.table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:afte
   color: #9faec1;
 }
 .dark-mode a:not(.mini-nav-item):not(.badge):not(.btn):not(.btn-block-option):not(.block):not(.dropdown-item):not(.nav-link):not(.page-link):not(.alert-link):not(.nav-main-link):not(.list-group-item-action):not(.close):not(.fc-event):not(.text-success-light):not(.text-danger-light):not(.text-warning-light):not(.text-info-light) {
-  color: #547de3;
+  color: #9da6b3;
 }
 .dark-mode a:not(.mini-nav-item):not(.badge):not(.btn):not(.btn-block-option):not(.block):not(.dropdown-item):not(.nav-link):not(.page-link):not(.alert-link):not(.nav-main-link):not(.list-group-item-action):not(.close):not(.fc-event):not(.text-success-light):not(.text-danger-light):not(.text-warning-light):not(.text-info-light).link-fx::before {
   background-color: #547de3;

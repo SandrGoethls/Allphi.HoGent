@@ -1,21 +1,32 @@
 ﻿@inject NavigationManager NavManager
 
+
 <style>
-    a {
-        color: #000000c4 !important;
+    a, .icon-color { /* Ensuring base styles are easy to override */
+        color: inherit; /* Allows color to be inherited from parent element */
+        text-decoration: none; /* Removes underline from links */
     }
 
-    @@media (min-width:300px) and (max-width:1344px) 
-    {
+    @@media (min-width:300px) and (max-width:1344px) {
         .rounded {
             margin-top: 97px;
         }
     }
 
+    .dark-mode .rounded, .dark-mode a, .dark-mode .icon-color {
+        background-color: #343a40; /* Dark theme background */
+        color: #ffffff; /* Light text color for dark theme */
+    }
+
+    .light-mode .rounded, .light-mode a, .light-mode .icon-color {
+        background-color: #ffffff; /* Light theme background */
+        color: #212529; /* Dark text color for light mode */
+    }
+
 </style>
 
-<div style="width: 240px; " >
-    <div class="rounded text-info p-2" style="background-color:white; ">
+<div class=" nav-menu @ThemeClass" style="width: 240px; ">
+    <div class="rounded text-info p-2">
         <div style="text-align:center;"
         <img src="images/AllphiLogoSymbolTransparant.png" style="width : 50px; height : auto;"/>
         </div>
@@ -38,6 +49,9 @@
 
 
 @code {
+
+    [Parameter]
+    public string ThemeClass { get; set; }
     private string _selectedLink = "dashboard";
 
     protected override void OnInitialized()

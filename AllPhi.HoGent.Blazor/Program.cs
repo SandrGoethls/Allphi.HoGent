@@ -1,3 +1,4 @@
+using AllPhi.HoGent.Blazor.Extensions;
 using AllPhi.HoGent.Blazor.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -14,6 +15,7 @@ builder.Services.AddScoped<IVehicleServices, VehicleServices>();
 builder.Services.AddScoped<IDriverServices, DriverServices>();
 builder.Services.AddScoped<IFuelCardDriverServices, FuelCardDriverServices>();
 builder.Services.AddScoped<IDriverVehicleServices, DriverVehicleServices>();
+builder.Services.AddScoped<ThemeService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

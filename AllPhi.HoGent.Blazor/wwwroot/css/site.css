@@ -240,5 +240,19 @@ body, html {
 .card p {
     text-align: center;
     margin-top: 0;
+    margin-bottom: 0;
     
+}
+
+.dark-mode .table th, .dark-mode .table td {
+    background-color: #333; /* Dark background for table cells in dark mode */
+    color: #fff; /* White text color for readability in dark mode */
+}
+
+.dark-mode .table thead th {
+    background-color: #555; /* Even darker background for headers in dark mode */
+}
+
+.dark-mode p {
+    color: #e0e0e0; /* Light grey text color for readability in dark mode */
 }

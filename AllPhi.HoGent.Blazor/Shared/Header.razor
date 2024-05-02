@@ -1,19 +1,40 @@
-﻿<style>
+﻿@using AllPhi.HoGent.Blazor.Extensions
+@inject ThemeService ThemeService
+
+<style>
     header {
         width: 100%;
     }
 </style>
 
-<header id="page-header" class="col-12 bg-body-light" style="display: flex; justify-content: center; align-items: center;">
-    <div class="p-2">
-        <a href="#" style="margin-left: -50px;">
+<header id="page-header" class="col-12 bg-body-light" style="display: flex; justify-content: space-between; align-items: center;">
+    <!-- Spacer div to balance the space on the left -->
+    <div style="flex: 1;"></div>
+    <div class="p-2" style="flex: 1; text-align: center; margin-left: -50px;">
+        <!-- Adjust text alignment to center -->
+        <a href="#">
             <img src="images/AllphiLogoTransparant.png" alt="AllPhiLogo" style="width: 200px; height: auto;" />
         </a>
-        
+    </div>
+    <div style="flex: 1; display: flex; justify-content: flex-end; padding:20px;">
+        <!-- Right-align the button -->
+        <button class="btn @GetButtonClass()" @onclick="ToggleTheme">
+            <i class="@GetIconClass()"></i>
+        </button>
     </div>
 </header>
 
 
+
 @code {
+
+    private void ToggleTheme()
+    {
+        ThemeService.ToggleTheme();
+    }
+
+    private string GetButtonClass() => ThemeService.IsDarkMode ? "btn-light" : "btn-dark";
+
+    private string GetIconClass() => ThemeService.IsDarkMode ? "bi bi-moon-stars-fill" : "bi bi-brightness-high-fill";
 
 }

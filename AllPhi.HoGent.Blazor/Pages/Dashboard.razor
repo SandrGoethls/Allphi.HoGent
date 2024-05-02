@@ -43,28 +43,30 @@ else
                     <h4>Bestuurders</h4>
                     <p>Total : @_driverListDto.TotalItems</p>
 
-                    <Chart Config="@_driversChartConfig"  />
+                    <Chart Config="@_driversChartConfig" Width="15" Height="15" />
+                       
+                    
 
                 </div>
                 <div class="col-md-3 card mx-5 p-2    ">
                     <h4>Voertuigen</h4>
                     <p>Total : @_vehicleListDto.TotalItems</p>
 
-                    <Chart Config="@_vehiclesChartConfig"  />
+                    <Chart Config="@_vehiclesChartConfig" Width="15" Height="15" />
 
                 </div>
                 <div class="col-md-3 card mx-5 p-2  ">
                     <h4>Tankkaarten</h4>
                     <p>Total : @_fuelCardListDto.TotalItems</p>
 
-                    <Chart Config="@_fuelCardsChartConfig"  />
+                    <Chart Config="@_fuelCardsChartConfig" Width="15" Height="15" />
 
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 card mx-5 p-2  ">
+                <div class="col-md-3 card mx-5 p-2 table-responsive   ">
                     <h4>Verjaardagen</h4>
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Bestuurder</th>
@@ -86,9 +88,9 @@ else
                     </table>
 
                 </div>
-                <div class="col-md-3 card mx-5 p-2  ">
-                    <h4>Voertuigen met Naderende Keuringsdatum</h4>
-                    <table>
+                <div class="col-md-3 card mx-5 p-2 table-responsive   ">
+                    <h4>Voertuigen met naderende Keuringsdatum</h4>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Nummerplaat</th>
@@ -110,9 +112,9 @@ else
                     </table>
 
                 </div>
-                <div class="col-md-3 card mx-5 p-2  ">
+                <div class="col-md-3 card mx-5 p-2 table-responsive  ">
                     <h4>Tankkaarten met naderende vervaldag</h4>
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Kaart Nummer</th>
@@ -137,9 +139,9 @@ else
             </div>
 
             <div class="row">
-                <div class="col-md-3 card mx-5 p-2  ">
+                <div class="col-md-3 card mx-5 p-2 table-responsive  ">
                     <h4>Laatst toegevoegde Bestuurders</h4>
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Bestuurder</th>
@@ -152,8 +154,8 @@ else
                             @foreach (var vehicle in _vehicleUpcomingInspection)
                             {
                                 <tr>
-                                    <td>@vehicle.LicensePlate </td>
-                                    <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td>
+                                     @* <td>@vehicle.LicensePlate </td>
+                                     <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td> *@
 
                                 </tr>
                             }
@@ -161,13 +163,13 @@ else
                     </table>
 
                 </div>
-                <div class="col-md-3 card mx-5 p-2  ">
+                <div class="col-md-3 card mx-5 p-2 table-responsive  ">
                     <h4>Laatst toegevoegde Voertuigen</h4>
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Nummerplaat</th>
-                                <th>Vervalt op</th>
+                                <th>Fabrikant</th>
 
                             </tr>
                         </thead>
@@ -176,8 +178,8 @@ else
                             @foreach (var vehicle in _vehicleUpcomingInspection)
                             {
                                 <tr>
-                                    <td>@vehicle.LicensePlate </td>
-                                    <td>@vehicle.CarBrand)</td>
+                                    @* <td>@vehicle.LicensePlate </td>
+                                    <td>@vehicle.CarBrand)</td> *@
 
                                 </tr>
                             }
@@ -185,9 +187,9 @@ else
                     </table>
 
                 </div>
-                <div class="col-md-3 card mx-5 p-2  ">
+                <div class="col-md-3 card mx-5 p-2 table-responsive  ">
                     <h4>Laatst toegevoegde Tankkaarten</h4>
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>KaartNummer</th>
@@ -200,8 +202,8 @@ else
                             @foreach (var vehicle in _vehicleUpcomingInspection)
                             {
                                 <tr>
-                                    <td>@vehicle.LicensePlate </td>
-                                    <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td>
+                                    @* <td>@vehicle.LicensePlate </td>
+                                    <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td> *@
 
                                 </tr>
                             }
@@ -348,11 +350,11 @@ else
                 {
                     Responsive = true,
                     Title = new OptionsTitle
-
                     {
                         Display = true,
                         Text = label + " Verdeling"
-                    }
+                    },
+                    
                 }
             };
 
