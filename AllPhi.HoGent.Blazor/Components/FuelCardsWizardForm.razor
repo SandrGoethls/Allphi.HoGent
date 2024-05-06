@@ -136,7 +136,7 @@ else if (currentStep == WizardStep.FuelType)
             </div>
         }
     </div>
-    }
+}
 else if (currentStep == WizardStep.RelatedDrivers)
 {
     <div class="col-md-12 mb-3">
@@ -241,7 +241,7 @@ else if (currentStep == WizardStep.RelatedDrivers)
             _checkedDriver.Add(driverDto);
     }
 
-        private void CheckFuelTypeChanged(FuelType fuelType)
+    private void CheckFuelTypeChanged(FuelType fuelType)
     {
         if (_checkedFuelType.Any(x => x == fuelType))
             _checkedFuelType.Remove(fuelType);
@@ -271,7 +271,6 @@ else if (currentStep == WizardStep.RelatedDrivers)
             GoToStep(step);
         }
     }
-
 
     void GoToPreviousStep()
     {
