@@ -228,5 +228,35 @@
 
         InvokeAsync(StateHasChanged);
     }
+
+    private async Task SortTable(string columnName)
+    {
+        _isLoading = true;
+        if (_currentSortColumn == columnName)
+        {
+            _isSortAscending = !_isSortAscending;
+        }
+        else
+        {
+            _currentSortColumn = columnName;
+            _isSortAscending = true;
+        }
+
+        await LoadFuelCardListDto();
+
+        _isLoading = false;
+    }
+
+    private async Task HandlePageChanged(int page)
+    {
+        _pageNumber = page;
+        await LoadFuelCardListDto();
+    }
+
+    private async Task HandleItemsPerPageChanged(int itemsPerPage)
+    {
+        _pageSize = itemsPerPage;
+        await LoadFuelCardListDto();
+    }
 }
 
