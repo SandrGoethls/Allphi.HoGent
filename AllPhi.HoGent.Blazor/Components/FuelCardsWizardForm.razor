@@ -56,12 +56,12 @@
 <div class="col-md-12 mb-3 wizard-steps">
     @for (int i = 0; i < 5; i++)
     {
-        var step = i; // Tijdelijke variabele
+        var step = i; 
         <div class="wizard-item">
             <span class="wizard-step @(step <= (int)currentStep ? "wizard-step-active" : "wizard-step-inactive")" @onclick="(step == 0 || _readyForNext) ? () => AttemptToGoToStep(step) : null ">
                 <i class="@GetIconClass(step)"></i>
             </span>
-            @if (i < 4) // Voeg geen lijn toe na het laatste icoon
+            @if (i < 4)
             {
                 <div class="wizard-line @(step < (int)currentStep ? "wizard-line-active" : "")"></div>
             }

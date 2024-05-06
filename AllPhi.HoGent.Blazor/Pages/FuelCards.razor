@@ -18,6 +18,246 @@
 {
     <LoadingSpinner IsLoading="@_isLoading" />
 }
+else
+{
+    <div class="row mb-5">
+        <div class="d-flex flex-wrap">
+            <div class="main-table">
+                <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                    <h3>Tankkaarten</h3>
+                    <div class="d-flex button-mobile-ui">
+                        <button type="button" class="btn buttons-succes m-2" @onclick="AddNewFuelCard">Tankkaart toevoegen</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive ">
+                    <table class="table tabel-design">
+                        <thead>
+                            <tr>
+                                <th style="width:0px;"></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("date")'>Vervaldag <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("cardnumber")'>Kaart nummer <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" @onclick='()=>SortTable("pin")'>Pin <span class="fa fa-sort"></span></th>
+                                <th class="tabel-row-design pointer-cursor" data-sort="status" @onclick='()=>SortTable("status")'>Status <span class="fa fa-sort"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var fuelCard in _fuelCardListDto.FuelCardDtos)
+                            {
+                                <tr class="pointer-cursor tabel-row-design @((fuelCard == _selectedFuelCardDto) ? "tabel-row-selected" : "")" @onclick="(async () => await SelectFuelCard(fuelCard))">
+                                    <td class="align-middle border-start"><span class="fas fa-gas-pump"></span></td>
+                                    <td class="align-middle">@fuelCard.ValidityDate.ToString("dd-MM-yyyy")</td>
+                                    <td class="align-middle">@fuelCard.CardNumber</td>
+                                    <td class="align-middle">@fuelCard.Pin</td>
+                                    <td class="align-middle border-end">@fuelCard.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <PaginationComponent CurrentPage="@_pageNumber"
+                                         TotalPages="@_totalPages"
+                                         ItemsPerPage="@_pageSize"
+                                         OnPageChanged="HandlePageChanged"
+                                         OnItemsPerPageChanged="HandleItemsPerPageChanged" />
+
+                </div>
+            </div>
+
+            @if (_showSendConfirmation)
+            {
+                <div class="main-table">
+                    @if (_fuelCardAdded)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-check-circle text-success me-3" data-feather="check-circle"></span>Succesvol toegevoegd</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Bedankt!<br />
+                                        Tankkaart is succesvol toegevoegd.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (_fuelCardUpdated)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-check-circle text-success me-3" data-feather="check-circle"></span>Succesvol bijgewerkt</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Bedankt!<br />
+                                        Tankkaart is succesvol bijgewerkt.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (_fuelCardDeleted)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-check-circle text-success me-3" data-feather="check-circle"></span>Succesvol verwijderd</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Bedankt!<br />
+                                        Tankkaart is succesvol verwijderd.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (_error)
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-times-circle text-danger me-3"></span>@ErrorTitle</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        @ErrorMessage<br />
+                                        Gelieve contact op te nemem met onze support via <a href="/">support@allphi.be</a>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col mb-3">
+                                <div class="mb-3">
+                                    <h4><span class="far fa-times-circle text-danger me-3"></span> Oei, er ging iets verkeerd</h4>
+                                </div>
+                                <div>
+                                    <p>
+                                        Excuses! Er ging iets verkeerd.<br />
+                                        Gelieve contact op te nemem met onze support via <a href="/">support@allphi.be</a>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+
+                @if (_addNewFuelCard)
+                {
+                    <div class="wizard-table usermanagement-table-size">
+                        <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                            <h3>Nieuwe tankkaart</h3>
+                        </div>
+
+                        <div class="usermanagement-table-responsive border p-1 d-flex justify-content-around">
+                            <div class="d-flex justify-content-around flex-wrap">
+                                <div class="row w-100">
+                                    <div class="col-md-12" style="">
+                                        <FuelCardsWizardForm OnSave="@((x) => SaveNewUser(x))" Drivers="@_driverListDto.DriverDtos" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (_selectedFuelCard)
+                {
+                    <div class="update-table">
+                        <div class="d-flex justify-content-between p-1 mb-5 flex-column">
+                            <h3>Geselecteerde tankkaart</h3>
+                            <div class="d-flex button-mobile-ui">
+                                <button type="submit" class="btn buttons-succes m-2" form="fuelcard-form">Tankkaart opslaan</button>
+                                <button type="button" class="btn buttons-danger m-2" @onclick="() => _showDeleteConfirmation = true">Tankkaart verwijderen</button>
+                            </div>
+                        </div>
+
+                        <div class="form-border p-1">
+                            <form class="d-flex justify-content-around flex-wrap" id="fuelcard-form" @onsubmit="@UpdateSelectedUser">
+                                <div class="row w-100">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="cardnumber">Kaartnummer:</label>
+                                        <input class="form-input-select" id="cardnumber" @bind="_selectedFuelCardDto.CardNumber" />
+                                        @if (string.IsNullOrEmpty(_selectedFuelCardDto?.CardNumber))
+                                        {
+                                            <p class="text-danger" style="font-size: 0.9rem;">Kaartnummer is verplicht</p>
+                                        }
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="pin">Pin:</label>
+                                        <input class="form-input-select" type="number" id="pin" @bind="_selectedFuelCardDto.Pin" />
+                                        @if (_selectedFuelCardDto.Pin.ToString().Length != 4)
+                                        {
+                                            <p class="text-danger" style="font-size: 0.9rem;">Pin is verplicht</p>
+                                        }
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex form-titles" for="status">Status:</label>
+                                        <select class="form-input-select" id="status" @bind="@_selectedFuelCardDto.Status">
+                                            @foreach (var role in Enum.GetValues(typeof(Status)))
+                                            {
+                                                <option value="@role">@(((Status)role))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-flex required-field-mark form-titles" for="validitydate">Vervaldag:</label>
+                                        <input class="form-input-select" type="date" id="validitydate" @bind='_selectedFuelCardDto.ValidityDate' />
+                                        @if (_selectedFuelCardDto.ValidityDate == DateTime.MinValue)
+                                        {
+                                            <p class="text-danger" style="font-size: 0.9rem;">Vervaldag is verplicht</p>
+                                        }
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="d-flex form-titles" for="type">Type:</label>
+                                        @foreach (var fuelType in Enum.GetValues(typeof(FuelType)))
+                                        {
+                                            <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_selectedFuelCardDto.FuelCardFuelTypesDto.Select(x => x.FuelType).Any(x => x == (FuelType)fuelType) ? "tabel-row-selected" : "")"
+                                                 @onclick="@(() => CheckFuelTypeChanged((FuelType)fuelType))">
+                                                <label class="pointer-cursor">@fuelType</label>
+                                                <input class="pointer-cursor" checked="@(_selectedFuelCardDto.FuelCardFuelTypesDto.Select(x => x.FuelType).Any(x => x == (FuelType)fuelType))" type="checkbox" />
+                                            </div>
+
+                                        }
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-titles">Gekoppelde Drivers:</label>
+                                        @foreach (var driver in _driverListDto.DriverDtos)
+                                        {
+                                            <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? "tabel-row-selected" : "")"
+                                                 @onclick="@(() => CheckDriverChanged(driver))">
+                                                <label class="pointer-cursor">@driver.FirstName @driver.LastName</label>
+                                                <input class="pointer-cursor" checked="@(_checkedDriver.Contains(driver))" type="checkbox" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-7">
+                        <div class="d-flex justify-content-between p-1">
+                            <h4 id="animatedText" style="color: #54a2d5;">Selecteer een tankkaart of klik op 'tankkaart toevoegen'</h4>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
 
 
 <DialogContainer Visible="_showDeleteConfirmation">
