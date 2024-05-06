@@ -83,12 +83,12 @@
         </p>
     </div>
     <div class="col-md-12 mb-3">
-        <label class="d-flex required-field-mark" for="chassisnumber">Kaartnummer:</label>
-        <input class="form-input-select" name="chassisnumber" @oninput="@((e) => OnInput(e, "chassisnumber"))" id="chassisnumber" @bind="SelectedCardNumber" />
+        <label class="d-flex required-field-mark" for="cardnumber">Kaartnummer:</label>
+        <input class="form-input-select" name="cardnumber" @oninput="@((e) => OnInput(e, "chassisnumber"))" id="cardnumber" @bind="SelectedCardNumber" />
     </div>
     <div class="col-md-12 mb-3">
-        <label class="d-flex required-field-mark" for="licenseplate">Vervaldag:</label>
-        <input class="form-input-select" name="licenseplate" @oninput="@((e) => OnInput(e, "licenseplate"))" id="licenseplate" @bind="SelectedValidityDate" />
+        <label class="d-flex required-field-mark" for="validityday">Vervaldag:</label>
+        <input class="form-input-select" type="date" name="validityday" @oninput="@((e) => OnInput(e, "licenseplate"))" id="validityday" @bind="SelectedValidityDate" />
     </div>
 }
 else if (currentStep == WizardStep.Status)
@@ -150,7 +150,7 @@ else if (currentStep == WizardStep.RelatedDrivers)
         </p>
     </div>
     <div class="col-md-12 mb-3">
-        <label>Gekoppelde Drivers:</label>
+        <label>Gekoppelde bestuurders:</label>
         @foreach (var driver in Drivers)
         {
             <div class="col-12 d-flex justify-content-between linked-subscriptions-first pointer-cursor border-bottom-solid @(_checkedDriver.Contains(driver) ? "tabel-row-selected" : "")"
@@ -190,13 +190,13 @@ else if (currentStep == WizardStep.RelatedDrivers)
     public List<DriverDto>? Drivers { get; set; } = new();
 
     [Parameter]
-    public EventCallback<VehicleDto> OnSave { get; set; }
+    public EventCallback<FuelCardDto> OnSave { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
         IsFormValid();
     }
-
 
     private void IsFormValid()
     {
