@@ -37,32 +37,38 @@ else
         <div class="block-header">
             <h3 class="block-title">Dashboard Analytics</h3>
         </div>
-        <div class="block-content space-y-6">
+        <div class="block-content space-y-4">
             <div class="row">
-                <div class="col-md-3 card mx-5 p-4 ">
-                    <h4>Drivers</h4>
+                <div class="col-md-3 card mx-5 p-2">
+                    <h4>Bestuurders</h4>
                     <p>Total : @_driverListDto.TotalItems</p>
-                    <Chart Config="@_driversChartConfig" Width="50" Height="50" />
+
+                    <Chart Config="@_driversChartConfig"  />
+
                 </div>
-                <div class="col-md-3 card mx-5 p-4 ">
-                    <h4>Vehicles</h4>
+                <div class="col-md-3 card mx-5 p-2    ">
+                    <h4>Voertuigen</h4>
                     <p>Total : @_vehicleListDto.TotalItems</p>
-                    <Chart Config="@_vehiclesChartConfig" Width="50" Height="50" />
+
+                    <Chart Config="@_vehiclesChartConfig"  />
+
                 </div>
-                <div class="col-md-3 card mx-5 p-4">
-                    <h4>Fuel Cards</h4>
+                <div class="col-md-3 card mx-5 p-2  ">
+                    <h4>Tankkaarten</h4>
                     <p>Total : @_fuelCardListDto.TotalItems</p>
-                    <Chart Config="@_fuelCardsChartConfig" Width="50" Height="50" />
+
+                    <Chart Config="@_fuelCardsChartConfig"  />
+
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 card mx-5 p-4 ">
-                    <h4>Upcoming Birthdays</h4>
+                <div class="col-md-3 card mx-5 p-2  ">
+                    <h4>Verjaardagen</h4>
                     <table>
                         <thead>
                             <tr>
-                                <th>Driver</th>
-                                <th>Birthday</th>
+                                <th>Bestuurder</th>
+                                <th>Verjaardag</th>
 
                             </tr>
                         </thead>
@@ -80,13 +86,13 @@ else
                     </table>
 
                 </div>
-                <div class="col-md-3 card mx-5 p-4 ">
-                    <h4>Upcomming vehicle inspection</h4>
+                <div class="col-md-3 card mx-5 p-2  ">
+                    <h4>Voertuigen met Naderende Keuringsdatum</h4>
                     <table>
                         <thead>
                             <tr>
-                                <th>Licence plate</th>
-                                <th>Inspection date</th>
+                                <th>Nummerplaat</th>
+                                <th>Vervalt op</th>
 
                             </tr>
                         </thead>
@@ -104,13 +110,13 @@ else
                     </table>
 
                 </div>
-                <div class="col-md-3 card mx-5 p-4 ">
-                    <h4>Expiring fuelcards</h4>
+                <div class="col-md-3 card mx-5 p-2  ">
+                    <h4>Tankkaarten met naderende vervaldag</h4>
                     <table>
                         <thead>
                             <tr>
-                                <th>Card number</th>
-                                <th>Expires on</th>
+                                <th>Kaart Nummer</th>
+                                <th>Vervalt op</th>
 
                             </tr>
                         </thead>
@@ -121,6 +127,81 @@ else
                                 <tr>
                                     <td>@fuelcard.CardNumber </td>
                                     <td>@fuelcard.ValidityDate.ToString("dd-MM-yyyy")</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 card mx-5 p-2  ">
+                    <h4>Laatst toegevoegde Bestuurders</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bestuurder</th>
+                                <th>Rijbewijs</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var vehicle in _vehicleUpcomingInspection)
+                            {
+                                <tr>
+                                    <td>@vehicle.LicensePlate </td>
+                                    <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="col-md-3 card mx-5 p-2  ">
+                    <h4>Laatst toegevoegde Voertuigen</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nummerplaat</th>
+                                <th>Vervalt op</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var vehicle in _vehicleUpcomingInspection)
+                            {
+                                <tr>
+                                    <td>@vehicle.LicensePlate </td>
+                                    <td>@vehicle.CarBrand)</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="col-md-3 card mx-5 p-2  ">
+                    <h4>Laatst toegevoegde Tankkaarten</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>KaartNummer</th>
+                                <th>Code</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var vehicle in _vehicleUpcomingInspection)
+                            {
+                                <tr>
+                                    <td>@vehicle.LicensePlate </td>
+                                    <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td>
 
                                 </tr>
                             }
@@ -240,19 +321,19 @@ else
         int driversAssignedToVehicles = _driverVehicleListDto.DriverVehicleDtos.Select(dv => dv.DriverId).Distinct().Count();
         int driversNotAssignedToVehicles = _driverListDto.TotalItems - driversAssignedToVehicles;
 
-        _driversChartConfig = GetChartConfig("Drivers", new int[] { driversNotAssignedToVehicles, driversAssignedToVehicles }, new string[] { "#e74c3c", "#2ecc71" }, 1);
+        _driversChartConfig = GetChartConfig("Bestuurder", new int[] { driversNotAssignedToVehicles, driversAssignedToVehicles }, new string[] { "#08354a", "#2397d4" }, 1);
 
         // For Vehicles
         int vehiclesWithDrivers = _driverVehicleListDto.DriverVehicleDtos.Select(dv => dv.VehicleId).Distinct().Count();
         int vehiclesWithoutDrivers = _vehicleListDto.TotalItems - vehiclesWithDrivers;
 
-        _vehiclesChartConfig = GetChartConfig("Vehicles", new int[] { vehiclesWithoutDrivers, vehiclesWithDrivers }, new string[] { "#f1faee", "#f4a261" }, 2);
+        _vehiclesChartConfig = GetChartConfig("Voertuig", new int[] { vehiclesWithoutDrivers, vehiclesWithDrivers }, new string[] { "#08354a", "#2397d4" }, 2);
 
         // For Fuel Cards
         int fuelCardsWithDrivers = _fuelCardListDto.FuelCardDtos.Count(fc => fc.DriverDtos != null && fc.DriverDtos.Any());
         int fuelCardsWithoutDrivers = _fuelCardListDto.TotalItems - fuelCardsWithDrivers;
 
-        _fuelCardsChartConfig = GetChartConfig("Fuel Cards", new int[] { fuelCardsWithoutDrivers, fuelCardsWithDrivers }, new string[] { "#457b9d", "#1d3557" }, 3);
+        _fuelCardsChartConfig = GetChartConfig("Tankkaarten", new int[] { fuelCardsWithoutDrivers, fuelCardsWithDrivers }, new string[] { "#08354a", "#2397d4" }, 3);
     }
 
 
@@ -270,7 +351,7 @@ else
 
                     {
                         Display = true,
-                        Text = label + " Distribution"
+                        Text = label + " Verdeling"
                     }
                 }
             };
@@ -278,7 +359,7 @@ else
         if (chart == 1)
         {
             config.Data.Labels.Clear();
-            foreach (var status in new[] { "Available Drivers", "Drivers assigned to vehicle" })
+            foreach (var status in new[] { "Beschikbare Bestuurders", "Bestuurders gekoppeld aan Voertuig" })
             {
                 config.Data.Labels.Add(status);
             }
@@ -287,7 +368,7 @@ else
         if (chart == 2)
         {
             config.Data.Labels.Clear();
-            foreach (var status in new[] { "Available Vehicles", "Vehicles assigned to drivers" })
+            foreach (var status in new[] { "Beschikbare Voertuigen", "Voertuigen gekoppeld aan Bestuurder" })
             {
                 config.Data.Labels.Add(status);
             }
@@ -296,7 +377,7 @@ else
         if (chart == 3)
         {
             config.Data.Labels.Clear();
-            foreach (var status in new[] { "Available Fuelcards", "Fuel assigned to drivers" })
+            foreach (var status in new[] { "Beschikbare Tankkaarten", "Tankkaarten gekoppeld aan Bestuurder" })
             {
                 config.Data.Labels.Add(status);
             }
