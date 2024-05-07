@@ -33466,13 +33466,13 @@ table.table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:afte
 }
 
 #page-container.dark-mode {
-  background-color: #19222d;
+/*  background-color: #19222d;*/
 }
 
 .dark-mode,
 .dark-mode #side-overlay,
 .dark-mode #page-loader {
-  background-color: #19222d;
+/*  background-color: #19222d;*/
   color: #bec8d5;
 }
 .dark-mode h1,

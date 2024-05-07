@@ -31,7 +31,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay; adjust opacity as needed */
+            background-color: rgba(0, 0, 0, 0.4); /* Dark overlay; adjust opacity as needed */
             z-index: 1;
         }
 
@@ -142,13 +142,13 @@
 
 <div id="page-container" class="@GetPageContainerClasses()">
     <main id="main-container">
-        <div class="main-content @GetThemeClass()">
+        <div class="main-content @GetThemeClass() ">
             <Header />
             <div class="main-padding">
                 <a class="menu-toggle" @onclick="ToggleNavMenu"><span class="fa fa-bars"></span></a>
-                <div class="row py-3 sub-container @GetThemeClass()" @onclick="CloseNavMenu">
+                <div class="row py-3 sub-container " @onclick="CloseNavMenu">
                     <NavMenu ThemeClass="@GetThemeClass()" />
-                    <div class="body-content @GetThemeClass()">
+                    <div class="body-content ">
                         @Body
                     </div>
                 </div>
