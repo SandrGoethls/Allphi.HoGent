@@ -74,5 +74,22 @@ namespace AllPhi.HoGent.Blazor.Services
 
             return true;
         }
+
+        public async Task<bool> UpdateFuelCardAsync(FuelCardDto fuelCardDto)
+        {
+            var json = JsonConvert.SerializeObject(fuelCardDto);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"api/fuelcards/updatefuelcard", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error updating fuel card: {errorResponse}");
+                return false;
+            }
+
+            return true;
+        }
     }
 }
