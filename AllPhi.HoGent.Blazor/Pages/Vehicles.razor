@@ -38,6 +38,10 @@
     table tbody .eentest :hover {
         background-color: rgba(33,150,243,0.058823529411764705) !important;
     }
+
+    .search-top {
+        height: fit-content;
+    }
 </style>
 
 <PageTitle>Vehicles</PageTitle>
@@ -57,8 +61,11 @@ else
                     <div class="d-flex button-mobile-ui">
                         @if (_showAllCars)
                         {
-                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Voertuig toevoegen</button>
-                            <input />
+                            <div class="d-flex flex-wrap">
+                                <button type="button" class="btn buttons-succes m-2" @onclick="AddNewVehicle">Voertuig toevoegen</button>
+                                <input class="form-input-select m-2 search-top" placeholder="Zoek op nummerplaat" id="searchOnLicencePlate" @bind="_searchLicencePlate" @oninput="OnChangeLicencePlate" />
+                                <input class="form-input-select m-2 search-top" placeholder="Zoek op chassisnummer" id="searchOnChassisNumber" @bind="_searchChassisNumber" @oninput="OnChangeChassisNumber" />
+                            </div>
                         }
                         else if (!_showAllCars)
                         {
@@ -400,6 +407,8 @@ else
     public string ErrorTitle { get; set; } = string.Empty;
     public string ErrorMessage { get; set; } = string.Empty;
 
+    private string _searchLicencePlate = string.Empty;
+    private string _searchChassisNumber = string.Empty;
     private string _searchNameTerm = string.Empty;
     private string _searchRegisterNumberTerm = string.Empty;
     private int _currentFilterVersion = 0;
@@ -422,8 +431,9 @@ else
 
     private async Task LoadVehicleListDto()
     {
+        FilterVehicle filterVehicle = new FilterVehicle() { SearchByLicencePlate = _searchLicencePlate, SearchByChassisNumber = _searchChassisNumber };
         Pagination pagination = new Pagination(_pageNumber, _pageSize);
-        _vehicleListDto = await _vehicleService.GetAllVehicleAsync(_currentSortColumn, _isSortAscending, pagination);
+        _vehicleListDto = await _vehicleService.GetAllVehicleAsync(_currentSortColumn, _isSortAscending, filterVehicle, pagination);
         _totalPages = (int)Math.Ceiling((double)_vehicleListDto.TotalItems / _pageSize);
     }
 
@@ -652,6 +662,28 @@ else
             else
                 _filteredListDriverDto = _driverListDto?.DriverDtos ?? new();
         }
+    }
+
+    private async Task OnChangeLicencePlate(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        _searchLicencePlate = e.Value?.ToString() ?? string.Empty;
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+            await LoadVehicleListDto();
+    }
+
+    private async Task OnChangeChassisNumber(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        _searchChassisNumber = e.Value?.ToString() ?? string.Empty;
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+            await LoadVehicleListDto();
     }
 
 }

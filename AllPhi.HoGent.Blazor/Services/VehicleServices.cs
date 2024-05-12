@@ -16,13 +16,19 @@ namespace AllPhi.HoGent.Blazor.Services
             _httpClient = httpClient;
         }
 
-        public async Task<VehicleListDto> GetAllVehicleAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] Pagination pagination)
+        public async Task<VehicleListDto> GetAllVehicleAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] FilterVehicle filterVehicle, [Optional] Pagination pagination)
         {
             var queryString = HttpUtility.ParseQueryString(string.Empty);
             if (!string.IsNullOrEmpty(sortBy)) 
                 queryString["sortBy"] = sortBy;
 
             queryString["isAscending"] = isAscending.ToString();
+
+            if (filterVehicle != null)
+            {
+                queryString["searchByLicencePlate"] = filterVehicle?.SearchByLicencePlate?.ToString();
+                queryString["searchByChassisNumber"] = filterVehicle?.SearchByChassisNumber?.ToString();
+            }
 
             if (pagination != null)
             {

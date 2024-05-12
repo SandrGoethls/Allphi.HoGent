@@ -25,7 +25,9 @@ namespace AllPhi.HoGent.Datalake.Data.Models
         public string PostalCode { get; set; } = string.Empty;
 
         public string RegisterNumber { get; set; } = string.Empty;
-        public DateTime DateOfBirth { get; set; } 
+        public DateTime DateOfBirth { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public TypeOfDriverLicense TypeOfDriverLicense { get; set; } = TypeOfDriverLicense.B;
 

@@ -25,7 +25,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         }
 
-        public async Task<(List<FuelCard>, int)> GetAllFuelCardsAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
+        public async Task<(List<FuelCard>, int)> GetAllFuelCardsAsync(FilterFuelCard filterFuelCard, [Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
             List<FuelCard> fuelCards = new();
 
@@ -39,6 +39,12 @@ namespace AllPhi.HoGent.Datalake.Data.Store
                 "validityDate" => isAscending ? fuelCardsQuery.OrderBy(x => x.ValidityDate) : fuelCardsQuery.OrderByDescending(x => x.ValidityDate),
                 _ => fuelCardsQuery
             };
+
+            if (filterFuelCard != null)
+            {
+                if (!string.IsNullOrEmpty(filterFuelCard.SearchByCardNumber))
+                    sortedFuelCards = sortedFuelCards.Where(x => x.CardNumber.Contains(filterFuelCard.SearchByCardNumber));
+            }
 
             var totalItems = await sortedFuelCards.CountAsync();
             if (pagination != null)

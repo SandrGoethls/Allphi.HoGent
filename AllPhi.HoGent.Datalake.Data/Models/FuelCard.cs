@@ -18,6 +18,8 @@ namespace AllPhi.HoGent.Datalake.Data.Models
 
         public DateTime ValidityDate { get; set; }
 
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
         public Status Status { get; set; } = Status.Active;
 
         public List<FuelCardFuelType>? FuelCardFuelTypes { get; set; } = new();

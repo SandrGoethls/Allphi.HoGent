@@ -12,7 +12,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
     public interface IVehicleStore
     {
         Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId);
-        Task<(List<Vehicle>, int)> GetAllVehiclesAsync([Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null);
+        Task<(List<Vehicle>, int)> GetAllVehiclesAsync(FilterVehicle? filterVehicle, [Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null);
         Task AddVehicle(Vehicle vehicle);
         Task UpdateVehicle(Vehicle vehicle);
         Task RemoveVehicle(Guid fuelCardId);

@@ -39,15 +39,22 @@ namespace AllPhi.HoGent.RestApi.Controllers
 
         
         [HttpGet("getallvehicles")]
-        public async Task<ActionResult<VehicleListDto>> GetAllVehicles([FromQuery] [Optional] string? sortBy, [FromQuery] [Optional] bool isAscending, [FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        public async Task<ActionResult<VehicleListDto>> GetAllVehicles([FromQuery] string? searchByLicencePlate, 
+                                                                       [FromQuery] string? searchByChassisNumber, 
+                                                                       [FromQuery][Optional] string? sortBy, 
+                                                                       [FromQuery][Optional] bool isAscending, 
+                                                                       [FromQuery] int? pageNumber = null, 
+                                                                       [FromQuery] int? pageSize = null)
         {
+            FilterVehicle? filterVehicle = new() { SearchByLicencePlate = searchByLicencePlate ?? "", SearchByChassisNumber = searchByChassisNumber ?? ""};
+
             Pagination? pagination = null;
             if (pageNumber.HasValue && pageSize.HasValue)
             {
                 pagination = new Pagination ( pageNumber.Value, pageSize.Value );
             }
 
-            var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync(sortBy, isAscending, pagination);
+            var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync(filterVehicle, sortBy, isAscending, pagination);
             if (vehicles == null)
             {
                 return NotFound();

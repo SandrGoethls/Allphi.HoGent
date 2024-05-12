@@ -21,13 +21,13 @@ namespace AllPhi.HoGent.Datalake.Data.Store
 
         public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
         {
-            return await _dbContext.Vehicles.FirstOrDefaultAsync(x => x.Id == vehicleId);
+            return await _dbContext.Vehicles.FirstOrDefaultAsync(x => x.Id == vehicleId) ?? new();
         }
 
-        public async Task<(List<Vehicle>, int)> GetAllVehiclesAsync([Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null)
+        public async Task<(List<Vehicle>, int)> GetAllVehiclesAsync(FilterVehicle? filterVehicle, [Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
             List<Vehicle> vehicles = new();
-            IQueryable<Vehicle> vehiclesQuery = _dbContext.Vehicles;
+            IQueryable<Vehicle> vehiclesQuery = _dbContext.Vehicles;         
 
             IQueryable<Vehicle> sortedVehicles = sortBy switch
             {
@@ -42,6 +42,15 @@ namespace AllPhi.HoGent.Datalake.Data.Store
                 "status" => isAscending ? vehiclesQuery.OrderBy(x => x.Status) : vehiclesQuery.OrderByDescending(x => x.Status),
                 _ => vehiclesQuery
             };
+
+            if (filterVehicle != null)
+            {
+                if (!string.IsNullOrEmpty(filterVehicle.SearchByLicencePlate))
+                    sortedVehicles = sortedVehicles.Where(x => x.LicensePlate.Contains(filterVehicle.SearchByLicencePlate));
+
+                if (!string.IsNullOrEmpty(filterVehicle.SearchByChassisNumber))
+                    sortedVehicles = sortedVehicles.Where(x => x.ChassisNumber.Contains(filterVehicle.SearchByChassisNumber));
+            }
 
             var totalItems = await sortedVehicles.CountAsync();
             if (pagination != null)

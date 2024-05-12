@@ -8,7 +8,7 @@ namespace AllPhi.HoGent.Blazor.Services
     {
         Task<(bool, string message)> AddFuelCardAsync(FuelCardDto fuelCardDto);
         Task<bool> DeleteFuelCardAsync(Guid fuelCardId);
-        Task<FuelCardListDto> GetAllFuelCardsAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] Pagination pagination);
+        Task<FuelCardListDto> GetAllFuelCardsAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] FilterFuelCard filterFuelCard, [Optional] Pagination pagination);
         Task<bool> UpdateFuelCardAsync(FuelCardDto fuelCardDto);
     }
 }

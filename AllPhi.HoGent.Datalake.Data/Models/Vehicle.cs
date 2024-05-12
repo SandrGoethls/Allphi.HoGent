@@ -28,7 +28,9 @@ namespace AllPhi.HoGent.Datalake.Data.Models
 
         public Status Status { get; set; } = Status.Active;
 
-        public DateTime InspectionDate { get; set; } 
+        public DateTime InspectionDate { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [NotMapped] public List<Driver>? Drivers { get; set; }
     }

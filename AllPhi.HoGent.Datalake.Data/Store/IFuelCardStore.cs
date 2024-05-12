@@ -12,7 +12,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
     public interface IFuelCardStore
     {
         Task<FuelCard> GetFuelCardByFuelCardIdAsync(Guid fuelCardId);
-        Task<(List<FuelCard>, int)> GetAllFuelCardsAsync([Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null);
+        Task<(List<FuelCard>, int)> GetAllFuelCardsAsync(FilterFuelCard filterFuelCard, [Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null);
         Task AddFuelCard(FuelCard fuelCard);
         Task UpdateFuelCard(FuelCard fuelCard);
         Task RemoveFuelCard(Guid fuelCardId);

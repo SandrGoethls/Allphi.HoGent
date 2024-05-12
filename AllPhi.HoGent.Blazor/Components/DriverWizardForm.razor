@@ -290,7 +290,7 @@
         <div class="col-md-6 mb-3">
             <p class="review">Voornaam: <span>@SelectedFirstName</span></p>
             <p class="review">Achternaam: <span>@SelectedLastName</span></p>
-            <p class="review">Geboortedatum: <span>@SelectedBirthdate</span></p>
+            <p class="review">Geboortedatum: <span>@SelectedBirthdate.ToString("dd/MM/yyyy")</span></p>
             <p class="review">Rijksregisternummer: <span>@SelectedRegisternumber</span></p>
             <p class="review">Status: <span>@SelectedStatus</span></p>
             <p class="review">Straat: <span>@SelectedStreet</span></p>
@@ -311,7 +311,7 @@
                 @foreach (var vehicle in _checkedVehicles)
                 {
                     <div class="d-flex col-12">
-                        <p class="review col-5">- <span>@vehicle.CarBrand</span></p>
+                        <p class="review col-4">- <span>@vehicle.CarBrand</span></p>
                         <span class="col-6">@vehicle.LicensePlate</span>
                     </div>
                 }
@@ -355,6 +355,7 @@
     private ElementReference container;
     private string inputValue = "";
     private bool isDropdownVisible;
+    private bool _registerNumberIsValid;
     private List<LocationModel.LocationResult> AddressSuggestions = new();
 
     public enum WizardStep
@@ -436,7 +437,8 @@
             if (string.IsNullOrEmpty(SelectedFirstName) ||
             string.IsNullOrEmpty(SelectedLastName) ||
             string.IsNullOrEmpty(SelectedRegisternumber) ||
-            !isBirthdateValid)
+            !isBirthdateValid ||
+            !_registerNumberIsValid)
                 _readyForNext = false;
             else
                 _readyForNext = true;
@@ -599,12 +601,14 @@
         if (!ValidateRegisterNumber.IsValidDriverRegisterNumber(SelectedRegisternumber))
         {
             ValidationMessage = "Ongeldig rijksregisternummer. Controleer het nummer a.u.b";
-            SelectedRegisternumber = "";
+            //SelectedRegisternumber = "";
+            _registerNumberIsValid = false;
             IsFormValid();
         }
         else
         {
             ValidationMessage = string.Empty;
+            _registerNumberIsValid = true;
             IsFormValid();
         }
     }

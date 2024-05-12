@@ -16,13 +16,18 @@ namespace AllPhi.HoGent.Blazor.Services
             _httpClient = httpClient;
         }
 
-        public async Task<FuelCardListDto> GetAllFuelCardsAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] Pagination pagination)
+        public async Task<FuelCardListDto> GetAllFuelCardsAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] FilterFuelCard filterFuelCard, [Optional] Pagination pagination)
         {
             var queryString = HttpUtility.ParseQueryString(string.Empty);
             if (!string.IsNullOrEmpty(sortBy)) 
                 queryString["sortBy"] = sortBy;
 
             queryString["isAscending"] = isAscending.ToString();
+
+            if (filterFuelCard != null)
+            {
+                queryString["searchByCardNumber"] = filterFuelCard?.SearchByCardNumber?.ToString();
+            }
 
             if (pagination != null)
             {
