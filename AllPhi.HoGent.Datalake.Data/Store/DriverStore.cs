@@ -38,6 +38,10 @@ namespace AllPhi.HoGent.Datalake.Data.Store
                 "lastname" => isAscending ? driverQuery.OrderBy(x => x.LastName) : driverQuery.OrderByDescending(x => x.LastName),
                 "city" => isAscending ? driverQuery.OrderBy(x => x.City) : driverQuery.OrderByDescending(x => x.City),
                 "street" => isAscending ? driverQuery.OrderBy(x => x.Street) : driverQuery.OrderByDescending(x => x.Street),
+                "housenumber" => isAscending ? driverQuery.OrderBy(x => x.HouseNumber) : driverQuery.OrderByDescending(x => x.HouseNumber),
+                "registernumber" => isAscending ? driverQuery.OrderBy(x => x.RegisterNumber) : driverQuery.OrderByDescending(x => x.RegisterNumber),
+                "typeofdriverlicense" => isAscending ? driverQuery.OrderBy(x => x.TypeOfDriverLicense) : driverQuery.OrderByDescending(x => x.TypeOfDriverLicense),
+                "status" => isAscending ? driverQuery.OrderBy(x => x.Status) : driverQuery.OrderByDescending(x => x.Status),
                 _ => driverQuery
             };
 
