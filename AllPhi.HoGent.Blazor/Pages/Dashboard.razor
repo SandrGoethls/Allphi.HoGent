@@ -27,7 +27,7 @@
 
 <style>
     .chart-width {
-        width:30%;
+        width: 30%;
         margin: 5px;
     }
 
@@ -101,8 +101,8 @@ else
                     <p>Total : @_driverListDto.TotalItems</p>
 
                     <Chart Config="@_driversChartConfig" Width="15" Height="15" />
-                       
-                    
+
+
 
                 </div>
                 <div class="chart-width card p-2    ">
@@ -203,16 +203,18 @@ else
                             <tr>
                                 <th>Bestuurder</th>
                                 <th>Rijbewijs</th>
+                                <th>Toegevoegd op</th>
 
                             </tr>
                         </thead>
 
                         <tbody>
-                            @foreach (var vehicle in _vehicleUpcomingInspection)
+                            @foreach (var driver in _lastAddedDrivers)
                             {
                                 <tr>
-                                     @* <td>@vehicle.LicensePlate </td>
-                                     <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td> *@
+                                    <td>@driver.FirstName @driver.LastName </td>
+                                    <td>@driver.TypeOfDriverLicense</td>
+                                    <td>@driver.CreatedAt.ToString("dd-MM-yyyy")</td>
 
                                 </tr>
                             }
@@ -227,16 +229,18 @@ else
                             <tr>
                                 <th>Nummerplaat</th>
                                 <th>Fabrikant</th>
+                                <th>Toegevoegd op</th>
 
                             </tr>
                         </thead>
 
                         <tbody>
-                            @foreach (var vehicle in _vehicleUpcomingInspection)
+                            @foreach (var vehicle in _lastAddedVehicles)
                             {
                                 <tr>
-                                    @* <td>@vehicle.LicensePlate </td>
-                                    <td>@vehicle.CarBrand)</td> *@
+                                    <td>@vehicle.LicensePlate </td>
+                                    <td>@vehicle.CarBrand</td>
+                                    <td>@vehicle.CreatedAt.ToString("dd-MM-yyyy")</td>
 
                                 </tr>
                             }
@@ -251,16 +255,18 @@ else
                             <tr>
                                 <th>KaartNummer</th>
                                 <th>Code</th>
+                                <th>Toegevoegd op</th>
 
                             </tr>
                         </thead>
 
                         <tbody>
-                            @foreach (var vehicle in _vehicleUpcomingInspection)
+                            @foreach (var fuelcard in _lastAddedFuelCards)
                             {
                                 <tr>
-                                    @* <td>@vehicle.LicensePlate </td>
-                                    <td>@vehicle.InspectionDate.ToString("dd-MM-yyyy")</td> *@
+                                    <td>@fuelcard.CardNumber </td>
+                                    <td>@fuelcard.Pin</td>
+                                    <td>@fuelcard.CreatedAt.ToString("dd-MM-yyyy")</td>
 
                                 </tr>
                             }
@@ -286,6 +292,7 @@ else
     private VehicleListDto? _vehicleListDto;
     private DriverListDto? _driverListDto;
     private DriverVehicleListDto? _driverVehicleListDto;
+    private FuelCardDriverListDto? _fuelCardDriverListDto;
 
 
     private bool _isLoading = true;
@@ -297,18 +304,26 @@ else
     private List<FuelCardDto> _fuelCardUpcomingValidity;
     private List<VehicleDto> _vehicleUpcomingInspection;
 
+    private List<DriverDto> _lastAddedDrivers;
+    private List<VehicleDto> _lastAddedVehicles;
+    private List<FuelCardDto> _lastAddedFuelCards;
+
     protected override async Task OnInitializedAsync()
     {
         _fuelCardListDto = await _fuelCardService.GetAllFuelCardsAsync();
         _vehicleListDto = await _vehicleService.GetAllVehicleAsync();
         _driverListDto = await _driverService.GetAllDriversAsync();
         _driverVehicleListDto = await _driverVehicleService.GetAllDriverVehicleAsync();
+        _fuelCardDriverListDto = await _fuelCardDriverService.GetAllFuelCardDriverAsync();
 
         await Task.Run(() =>
         {
             GetUpcomingBirthdays();
             GetUpcomingVehicleInspections();
             GetUpcomingValidityFuelCards();
+            GetLastAddedDrivers();
+            GetLastAddedVehicles();
+            GetLastAddedFuelCards();
             InitializeCharts();
         });
         _isLoading = false;
@@ -374,6 +389,45 @@ else
 
     }
 
+    private void GetLastAddedDrivers()
+    {
+        if (_driverListDto != null && _driverListDto.DriverDtos != null)
+        {
+            _lastAddedDrivers = _driverListDto.DriverDtos.OrderByDescending(d => d.CreatedAt).Take(5).ToList();
+        }
+        else
+        {
+            _lastAddedDrivers = new List<DriverDto>();
+        }
+
+    }
+
+    private void GetLastAddedVehicles()
+    {
+        if (_vehicleListDto != null && _vehicleListDto.VehicleDtos != null)
+        {
+            _lastAddedVehicles = _vehicleListDto.VehicleDtos.OrderByDescending(d => d.CreatedAt).Take(5).ToList();
+        }
+        else
+        {
+            _lastAddedVehicles = new List<VehicleDto>();
+        }
+
+    }
+
+    private void GetLastAddedFuelCards()
+    {
+        if (_fuelCardListDto != null && _fuelCardListDto.FuelCardDtos != null)
+        {
+            _lastAddedFuelCards = _fuelCardListDto.FuelCardDtos.OrderByDescending(d => d.CreatedAt).Take(5).ToList();
+        }
+        else
+        {
+            _lastAddedFuelCards = new List<FuelCardDto>();
+        }
+
+    }
+
     private void InitializeCharts()
     {
         // For Drivers
@@ -389,7 +443,7 @@ else
         _vehiclesChartConfig = GetChartConfig("Voertuig", new int[] { vehiclesWithoutDrivers, vehiclesWithDrivers }, new string[] { "#08354a", "#2397d4" }, 2);
 
         // For Fuel Cards
-        int fuelCardsWithDrivers = _fuelCardListDto.FuelCardDtos.Count(fc => fc.DriverDtos != null && fc.DriverDtos.Any());
+        int fuelCardsWithDrivers = _fuelCardDriverListDto.FuelCardDriverDtos.Select(fd => fd.FuelCardId).Distinct().Count();
         int fuelCardsWithoutDrivers = _fuelCardListDto.TotalItems - fuelCardsWithDrivers;
 
         _fuelCardsChartConfig = GetChartConfig("Tankkaarten", new int[] { fuelCardsWithoutDrivers, fuelCardsWithDrivers }, new string[] { "#08354a", "#2397d4" }, 3);
@@ -411,7 +465,7 @@ else
                         Display = true,
                         Text = label + " Verdeling"
                     },
-                    
+
                 }
             };
 

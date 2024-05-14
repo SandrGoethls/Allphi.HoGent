@@ -1,6 +1,9 @@
 ﻿using AllPhi.HoGent.Blazor.Dto;
+using AllPhi.HoGent.Datalake.Data.Helpers;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Web;
 
 namespace AllPhi.HoGent.Blazor.Services
 {
@@ -11,6 +14,36 @@ namespace AllPhi.HoGent.Blazor.Services
         public FuelCardDriverServices(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        public async Task<FuelCardDriverListDto> GetAllFuelCardDriverAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
+        {
+            var querystring = HttpUtility.ParseQueryString(string.Empty);
+            if(!string.IsNullOrEmpty(sortBy))
+            {
+                querystring["sortBy"] = sortBy;
+                querystring["isAscending"] = isAscending.ToString();
+            }
+            if(pagination != null)
+            {
+                querystring["pageNumber"] = pagination.PageNumber.ToString();
+                querystring["pageSize"] = pagination.PageSize.ToString();
+            }
+
+            string url = $"api/fuelcarddriver/getallfuelcarddrivers?{querystring}";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error fetching fuelcard's drivers: {response.ReasonPhrase}");
+            }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var fuelCardDriverListDto = JsonConvert.DeserializeObject<FuelCardDriverListDto>(responseContent);
+            return fuelCardDriverListDto ?? new FuelCardDriverListDto();
+
+            
         }
 
         public async Task<(List<FuelCardDriverDto>, bool status, string message)> GetDriverWithConnectedFuelCardsByDriverId(Guid driverId)
