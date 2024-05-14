@@ -21,6 +21,7 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 RegisterNumber = driver.RegisterNumber,
                 DateOfBirth = driver.DateOfBirth,
                 TypeOfDriverLicense = driver.TypeOfDriverLicense,
+                CreatedAt = driver.CreatedAt,
                 Status = driver.Status
             };
         }
@@ -40,6 +41,7 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 RegisterNumber = d.RegisterNumber,
                 DateOfBirth = d.DateOfBirth,
                 TypeOfDriverLicense = d.TypeOfDriverLicense,
+                CreatedAt = d.CreatedAt,
                 Status = d.Status
 
             }).ToList();
@@ -60,6 +62,7 @@ namespace AllPhi.HoGent.RestApi.Extensions
                 RegisterNumber = driverDto.RegisterNumber,
                 DateOfBirth = driverDto.DateOfBirth,
                 TypeOfDriverLicense = driverDto.TypeOfDriverLicense,
+                CreatedAt = driverDto.CreatedAt,
                 Status = driverDto.Status
             };
         }

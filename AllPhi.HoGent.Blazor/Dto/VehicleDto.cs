@@ -24,6 +24,8 @@ namespace AllPhi.HoGent.Blazor.Dto
 
         public DateTime InspectionDate { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         public List<DriverDto>? DriversDto { get; set; }
     }
 }

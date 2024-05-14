@@ -13,6 +13,8 @@ namespace AllPhi.HoGent.RestApi.Dto
 
         public DateTime ValidityDate { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         public List<FuelCardFuelTypeDto>? FuelCardFuelTypesDto { get; set; } = new();
         public List<Driver>? Drivers { get; set; }
 

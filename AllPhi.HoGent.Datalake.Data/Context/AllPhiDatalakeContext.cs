@@ -37,6 +37,10 @@ namespace AllPhi.HoGent.Datalake.Data.Context
             modelBuilder.Entity<Driver>().Property(e => e.TypeOfDriverLicense).HasConversion<string>();
 
             modelBuilder.Entity<FuelCardFuelType>().Property(e => e.FuelType).HasConversion<string>();
+
+            modelBuilder.Entity<Vehicle>().Property(v => v.CreatedAt).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<Driver>().Property(v => v.CreatedAt).HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<FuelCard>().Property(v => v.CreatedAt).HasDefaultValueSql("GETDATE()");
         }
     }
 }

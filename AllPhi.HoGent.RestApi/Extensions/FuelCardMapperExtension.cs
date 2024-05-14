@@ -22,7 +22,8 @@ namespace AllPhi.HoGent.RestApi.Extensions
                     Id = f.Id
                 }).ToList(),
                 Drivers = fuelCard.Drivers,
-                Status = fuelCard.Status
+                Status = fuelCard.Status,
+                CreatedAt = fuelCard.CreatedAt
             };
         }
 
@@ -42,7 +43,8 @@ namespace AllPhi.HoGent.RestApi.Extensions
                     Id = f.Id
                 }).ToList(),
                 Drivers = f.Drivers,
-                Status = f.Status
+                Status = f.Status,
+                CreatedAt = f.CreatedAt
             }).ToList();
 
         }
@@ -61,7 +63,9 @@ namespace AllPhi.HoGent.RestApi.Extensions
                     FuelCardId = f.FuelCardId
                 }).ToList(),
                 Drivers = fuelCardDto.Drivers,
-                Status = fuelCardDto.Status
+                Status = fuelCardDto.Status,
+                CreatedAt = fuelCardDto.CreatedAt
+
             };
         }
     }

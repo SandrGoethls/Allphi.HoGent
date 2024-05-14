@@ -26,6 +26,8 @@ namespace AllPhi.HoGent.Blazor.Dto
 
         public Status Status { get; set; } = Status.Active;
 
+        public DateTime CreatedAt { get; set; }
+
         public List<FuelCardDto>? FuelCardDtos { get; set; }
         public List<VehicleDto>? VehicleDtos { get; set; }
     }

@@ -15,6 +15,8 @@ namespace AllPhi.HoGent.Blazor.Dto
         public List<FuelCardFuelTypeDto>? FuelCardFuelTypesDto { get; set; } = new();
         public List<DriverDto>? DriverDtos { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         public Status Status { get; set; } = Status.Active;
     }
 }

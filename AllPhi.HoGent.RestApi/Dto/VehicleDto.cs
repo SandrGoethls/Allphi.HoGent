@@ -25,6 +25,8 @@ namespace AllPhi.HoGent.RestApi.Dto
 
         public DateTime InspectionDate { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         public List<Driver>? Drivers { get; set; }
     }
 }
