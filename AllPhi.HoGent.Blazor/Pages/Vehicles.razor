@@ -441,6 +441,7 @@ else
     {
         SetBoolDefault();
 
+        _vehicleDeleted = false;
         _selectedVehicle = false;
         _addNewVehicle = true;
         _showAllCars = false;
@@ -457,7 +458,7 @@ else
         await SelectVehicle(selectedVehicle);
         ShowAllCars();
         _showDeleteConfirmation = true;
-
+        _showAllCars = false;
     }
 
     private async Task SelectVehicle(VehicleDto selectedVehicle)

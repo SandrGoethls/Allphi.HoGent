@@ -433,6 +433,7 @@ else
         SetBoolDefault();
 
         _selectedDriver = false;
+        _driverDeleted = false;
         _addNewDriver = true;
         _showAllDrivers = false;
     }
@@ -448,6 +449,7 @@ else
         await SelectDriver(driverDto);
         ShowAllDrivers();
         _showDeleteConfirmation = true;
+        _showAllDrivers = false;
 
     }
 
@@ -526,8 +528,8 @@ else
             {
                 await _driverService.DeleteDriverAsync(driverDto.Id);
 
-                _showSendConfirmation = true;
                 _driverDeleted = true;
+                _showSendConfirmation = true;
 
                 await LoadDriverListDto();
                 await InvokeAsync(StateHasChanged);

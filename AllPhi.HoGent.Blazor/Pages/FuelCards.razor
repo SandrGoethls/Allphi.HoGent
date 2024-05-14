@@ -188,6 +188,7 @@ else
                                 <div>
                                     <p>
                                         @ErrorMessage<br />
+                                        <br />
                                         Gelieve contact op te nemem met onze support via <a href="/">support@allphi.be</a>.
                                     </p>
                                 </div>
@@ -415,6 +416,7 @@ else
         SetBoolDefault();
 
         _selectedFuelCard = false;
+        _fuelCardDeleted = false;
         _addNewFuelCard = true;
         _showAllFuelCards = false;
     }
@@ -430,6 +432,7 @@ else
         await SelectFuelCard(fuelCardDto);
         ShowAllFuelcards();
         _showDeleteConfirmation = true;
+        _showAllFuelCards = false;
 
     }
 
