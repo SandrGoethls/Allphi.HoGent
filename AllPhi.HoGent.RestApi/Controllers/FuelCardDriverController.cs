@@ -65,8 +65,6 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             await _fuelCardDriverStore.UpdateFuelCardWithDriversByFuelCardIdAndDriverIds(fuelcardId, newDriverIds);
             return Ok();
-        }
-
-        
+        }        
     }
 }
