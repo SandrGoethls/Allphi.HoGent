@@ -359,6 +359,7 @@
         {
             currentStep--;
         }
+        IsFormValid();
     }
 
     void GoToNextStep()
@@ -415,6 +416,7 @@
         {
             GoToStep(step);
         }
+        IsFormValid();
     }
 
     private async Task OnChangeName(ChangeEventArgs e)

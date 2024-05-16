@@ -2,11 +2,9 @@
 @using AllPhi.HoGent.Blazor.Dto.Enums
 @using AllPhi.HoGent.Blazor.Extensions
 @inject HttpClient _http
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JS
 
 @using Newtonsoft.Json
-@inject HttpClient _http
-@inject IJSRuntime JSRuntime
 
 <style>
     .scrollable-driver-list {
@@ -138,7 +136,7 @@
 
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark form-titles" for="geboortedatum">Geboortedatum:</label>
-            <input class="form-input-select" type="date" name="geboortedatum" id="geboortedatum" onkeydown="return false;" min="@MinDate" max="@MaxDate" @oninput="@((e) => ValidateNumber(e, "dateOfBirth"))" @bind="SelectedBirthdate" />
+            <input class="form-input-select" type="date" name="geboortedatum" id="geboortedatum" min="@MinDate" max="@MaxDate" @oninput="@((e) => ValidateNumber(e, "dateOfBirth"))" @bind="SelectedBirthdate" />
         </div>
 
         <div class="col-md-12 mb-3">
@@ -492,8 +490,8 @@
         if (currentStep > WizardStep.DriverDetails)
         {
             currentStep--;
-            IsFormValid();
         }
+        IsFormValid();
     }
 
     void GoToNextStep()
@@ -528,11 +526,11 @@
 
     private void AttemptToGoToStep(int step)
     {
-        IsFormValid();
         if (_readyForNext || step < (int)currentStep)
         {
             GoToStep(step);
         }
+        IsFormValid();
     }
 
 
@@ -655,5 +653,10 @@
             else
                 _filteredListVehicleDto = Vehicles ?? new();
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("preventTypingInDateInput", "geboortedatum");
     }
 }

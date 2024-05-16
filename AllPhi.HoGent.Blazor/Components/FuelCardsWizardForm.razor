@@ -1,5 +1,6 @@
 ﻿@using AllPhi.HoGent.Blazor.Dto
 @using AllPhi.HoGent.Blazor.Dto.Enums
+@inject IJSRuntime JS
 
 <style>
     .scrollable-driver-list {
@@ -97,11 +98,11 @@
         </div>
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark" for="cardnumber">Kaartnummer:</label>
-            <input class="form-input-select" name="cardnumber" @oninput="@((e) => OnInput(e, "chassisnumber"))" id="cardnumber" @bind="SelectedCardNumber" />
+            <input class="form-input-select" name="cardnumber" @oninput="@((e) => OnInput(e, "cardnumber"))" id="cardnumber" @bind="SelectedCardNumber" />
         </div>
         <div class="col-md-12 mb-3">
             <label class="d-flex required-field-mark" for="validityday">Vervaldag:</label>
-            <input class="form-input-select" type="date" name="validityday" @oninput="@((e) => OnInput(e, "licenseplate"))" id="validityday" @bind="SelectedValidityDate" />
+            <input class="form-input-select" type="date" name="validityday" @oninput="@((e) => OnInput(e, "validityday"))" id="validityday" @bind="SelectedValidityDate" />
         </div>
     }
     else if (currentStep == WizardStep.Status)
@@ -370,6 +371,7 @@
         {
             GoToStep(step);
         }
+        IsFormValid();
     }
 
     void GoToPreviousStep()
@@ -378,6 +380,7 @@
         {
             currentStep--;
         }
+        IsFormValid();
     }
 
     void GoToNextStep()
@@ -397,8 +400,17 @@
                 SelectedCardNumber = e.Value.ToString();
             else if (field == "validityday")
                 SelectedValidityDate = DateTime.Parse(e.Value.ToString());
-            else if (field == "pin" && e.Value != null && e.Value != "")
-                SelectedPin = int.Parse(e?.Value?.ToString());
+            else if (field == "pin")
+            {
+                if (e.Value != null && e.Value != "")
+                {
+                    SelectedPin = int.Parse(e?.Value?.ToString());
+                }
+                else
+                {
+                    SelectedPin = 0;
+                }
+            }
         }
         IsFormValid();
     }
@@ -435,5 +447,10 @@
             else
                 _filteredListDriverDto = Drivers ?? new();
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("preventTypingInDateInput", "validityday");
     }
 }

@@ -16,5 +16,13 @@
     }
 }
 
+function preventTypingInDateInput(elementId) {
+    var input = document.getElementById(elementId);
+    if (input) {
+        input.addEventListener('keydown', function (e) {
+            e.preventDefault(); // Voorkomt daadwerkelijk dat de toetsaanslagen worden geaccepteerd
+        });
+    }
+}
 
 
