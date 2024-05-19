@@ -70,5 +70,43 @@ namespace AllPhi.HoGent.Testing.ApiTest
             Assert.IsType<NotFoundObjectResult>(result);
             #endregion
         }
+
+        [Fact]
+        public async Task GetFuelCardWithConnectedDriversByFuelCardId_ReturnsDrivers_WhenDriversExist()
+        {
+            #region Arrange
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
+            var fuelCardId = Guid.NewGuid(); // Gebruik een specifieke Guid die chauffeurs zal teruggeven
+            #endregion
+
+            #region Act
+            var result = await controller.GetFuelCardWithDriversByFuelCardId(fuelCardId);
+            #endregion
+
+            #region Assert
+            var actionResult = Assert.IsType<OkObjectResult>(result);
+            var returnedDrivers = Assert.IsType<List<FuelCardDriverDto>>(actionResult.Value);
+            Assert.NotEmpty(returnedDrivers);
+            #endregion
+        }
+
+        [Fact]
+        public async Task GetFuelCardWithConnectedDriversByFuelCardId_ReturnsNotFound_WhenNoDriversExist()
+        {
+            #region Arrange
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
+            var fuelCardId = Guid.Empty; // Gebruik een Guid die geen chauffeurs zal teruggeven
+            #endregion
+
+            #region Act
+            var result = await controller.GetFuelCardWithDriversByFuelCardId(fuelCardId);
+            #endregion
+
+            #region Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+            #endregion
+        }
     }
 }
