@@ -127,5 +127,24 @@ namespace AllPhi.HoGent.Testing.ApiTest
             Assert.IsType<OkResult>(result);
             #endregion
         }
+
+        [Fact]
+        public async Task UpdateFuelCardDriversByFuelCardId_ReturnsOk_WhenFuelCardDriversAreUpdated()
+        {
+            #region Arrange
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
+            var fuelCardId = Guid.NewGuid(); // Gebruik een specifieke Guid die chauffeurs zal updaten
+            var newDriverIds = new List<Guid> { Guid.NewGuid() }; // Gebruik een lijst met specifieke Guids
+            #endregion
+
+            #region Act
+            var result = await controller.UpdateFuelCardDriversByFuelCardId(fuelCardId, newDriverIds);
+            #endregion
+
+            #region Assert
+            Assert.IsType<OkResult>(result);
+            #endregion
+        }
     }
 }
