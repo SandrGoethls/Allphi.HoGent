@@ -4,6 +4,7 @@ using AllPhi.HoGent.Datalake.Data.Store;
 using AllPhi.HoGent.RestApi.Controllers;
 using AllPhi.HoGent.RestApi.Dto;
 using AllPhi.HoGent.Testing.MockData;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
@@ -56,7 +57,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
         }
 
         [Fact]
-        public async Task GetDriverWithConnectedFuelCardsByDriverId_ReturnsNotFound_WhenNoCardsExist()
+        public async Task GetDriverWithConnectedFuelCardsByDriverId_ReturnsBadRequestObjectResult_WhenNoCardsExist()
         {
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
@@ -69,7 +70,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
             #endregion
         }
 
@@ -95,7 +96,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
         }
 
         [Fact]
-        public async Task GetFuelCardWithConnectedDriversByFuelCardId_ReturnsNotFound_WhenNoDriversExist()
+        public async Task GetFuelCardWithConnectedDriversByFuelCardId_ReturnsBadRequestObjectResult_WhenNoDriversExist()
         {
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
@@ -108,7 +109,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
             #endregion
         }
 

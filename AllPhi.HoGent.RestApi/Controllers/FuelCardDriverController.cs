@@ -55,7 +55,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             {
                 if (driverId.Equals(Guid.Empty))
                 {
-                    return NotFound(new { Message = "DriverId cannot be empty." });
+                    return BadRequest(new { Message = "DriverId cannot be empty." });
                 }
 
                 var fuelCardDrivers = await _fuelCardDriverStore.GetDriverWithConnectedFuelCardsByDriverId(driverId);
@@ -80,7 +80,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             {
                 if (fuelcardId.Equals(Guid.Empty))
                 {
-                    return NotFound(new { Message = "Fuelcard ID cannot be empty." });
+                    return BadRequest(new { Message = "Fuelcard ID cannot be empty." });
                 }
 
                 var fuelCardDrivers = await _fuelCardDriverStore.GetFuelCardWithConnectedDriversByFuelCardId(fuelcardId);
