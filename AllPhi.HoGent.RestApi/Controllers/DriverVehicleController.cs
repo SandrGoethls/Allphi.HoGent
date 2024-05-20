@@ -67,6 +67,11 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             try
             {
+                if (vehicleId.Equals(Guid.Empty))
+                {
+                    return BadRequest(new { Message = "Vehicle ID not found." });
+                }
+
                 var driverVehicles = await _driverVehicleStore.GetVehicleWithConnectedDriversByVehicleId(vehicleId);
 
                 if (driverVehicles == null || !driverVehicles.Any())
