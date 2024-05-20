@@ -22,8 +22,8 @@ namespace AllPhi.HoGent.Testing.MockData
             {
                 new FuelCardDriver
                 {
-                    DriverId = new Guid("a7245037-c683-4f82-b261-5c053502ed93"),
-                    FuelCardId = new Guid("e4f8a6b1-cg6f-8ah9-c6e4-3g5h6e8g0h9f")
+                    DriverId = Guid.NewGuid(),
+                    FuelCardId = Guid.NewGuid(),
                 }
         };
 
@@ -31,22 +31,16 @@ namespace AllPhi.HoGent.Testing.MockData
 
             mock.Setup(m => m.GetDriverWithConnectedFuelCardsByDriverId(It.Is<Guid>(id => id == Guid.Empty))).ReturnsAsync(new List<FuelCardDriver>());
 
-            mock.Setup(store => store.GetDriverWithConnectedFuelCardsByDriverId(It.IsAny<Guid>())).ReturnsAsync(mockFuelCardDrivers);
-
             mock.Setup(m => m.GetAllFuelCardDriverAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Pagination?>()))
                 .ReturnsAsync((mockFuelCardDrivers, mockFuelCardDrivers.Count));
-
+            
             mock.Setup(m => m.GetFuelCardWithConnectedDriversByFuelCardId(It.IsAny<Guid>())).ReturnsAsync(mockFuelCardDrivers);
 
             mock.Setup(m => m.GetFuelCardWithConnectedDriversByFuelCardId(It.Is<Guid>(id => id == Guid.Empty))).ReturnsAsync(new List<FuelCardDriver>());
 
-            mock.Setup(m => m.UpdateDriverWithFuelCardsByDriverIdAndListOfFuelCardIds(It.IsAny<Guid>(), It.IsAny<List<Guid>>()));
+            mock.Setup(m => m.UpdateDriverWithFuelCardsByDriverIdAndListOfFuelCardIds(It.IsAny<Guid>(), It.IsAny<List<Guid>>())).Returns(Task.CompletedTask);
 
             mock.Setup(m => m.UpdateFuelCardWithDriversByFuelCardIdAndDriverIds(It.IsAny<Guid>(), It.IsAny<List<Guid>>()));
-
-            mock.Setup(m => m.UpdateDriverWithFuelCardsByDriverIdAndListOfFuelCardIds(It.Is<Guid>(id => id == Guid.Empty), It.IsAny<List<Guid>>()));
-
-            mock.Setup(m => m.UpdateFuelCardWithDriversByFuelCardIdAndDriverIds(It.Is<Guid>(id => id == Guid.Empty), It.IsAny<List<Guid>>()));
 
             return mock;
         }

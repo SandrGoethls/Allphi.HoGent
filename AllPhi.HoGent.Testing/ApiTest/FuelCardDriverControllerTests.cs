@@ -1,4 +1,5 @@
-﻿using AllPhi.HoGent.Datalake.Data.Models;
+﻿using AllPhi.HoGent.Datalake.Data.Helpers;
+using AllPhi.HoGent.Datalake.Data.Models;
 using AllPhi.HoGent.Datalake.Data.Store;
 using AllPhi.HoGent.RestApi.Controllers;
 using AllPhi.HoGent.RestApi.Dto;
@@ -28,9 +29,9 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            var actionResult = Assert.IsType<OkObjectResult>(result);
-            var fuelCardDriverListDto = Assert.IsType<List<FuelCardDriverListDto>>(actionResult.Value);
-            Assert.NotEmpty(fuelCardDriverListDto);
+            var actionResult = Assert.IsType<OkObjectResult>(result.Result);
+            var fuelCardDriverListDto = Assert.IsType<FuelCardDriverListDto>(actionResult.Value);
+            Assert.IsType<FuelCardDriverListDto>(fuelCardDriverListDto);
             #endregion
         }
 
@@ -49,7 +50,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
 
             #region Assert
             var actionResult = Assert.IsType<OkObjectResult>(result);
-            var returnedFuelCards = Assert.IsType<List<FuelCardDriver>>(actionResult.Value);
+            var returnedFuelCards = Assert.IsType<List<FuelCardDriverDto>>(actionResult.Value);
             Assert.NotEmpty(returnedFuelCards);
             #endregion
         }
@@ -60,7 +61,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var driverId = new Guid("c2d6e4f9-af4f-68f7-a4c2-1e3f4c6e8c7e");
+            var driverId = Guid.Empty;
             #endregion
 
             #region Act
@@ -78,7 +79,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var fuelCardId = new Guid("e4f8a6b1-cg6f-8ah9-c6e4-3g5h6e8g0h9f");
+            var fuelCardId = Guid.NewGuid();
             #endregion
 
             #region Act
@@ -87,7 +88,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
 
             #region Assert
             var actionResult = Assert.IsType<OkObjectResult>(result);
-            var returnedDrivers = Assert.IsType<List<FuelCardDriver>>(actionResult.Value);
+            var returnedDrivers = Assert.IsType<List<FuelCardDriverDto>>(actionResult.Value);
             Assert.NotEmpty(returnedDrivers);
             #endregion
 
@@ -98,11 +99,11 @@ namespace AllPhi.HoGent.Testing.ApiTest
         {
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardId = Guid.Empty;
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var fuelCardId = new Guid("d3e7f5a0-bf5f-79g8-b5d3-2f4g5d7f9d8g");
             #endregion
 
-            #region Act
+            #region Act           
             var result = await controller.GetFuelCardWithDriversByFuelCardId(fuelCardId);
             #endregion
 
@@ -119,11 +120,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
             var driverId = new Guid("a7245037-c683-4f82-b261-5c053502ed93");
 
-            var newFuelCardIds = new List<Guid>{
-                                        new Guid("e4f8a6b1-cg6f-8ah9-c6e4-3g5h6e8g0h9f"),
-                                        new Guid("f5b7598d-6c26-4ef4-ba0e-48210d8c28bf"),
-                                        new Guid("a7a24c2f-7358-4c86-ba47-d13a8f69f892") 
-                                          };
+            var newFuelCardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -141,12 +138,8 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var fuelCardId = new Guid("e4f8a6b1-cg6f-8ah9-c6e4-3g5h6e8g0h9f");
-            var newDriverIds = new List<Guid>{ 
-                                        new Guid("6b01c497-9cfd-487d-bae1-37d5c9e6ef16"),
-                                        new Guid("eedeb2a2-81b1-4b7d-847d-19fc38f2d2ad"), 
-                                        new Guid("f5b7598d-6c26-4ef4-ba0e-48210d8c28bf") 
-                                          };
+            var fuelCardId = Guid.NewGuid();
+            var newDriverIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -165,11 +158,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
             var driverId = Guid.Empty;
-            var newFuelCardIds = new List<Guid>{
-                                        new Guid("e4f8a6b1-cg6f-8ah9-c6e4-3g5h6e8g0h9f"),
-                                        new Guid("f5b7598d-6c26-4ef4-ba0e-48210d8c28bf"),
-                                        new Guid("a7a24c2f-7358-4c86-ba47-d13a8f69f892")
-                                          };
+            var newFuelCardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -177,7 +166,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<BadRequestResult>(result);
+            Assert.IsType<NotFoundObjectResult>(result);
             #endregion
         }
 
@@ -188,11 +177,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
             var fuelCardId = Guid.Empty;
-            var newDriverIds = new List<Guid>{
-                                        new Guid("6b01c497-9cfd-487d-bae1-37d5c9e6ef16"),
-                                        new Guid("eedeb2a2-81b1-4b7d-847d-19fc38f2d2ad"),
-                                        new Guid("f5b7598d-6c26-4ef4-ba0e-48210d8c28bf")
-                                          };
+            var newDriverIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -200,7 +185,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<BadRequestResult>(result);
+            Assert.IsType<NotFoundObjectResult>(result);
             #endregion
         }
     }

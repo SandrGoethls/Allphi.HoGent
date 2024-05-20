@@ -87,7 +87,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             var result = await controller.GetAllDrivers();
 
             // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
+            Assert.IsType<NotFoundResult>(result.Result);
         }
 
         // <========================================================>
@@ -109,7 +109,8 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 City = "Zele",
                 HouseNumber = "400",
                 PostalCode = "4000NA",
-                RegisterNumber = "444555",
+                RegisterNumber = "95052329179",
+                DateOfBirth = new DateTime(1995, 05, 23),
                 Street = "Kortstraat",
                 TypeOfDriverLicense = TypeOfDriverLicense.B
             };
