@@ -98,7 +98,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             try
             {
-                if (driverId == Guid.Empty)
+                if (driverId.Equals(Guid.Empty))
                 {
                     return BadRequest(new { Message = "Driver ID cannot be empty." });
                 }
@@ -127,7 +127,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             try
             {
-                if (vehicleId == Guid.Empty)
+                if (vehicleId.Equals(Guid.Empty))
                 {
                     return BadRequest(new { Message = "Vehicle ID cannot be empty." });
                 }

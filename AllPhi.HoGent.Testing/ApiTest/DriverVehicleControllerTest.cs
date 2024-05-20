@@ -94,7 +94,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
         }
 
         [Fact]
-        public async Task GetVehicleWithConnectedDriversByVehicleId_ReturnsObjectNotFound_WhenNoDriversExist()
+        public async Task GetVehicleWithConnectedDriversByVehicleId_ReturnsBadRequestObjectResult_WhenNoDriversExist()
         {
             #region Arrange
             var driverVehicleStoreMock = DriverVehicleStoreMock.GetDriverVehicleStoreMock();
@@ -107,7 +107,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            var actionResult = Assert.IsType<NotFoundObjectResult>(result.Result);
+            var actionResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             #endregion
         }
 
