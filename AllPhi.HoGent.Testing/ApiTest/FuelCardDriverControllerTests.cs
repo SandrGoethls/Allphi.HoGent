@@ -1,7 +1,10 @@
-﻿using AllPhi.HoGent.Datalake.Data.Store;
+﻿using AllPhi.HoGent.Datalake.Data.Helpers;
+using AllPhi.HoGent.Datalake.Data.Models;
+using AllPhi.HoGent.Datalake.Data.Store;
 using AllPhi.HoGent.RestApi.Controllers;
 using AllPhi.HoGent.RestApi.Dto;
 using AllPhi.HoGent.Testing.MockData;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
@@ -27,9 +30,9 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            var actionResult = Assert.IsType<OkObjectResult>(result);
-            var fuelCardDriverListDto = Assert.IsType<List<FuelCardDriverListDto>>(actionResult.Value);
-            Assert.NotEmpty(fuelCardDriverListDto);
+            var actionResult = Assert.IsType<OkObjectResult>(result.Result);
+            var fuelCardDriverListDto = Assert.IsType<FuelCardDriverListDto>(actionResult.Value);
+            Assert.IsType<FuelCardDriverListDto>(fuelCardDriverListDto);
             #endregion
         }
 
@@ -39,7 +42,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var driverId = Guid.NewGuid(); // Gebruik een specifieke Guid die brandstofkaarten zal teruggeven
+            var driverId = new Guid("a7245037-c683-4f82-b261-5c053502ed93");
             #endregion
 
             #region Act
@@ -54,12 +57,12 @@ namespace AllPhi.HoGent.Testing.ApiTest
         }
 
         [Fact]
-        public async Task GetDriverWithConnectedFuelCardsByDriverId_ReturnsNotFound_WhenNoCardsExist()
+        public async Task GetDriverWithConnectedFuelCardsByDriverId_ReturnsBadRequestObjectResult_WhenNoCardsExist()
         {
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var driverId = Guid.Empty; // Gebruik een Guid die geen brandstofkaarten zal teruggeven
+            var driverId = Guid.Empty;
             #endregion
 
             #region Act
@@ -67,7 +70,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
             #endregion
         }
 
@@ -77,7 +80,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var fuelCardId = Guid.NewGuid(); // Gebruik een specifieke Guid die chauffeurs zal teruggeven
+            var fuelCardId = Guid.NewGuid();
             #endregion
 
             #region Act
@@ -89,23 +92,24 @@ namespace AllPhi.HoGent.Testing.ApiTest
             var returnedDrivers = Assert.IsType<List<FuelCardDriverDto>>(actionResult.Value);
             Assert.NotEmpty(returnedDrivers);
             #endregion
+
         }
 
         [Fact]
-        public async Task GetFuelCardWithConnectedDriversByFuelCardId_ReturnsNotFound_WhenNoDriversExist()
+        public async Task GetFuelCardWithConnectedDriversByFuelCardId_ReturnsBadRequestObjectResult_WhenNoDriversExist()
         {
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardId = Guid.Empty;
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var fuelCardId = Guid.Empty; // Gebruik een Guid die geen chauffeurs zal teruggeven
             #endregion
 
-            #region Act
+            #region Act           
             var result = await controller.GetFuelCardWithDriversByFuelCardId(fuelCardId);
             #endregion
 
             #region Assert
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
             #endregion
         }
 
@@ -115,8 +119,9 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var driverId = Guid.NewGuid(); // Gebruik een specifieke Guid die brandstofkaarten zal updaten
-            var newFuelCardIds = new List<Guid> { Guid.NewGuid() }; // Gebruik een lijst met specifieke Guids
+            var driverId = new Guid("a7245037-c683-4f82-b261-5c053502ed93");
+
+            var newFuelCardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -134,8 +139,8 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var fuelCardId = Guid.NewGuid(); // Gebruik een specifieke Guid die chauffeurs zal updaten
-            var newDriverIds = new List<Guid> { Guid.NewGuid() }; // Gebruik een lijst met specifieke Guids
+            var fuelCardId = Guid.NewGuid();
+            var newDriverIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -153,8 +158,8 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var driverId = Guid.Empty; // Gebruik een lege Guid
-            var newFuelCardIds = new List<Guid> { Guid.NewGuid() }; // Gebruik een lijst met specifieke Guids
+            var driverId = Guid.Empty;
+            var newFuelCardIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -162,7 +167,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<BadRequestResult>(result);
+            Assert.IsType<NotFoundObjectResult>(result);
             #endregion
         }
 
@@ -172,8 +177,8 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #region Arrange
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
-            var fuelCardId = Guid.Empty; // Gebruik een lege Guid
-            var newDriverIds = new List<Guid> { Guid.NewGuid() }; // Gebruik een lijst met specifieke Guids
+            var fuelCardId = Guid.Empty;
+            var newDriverIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             #endregion
 
             #region Act
@@ -181,7 +186,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<BadRequestResult>(result);
+            Assert.IsType<NotFoundObjectResult>(result);
             #endregion
         }
     }

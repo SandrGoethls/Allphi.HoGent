@@ -34,7 +34,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             }
 
             var (drivers, count) = await _driverStore.GetAllDriversAsync(sortBy, isAscending, pagination);
-            if (drivers == null)
+            if (count <= 0)
             {
                 return NotFound();
             }
@@ -44,6 +44,9 @@ namespace AllPhi.HoGent.RestApi.Controllers
                 DriverDtos = MapToDriverListDto(drivers),
                 TotalItems = count
             };
+
+
+
             return Ok(driverListDtos);
         }
 
