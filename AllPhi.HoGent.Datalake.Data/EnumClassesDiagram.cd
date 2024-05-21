@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Enum Name="AllPhi.HoGent.Datalake.Data.Models.Enums.CarBrand">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAACAQAwAAMACAAAQAAAEEAAAAAAAAABAAEghAgCI=</HashCode>
+      <FileName>Models\Enums\CarBrand.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AllPhi.HoGent.Datalake.Data.Models.Enums.FuelType">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAAAAgAgAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Enums\FuelType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AllPhi.HoGent.Datalake.Data.Models.Enums.NumberOfDoors">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAAAAAAAAAAAAAAAACAAAAABhAAAAAAA=</HashCode>
+      <FileName>Models\Enums\NumberOfDoors.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AllPhi.HoGent.Datalake.Data.Models.Enums.Status">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Enums\Status.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AllPhi.HoGent.Datalake.Data.Models.Enums.TypeOfCar">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAABAkAAAhAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Models\Enums\TypeOfCar.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AllPhi.HoGent.Datalake.Data.Models.Enums.TypeOfDriverLicense">
+    <Position X="2.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAADCAAAAABAAAAACAAAAAEAJAAAApAEEAAA=</HashCode>
+      <FileName>Models\Enums\TypeOfDriverLicense.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AllPhi.HoGent.Datalake.Data.Models.Enums.VehicleColor">
+    <Position X="4.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAGAAAAAAAAAgAAAAAAAAAABAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Models\Enums\VehicleColor.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
