@@ -28,7 +28,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             {
                 return NotFound();
             }
-            
+
             var driverVehicleListDtos = new DriverVehicleListDto
             {
                 DriverVehicleDtos = MapToDriverVehicleListDto(driverVehicles),
@@ -40,39 +40,115 @@ namespace AllPhi.HoGent.RestApi.Controllers
         [HttpGet("getdriverwithvehiclesbydriverid/{driverId}")]
         public async Task<ActionResult<DriverVehicleListDto>> GetDriverWithVehiclesByDriverId(Guid driverId)
         {
-            var driverVehicles = await _driverVehicleStore.GetDriverWithConnectedVehicleByDriverId(driverId);
-            if (driverVehicles == null)
+            try
             {
-                return NotFound();
+                if (driverId.Equals(Guid.Empty))
+                {
+                    return BadRequest(new { Message = "DriverId cannot be empty." });
+                }
+
+                var driverVehicles = await _driverVehicleStore.GetDriverWithConnectedVehicleByDriverId(driverId);
+
+                if (!driverVehicles.Any())
+                {
+                    return NotFound(new { Message = "No vehicles to be found." });
+                }
+
+                return Ok(MapToDriverVehicleListDto(driverVehicles));
             }
-            return Ok(MapToDriverVehicleListDto(driverVehicles));
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred.", Detail = ex.Message });
+            }
         }
 
         [HttpGet("getvehiclewithdrivers/{vehicleId}")]
         public async Task<ActionResult<DriverVehicleListDto>> GetVehicleWithDriversByVehicleId(Guid vehicleId)
         {
-            var driverVehicles = await _driverVehicleStore.GetVehicleWithConnectedDriversByVehicleId(vehicleId);
-            if (driverVehicles == null)
+            try
             {
-                return NotFound();
-            }
+                if (vehicleId.Equals(Guid.Empty))
+                {
+                    return BadRequest(new { Message = "Vehicle ID not found." });
+                }
 
-            var driverVehicleDtos = MapToDriverVehicleListDto(driverVehicles);
-            return Ok(driverVehicleDtos);
+                var driverVehicles = await _driverVehicleStore.GetVehicleWithConnectedDriversByVehicleId(vehicleId);
+
+                if (driverVehicles == null || !driverVehicles.Any())
+                {
+                    return NotFound(new { Message = "No drivers found for this vehicle ID." });
+                }
+
+                var driverVehicleDtos = MapToDriverVehicleListDto(driverVehicles);
+                return Ok(driverVehicleDtos);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { Message = "Vehicle not found." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred.", Detail = ex.Message });
+            }
         }
+
 
         [HttpPost("updatedrivervehiclesbydriverid/{driverId}")]
         public async Task<IActionResult> UpdateDriverVehiclesByDriverId(Guid driverId, [FromBody] List<Guid> newVehicleIds)
         {
-            await _driverVehicleStore.UpdateDriverWithVehiclesByDriverIdAndListOfVehicleIds(driverId, newVehicleIds);
-            return Ok();
+            try
+            {
+                if (driverId.Equals(Guid.Empty))
+                {
+                    return BadRequest(new { Message = "Driver ID cannot be empty." });
+                }
+
+                if (newVehicleIds == null || !newVehicleIds.Any())
+                {
+                    return BadRequest(new { Message = "Vehicle IDs list cannot be null or empty." });
+                }
+
+                await _driverVehicleStore.UpdateDriverWithVehiclesByDriverIdAndListOfVehicleIds(driverId, newVehicleIds);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { Message = "Driver not found." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred.", Detail = ex.Message });
+            }
         }
+
 
         [HttpPost("updatevehicledriversbyvehicleid/{vehicleId}")]
         public async Task<IActionResult> UpdateVehicleDriversByVehicleId(Guid vehicleId, [FromBody] List<Guid> newDriverIds)
         {
-            await _driverVehicleStore.UpdateVehicleWithDriversByFuelCardIdAndDriverIds(vehicleId, newDriverIds);
-            return Ok();
+            try
+            {
+                if (vehicleId.Equals(Guid.Empty))
+                {
+                    return BadRequest(new { Message = "Vehicle ID cannot be empty." });
+                }
+
+                if (newDriverIds == null || !newDriverIds.Any())
+                {
+                    return BadRequest(new { Message = "Driver IDs list cannot be null or empty." });
+                }
+
+                await _driverVehicleStore.UpdateVehicleWithDriversByFuelCardIdAndDriverIds(vehicleId, newDriverIds);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { Message = "Vehicle not found." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred.", Detail = ex.Message });
+            }
         }
+
     }
 }
