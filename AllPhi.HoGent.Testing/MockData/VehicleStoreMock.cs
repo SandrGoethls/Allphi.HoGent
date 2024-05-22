@@ -18,7 +18,7 @@ namespace AllPhi.HoGent.Testing.MockData
             var mock = new Mock<IVehicleStore>();
 
             var mockVehicle_1 = new Vehicle
-            {               
+            {
                 Id = new Guid("a7245037-c683-4f82-b261-5c053502ed93"),
                 ChassisNumber = "123456789",
                 LicensePlate = "1-ABC-123",
@@ -46,6 +46,8 @@ namespace AllPhi.HoGent.Testing.MockData
                 InspectionDate = DateTime.Now.AddYears(-1),
                 CreatedAt = DateTime.Now.AddYears(-2)
             };
+
+            mock.Setup(x => x.GetVehicleByIdAsync(mockVehicle_1.Id)).ReturnsAsync(mockVehicle_1);
 
             return mock;
         }

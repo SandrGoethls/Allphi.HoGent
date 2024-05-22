@@ -54,7 +54,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            Assert.IsType<NotFoundResult>(result.Result);
+            Assert.IsType<NotFoundObjectResult>(result.Result);
             #endregion
         }
 

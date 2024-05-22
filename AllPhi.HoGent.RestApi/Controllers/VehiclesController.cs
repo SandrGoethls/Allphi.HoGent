@@ -28,45 +28,83 @@ namespace AllPhi.HoGent.RestApi.Controllers
         [HttpGet("getvehiclebyid/{vehicleId}")]
         public async Task<ActionResult<VehicleDto>> GetVehicleById(Guid vehicleId)
         {
-            Vehicle vehicle = await _vehicleStore.GetVehicleByIdAsync(vehicleId);
-            if (vehicle == null)
+            try
             {
-                return NotFound();
+                if (vehicleId == null || vehicleId.Equals(Guid.Empty))
+                {
+                    return NotFound(new { message = "VehicleId is empty." });
+                }
+
+                Vehicle vehicle = await _vehicleStore.GetVehicleByIdAsync(vehicleId);
+
+                if (vehicle == null)
+                {
+                    return NotFound(new { message = "Vehicle not found." });
+                }
+
+                VehicleDto vehicleDto = MapToVehicleDto(vehicle);
+                return Ok(vehicleDto);
             }
-            VehicleDto vehicleDto = MapToVehicleDto(vehicle);
-            return Ok(vehicleDto);
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
 
-        
+
         [HttpGet("getallvehicles")]
-        public async Task<ActionResult<VehicleListDto>> GetAllVehicles([FromQuery] string? searchByLicencePlate, 
-                                                                       [FromQuery] string? searchByChassisNumber, 
-                                                                       [FromQuery][Optional] string? sortBy, 
-                                                                       [FromQuery][Optional] bool isAscending, 
-                                                                       [FromQuery] int? pageNumber = null, 
+        public async Task<ActionResult<VehicleListDto>> GetAllVehicles([FromQuery] string? searchByLicencePlate,
+                                                                       [FromQuery] string? searchByChassisNumber,
+                                                                       [FromQuery][Optional] string? sortBy,
+                                                                       [FromQuery][Optional] bool isAscending,
+                                                                       [FromQuery] int? pageNumber = null,
                                                                        [FromQuery] int? pageSize = null)
         {
-            FilterVehicle? filterVehicle = new() { SearchByLicencePlate = searchByLicencePlate ?? "", SearchByChassisNumber = searchByChassisNumber ?? ""};
-
-            Pagination? pagination = null;
-            if (pageNumber.HasValue && pageSize.HasValue)
+            try
             {
-                pagination = new Pagination ( pageNumber.Value, pageSize.Value );
+
+                FilterVehicle? filterVehicle = new() { SearchByLicencePlate = searchByLicencePlate ?? "", SearchByChassisNumber = searchByChassisNumber ?? "" };
+
+                Pagination? pagination = null;
+                if (pageNumber.HasValue && pageSize.HasValue)
+                {
+                    pagination = new Pagination(pageNumber.Value, pageSize.Value);
+                }
+
+                var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync(filterVehicle, sortBy, isAscending, pagination);
+                if (vehicles == null)
+                {
+                    return NotFound();
+                }
+
+                var vehicleListDto = new VehicleListDto
+                {
+                    VehicleDtos = MapToVehicleListDto(vehicles),
+                    TotalItems = count
+                };
+
+                return Ok(vehicleListDto);
             }
-
-            var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync(filterVehicle, sortBy, isAscending, pagination);
-            if (vehicles == null)
+            catch (ArgumentException ex)
             {
-                return NotFound();
+                return BadRequest(new { message = ex.Message });
             }
-
-            var vehicleListDto = new VehicleListDto
+            catch (InvalidOperationException ex)
             {
-                VehicleDtos = MapToVehicleListDto(vehicles),
-                TotalItems = count 
-            };
-
-            return Ok(vehicleListDto);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPost("addvehicle")]
@@ -75,7 +113,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
             if (_vehicleStore.VehicleWithChassisNumberExists(vehicleDto.ChassisNumber))
             {
                 return BadRequest("Vehicle with this chassis number already exists");
-                
+
             }
             if (_vehicleStore.VehicleWithLicensePlateExists(vehicleDto.LicensePlate))
             {
@@ -120,6 +158,6 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         //[HttpGet("getvehicleincludeddriversbydriverid/{vehicleId}")]
-        
+
     }
 }

@@ -28,10 +28,16 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             try
             {
+                if (fuelcardId == null || fuelcardId.Equals(Guid.Empty))
+                {
+                    return NotFound("FuelcardId is empty");
+                }
+
                 var fuelCard = await _fuelCardStore.GetFuelCardByFuelCardIdAsync(fuelcardId);
+
                 if (fuelCard == null)
                 {
-                    return NotFound();
+                    return NotFound("No fuelcards found.");
                 }
 
                 FuelCardDto fuelCardDto = MapToFuelCardDto(fuelCard);
@@ -39,17 +45,14 @@ namespace AllPhi.HoGent.RestApi.Controllers
             }
             catch (ArgumentNullException ex)
             {
-                // Handle specific exception (e.g., if fuelcardId is null)
                 return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
             {
-                // Handle specific exception (e.g., if the operation is invalid)
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                // Handle any other exception
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
