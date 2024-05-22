@@ -22,7 +22,7 @@ namespace AllPhi.HoGent.Datalake.Data.Models
 
         public FuelType FuelType { get; set; } = FuelType.Benzine;
 
-        public TypeOfCar TypeOfCar { get; set; } = TypeOfCar.PassangerCar;
+        public TypeOfCar TypeOfCar { get; set; } = TypeOfCar.PassengerCar;
 
         public VehicleColor VehicleColor { get; set; } = VehicleColor.Black;
 

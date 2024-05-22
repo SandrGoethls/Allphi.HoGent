@@ -2,7 +2,7 @@
 {
     public enum TypeOfCar
     {
-        PassangerCar = 1,
+        PassengerCar = 1,
         Van = 2,
         SUV = 3,
         Hatchback = 4,

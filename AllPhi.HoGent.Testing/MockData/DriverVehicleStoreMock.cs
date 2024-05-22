@@ -1,5 +1,4 @@
-﻿using AllPhi.HoGent.Datalake.Data.Models.Enums;
-using AllPhi.HoGent.Datalake.Data.Models;
+﻿using AllPhi.HoGent.Datalake.Data.Models;
 using AllPhi.HoGent.Datalake.Data.Store;
 using Moq;
 using System;
@@ -40,7 +39,8 @@ namespace AllPhi.HoGent.Testing.MockData
             mock.Setup(x => x.UpdateDriverWithVehiclesByDriverIdAndListOfVehicleIds(It.IsAny<Guid>(), It.IsAny<List<Guid>>()))
                                                                                     .Returns(Task.CompletedTask);
 
-            mock.Setup(x => x.UpdateVehicleWithDriversByFuelCardIdAndDriverIds(It.IsAny<Guid>(), It.IsAny<List<Guid>>())).Returns(Task.CompletedTask);
+            mock.Setup(x => x.UpdateVehicleWithDriversByFuelCardIdAndDriverIds(It.IsAny<Guid>(), It.IsAny<List<Guid>>()))
+                                                                                    .Returns(Task.CompletedTask);
 
             return mock;
         }
