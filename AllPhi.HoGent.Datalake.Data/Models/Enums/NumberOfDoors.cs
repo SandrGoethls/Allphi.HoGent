@@ -9,11 +9,8 @@ namespace AllPhi.HoGent.Datalake.Data.Models.Enums
 {
     public enum NumberOfDoors
     {
-        [Display(Name = "1 deur")]
-        OneDoor = 1,
-
         [Display(Name = "2 deuren")]
-        TwooDoors = 2,
+        TwoDoors = 2,
 
         [Display(Name = "3 deuren")]
         ThreeDoors = 3,
