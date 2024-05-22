@@ -26,46 +26,84 @@ namespace AllPhi.HoGent.RestApi.Controllers
         [HttpGet("getfuelcardbyid/{fuelcardId}")]
         public async Task<ActionResult<FuelCardDto>> GetFuelCardById(Guid fuelcardId)
         {
-            var fuelCard = await _fuelCardStore.GetFuelCardByFuelCardIdAsync(fuelcardId);
-            if (fuelCard == null)
+            try
             {
-                return NotFound();
+                var fuelCard = await _fuelCardStore.GetFuelCardByFuelCardIdAsync(fuelcardId);
+                if (fuelCard == null)
+                {
+                    return NotFound();
+                }
+
+                FuelCardDto fuelCardDto = MapToFuelCardDto(fuelCard);
+                return Ok(fuelCardDto);
             }
-            FuelCardDto fuelCardDto = MapToFuelCardDto(fuelCard);
-            return Ok(fuelCardDto);
+            catch (ArgumentNullException ex)
+            {
+                // Handle specific exception (e.g., if fuelcardId is null)
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle specific exception (e.g., if the operation is invalid)
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Handle any other exception
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
+
 
         [HttpGet("getallfuelcards")]
         public async Task<ActionResult<FuelCardListDto>> GetAllFuelCards([FromQuery] string? searchByCardNumber,
-                                                                         [FromQuery][Optional] string? sortBy, 
-                                                                         [FromQuery][Optional] bool isAscending, 
-                                                                         [FromQuery] int? pageNumber = null, 
+                                                                         [FromQuery][Optional] string? sortBy,
+                                                                         [FromQuery][Optional] bool isAscending,
+                                                                         [FromQuery] int? pageNumber = null,
                                                                          [FromQuery] int? pageSize = null)
         {
-            FilterFuelCard? filterFuelCard = new() { SearchByCardNumber = searchByCardNumber ?? "" };
-
-            Pagination? pagination = null;
-            if (pageNumber.HasValue && pageSize.HasValue)
+            try
             {
-                pagination = new Pagination(pageNumber.Value, pageSize.Value);
+                FilterFuelCard? filterFuelCard = new() { SearchByCardNumber = searchByCardNumber ?? "" };
+
+                Pagination? pagination = null;
+                if (pageNumber.HasValue && pageSize.HasValue)
+                {
+                    pagination = new Pagination(pageNumber.Value, pageSize.Value);
+                }
+
+                var (fuelCards, count) = await _fuelCardStore.GetAllFuelCardsAsync(filterFuelCard, sortBy, isAscending, pagination);
+
+                if (fuelCards == null || fuelCards.Count <= 0)
+                {
+                    return NotFound();
+                }
+
+                var fuelCardListDtos = new FuelCardListDto
+                {
+                    FuelCardDtos = MapToFuelCardListDto(fuelCards),
+                    TotalItems = count
+                };
+
+                return Ok(fuelCardListDtos);
             }
-
-            var (fuelCards, count) = await _fuelCardStore.GetAllFuelCardsAsync(filterFuelCard, sortBy, isAscending, pagination);
-            if (fuelCards == null)
+            catch (ArgumentException ex)
             {
-                return NotFound();
+                return BadRequest(new { message = ex.Message });
             }
-
-            var fuelCardListDtos = new FuelCardListDto
+            catch (InvalidOperationException ex)
             {
-                FuelCardDtos = MapToFuelCardListDto(fuelCards),
-                TotalItems = count
-            };
-            return Ok(fuelCardListDtos);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
 
+
         [HttpPost("addfuelcard")]
-        public async Task<IActionResult> AddFuelCard([FromBody]FuelCardDto fuelCardDto)
+        public async Task<IActionResult> AddFuelCard([FromBody] FuelCardDto fuelCardDto)
         {
             FuelCard fuelCard = MapToFuelCard(fuelCardDto);
             await _fuelCardStore.AddFuelCard(fuelCard);

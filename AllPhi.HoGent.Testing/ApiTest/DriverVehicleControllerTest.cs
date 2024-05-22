@@ -69,7 +69,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
 
             #region Assert
-            var actionResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
             #endregion
         }
 
