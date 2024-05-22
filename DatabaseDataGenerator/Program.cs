@@ -104,7 +104,7 @@ namespace DatabaseDataGenerator
 
         private static string GenerateRandomString(int length)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string chars = "0123456789";
             var stringChars = new char[length];
             for (int i = 0; i < length; i++)
             {
