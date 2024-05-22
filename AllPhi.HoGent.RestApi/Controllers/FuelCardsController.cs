@@ -105,40 +105,130 @@ namespace AllPhi.HoGent.RestApi.Controllers
         [HttpPost("addfuelcard")]
         public async Task<IActionResult> AddFuelCard([FromBody] FuelCardDto fuelCardDto)
         {
-            FuelCard fuelCard = MapToFuelCard(fuelCardDto);
-            await _fuelCardStore.AddFuelCard(fuelCard);
-            return Ok();
+            try
+            {
+                if (fuelCardDto == null)
+                {
+                    return BadRequest(new { message = "FuelCardDto cannot be null." });
+                }
+
+                FuelCard fuelCard = MapToFuelCard(fuelCardDto);
+                await _fuelCardStore.AddFuelCard(fuelCard);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
 
+
         [HttpPost("updatefuelcard")]
-        public async Task<IActionResult> UpdateFuelCard(FuelCardDto fuelCard)
+        public async Task<IActionResult> UpdateFuelCard([FromBody] FuelCardDto fuelCardDto)
         {
-            FuelCard fuelCardModel = MapToFuelCard(fuelCard);
-            await _fuelCardStore.UpdateFuelCard(fuelCardModel);
-            return Ok();
+            try
+            {
+                if (fuelCardDto == null)
+                {
+                    return BadRequest(new { message = "FuelCardDto cannot be null." });
+                }
+
+                FuelCard fuelCardModel = MapToFuelCard(fuelCardDto);
+                await _fuelCardStore.UpdateFuelCard(fuelCardModel);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
 
         [HttpDelete("deletefuelcard/{fuelcardid}")]
         public async Task<IActionResult> DeleteFuelCard(Guid fuelcardid)
         {
-            await _fuelCardStore.RemoveFuelCard(fuelcardid);
-            return Ok();
+            try
+            {
+                if (fuelcardid.Equals(Guid.Empty))
+                {
+                    return NotFound(new { Message = "Fuelcard Id cannot be null." });
+                }
+
+                await _fuelCardStore.RemoveFuelCard(fuelcardid);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
+
 
         [HttpGet("getfuelcardincludeddriversbyfuelcardid/{fuelcardId}")]
         public async Task<ActionResult<FuelCardDto>> GetFuelCardIncludedDriversByFuelCardId(Guid fuelcardId)
         {
-            FuelCard fuelCard = await _fuelCardStore.GetFuelCardByFuelCardIdAsync(fuelcardId);
-            List<FuelCardDriver> fuelCardDriver = await _fuelCardDriverStore.GetFuelCardWithConnectedDriversByFuelCardId(fuelcardId);
-
-            if (fuelCard == null)
+            try
             {
-                return NotFound();
-            }
+                FuelCard fuelCard = await _fuelCardStore.GetFuelCardByFuelCardIdAsync(fuelcardId);
+                List<FuelCardDriver> fuelCardDriver = await _fuelCardDriverStore.GetFuelCardWithConnectedDriversByFuelCardId(fuelcardId);
 
-            FuelCardDto fuelCardDto = MapToFuelCardDto(fuelCard);
-            fuelCardDto.Drivers = fuelCardDriver.Select(x => x.Driver).ToList();
-            return Ok(fuelCardDto);
+                if (fuelCard == null || fuelCard.Equals(Guid.Empty))
+                {
+                    return NotFound(new { Message = "Fuelcard Id cannot be null." });
+                }
+
+                FuelCardDto fuelCardDto = MapToFuelCardDto(fuelCard);
+                fuelCardDto.Drivers = fuelCardDriver.Select(x => x.Driver).ToList();
+
+                return Ok(fuelCardDto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
         }
     }
 }

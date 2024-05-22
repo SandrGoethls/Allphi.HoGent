@@ -98,5 +98,174 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
         }
 
+        [Fact]
+        public async Task AddFuelCard_ReturnsOk_WhenFuelCardIsSuccessfullyAdded()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            var fuelCardToAdd = new FuelCardDto
+            {
+                Id = Guid.NewGuid(),
+                Pin = 1234,
+                ValidityDate = DateTime.Now.AddYears(2),
+                CreatedAt = DateTime.Now.AddYears(-2),
+                CardNumber = "123456789",
+                Status = Status.Active
+            };
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.AddFuelCard(fuelCardToAdd);
+            #endregion
+
+            #region Assert
+            Assert.IsType<OkResult>(result);
+            #endregion
+        }
+
+        [Fact]
+        public async Task AddFuelCard_ReturnsBadRequest_WhenFuelCardDtoIsNull()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.AddFuelCard(null);
+            #endregion
+
+            #region Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+            #endregion
+        }
+
+        [Fact]
+        public async Task UpdateFuelCard_ReturnsOk_WhenFuelCardIsSuccessfullyUpdated()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            var fuelCardToUpdate = new FuelCardDto
+            {
+                Id = Guid.NewGuid(),
+                Pin = 1234,
+                ValidityDate = DateTime.Now.AddYears(2),
+                CreatedAt = DateTime.Now.AddYears(-2),
+                CardNumber = "123456789",
+                Status = Status.Active
+            };
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.UpdateFuelCard(fuelCardToUpdate);
+            #endregion
+
+            #region Assert
+            Assert.IsType<OkResult>(result);
+            #endregion
+        }
+
+        [Fact]
+        public async Task UpdateFuelCard_ReturnsBadRequest_WhenFuelCardDtoIsNull()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.UpdateFuelCard(null);
+            #endregion
+
+            #region Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+            #endregion
+        }
+
+        [Fact]
+        public async Task DeleteFuelCard_ReturnsOk_WhenFuelCardIsSuccessfullyDeleted()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            var fuelCardId = new Guid("a7245037-c683-4f82-b261-5c053502ed93");
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.DeleteFuelCard(fuelCardId);
+            #endregion
+
+            #region Assert
+            Assert.IsType<OkResult>(result);
+            #endregion
+        }
+
+        [Fact]
+        public async Task DeleteFuelCard_ReturnsNotFound_WhenFuelCardDoesNotExist()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            fuelCardStoreMock?.Setup(store => store.GetFuelCardByFuelCardIdAsync(It.IsAny<Guid>()))
+                          .ReturnsAsync((FuelCard)null);
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.DeleteFuelCard(Guid.Empty);
+            #endregion
+
+            #region Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+            #endregion
+        }
+
+        [Fact]
+        public async Task GetFuelCardIncludedDriversByFuelCardId_ReturnsCorrectFuelCard()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            var expectedFuelcardId = new Guid("a7245037-c683-4f82-b261-5c053502ed93");
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.GetFuelCardIncludedDriversByFuelCardId(expectedFuelcardId);
+            #endregion
+
+            #region Assert
+            var actionResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnedFuelCard = Assert.IsType<FuelCardDto>(actionResult.Value);
+            Assert.Equal(expectedFuelcardId, returnedFuelCard.Id);
+            #endregion
+        }
+
+        [Fact]
+        public async Task GetFuelCardIncludedDriversByFuelCardId_ReturnsNotFound_WhenFuelCardDoesNotExist()
+        {
+            #region Arrange
+            var fuelCardStoreMock = FuelCardStoreMock.GetFuelCardsStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            fuelCardStoreMock?.Setup(store => store.GetFuelCardByFuelCardIdAsync(It.IsAny<Guid>()))
+                          .ReturnsAsync((FuelCard)null);
+            var fuelCardController = new FuelCardsController(fuelCardStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
+
+            #region Act
+            var result = await fuelCardController.GetFuelCardIncludedDriversByFuelCardId(Guid.Empty);
+            #endregion
+
+            #region Assert
+            Assert.IsType<NotFoundObjectResult>(result.Result);
+            #endregion
+        }
     }
 }
