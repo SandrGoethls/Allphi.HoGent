@@ -10,7 +10,7 @@ namespace AllPhi.HoGent.Datalake.Data.Models.Enums
     public enum NumberOfDoors
     {
         [Display(Name = "2 deuren")]
-        TwoDoors = 2,
+        TwooDoors = 2,
 
         [Display(Name = "3 deuren")]
         ThreeDoors = 3,

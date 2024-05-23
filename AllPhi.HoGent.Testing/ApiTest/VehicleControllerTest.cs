@@ -130,7 +130,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 CarBrand = CarBrand.Bmw,
                 NumberOfDoors = NumberOfDoors.FiveDoors,
                 FuelType = FuelType.Benzine,
-                TypeOfCar = TypeOfCar.PassengerCar,
+                TypeOfCar = TypeOfCar.PassangerCar,
                 Status = Status.Active,
                 InspectionDate = DateTime.Now.AddYears(-1),
                 CreatedAt = DateTime.Now.AddYears(-1)
@@ -180,7 +180,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 CarBrand = CarBrand.Bmw,
                 NumberOfDoors = NumberOfDoors.FiveDoors,
                 FuelType = FuelType.Benzine,
-                TypeOfCar = TypeOfCar.PassengerCar,
+                TypeOfCar = TypeOfCar.PassangerCar,
                 Status = Status.Active,
                 InspectionDate = DateTime.Now.AddYears(-1),
                 CreatedAt = DateTime.Now.AddYears(-1)
@@ -211,7 +211,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 CarBrand = CarBrand.Bmw,
                 NumberOfDoors = NumberOfDoors.FiveDoors,
                 FuelType = FuelType.Benzine,
-                TypeOfCar = TypeOfCar.PassengerCar,
+                TypeOfCar = TypeOfCar.PassangerCar,
                 Status = Status.Active,
                 InspectionDate = DateTime.Now.AddYears(-1),
                 CreatedAt = DateTime.Now.AddYears(-1)
@@ -242,7 +242,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 CarBrand = CarBrand.Bmw,
                 NumberOfDoors = NumberOfDoors.FiveDoors,
                 FuelType = FuelType.Benzine,
-                TypeOfCar = TypeOfCar.PassengerCar,
+                TypeOfCar = TypeOfCar.PassangerCar,
                 Status = Status.Active,
                 InspectionDate = DateTime.Now.AddYears(-1),
                 CreatedAt = DateTime.Now.AddYears(-1)
