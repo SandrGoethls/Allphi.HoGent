@@ -47,7 +47,9 @@ namespace AllPhi.HoGent.Testing.MockData
                 CreatedAt = DateTime.Now.AddYears(-2)
             };
 
-            mock.Setup(x => x.GetVehicleByIdAsync(It.IsAny<Guid>())).ReturnsAsync(mockVehicle_1);
+            mock.Setup(x => x.GetVehicleByIdAsync(It.Is<Guid>(id => id == mockVehicle_1.Id))).ReturnsAsync(mockVehicle_1);
+
+            mock.Setup(x => x.GetVehicleByIdAsync(It.Is<Guid>(id => id != mockVehicle_1.Id))).ReturnsAsync((Vehicle)null);
 
             mock.Setup(x => x.GetAllVehiclesAsync(It.IsAny<FilterVehicle>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Pagination?>()))
                                 .ReturnsAsync((new List<Vehicle> { mockVehicle_1, mockVehicle_2 }, 2));
@@ -58,7 +60,7 @@ namespace AllPhi.HoGent.Testing.MockData
 
             mock.Setup(x => x.RemoveVehicle(It.IsAny<Guid>())).Returns(Task.CompletedTask);
 
-            mock.Setup(x => x.GetVehicleByIdAsync(It.IsAny<Guid>())).ReturnsAsync(It.IsAny<Vehicle>);
+            
 
             return mock;
         }
