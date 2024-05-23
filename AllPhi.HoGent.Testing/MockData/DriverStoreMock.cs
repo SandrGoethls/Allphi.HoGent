@@ -63,7 +63,7 @@ namespace AllPhi.HoGent.Testing.MockData
 
             mock.Setup(m => m.GetDriverByIdAsync(It.IsAny<Guid>())).ReturnsAsync(mockDriver);
 
-            mock.Setup(m => m.GetAllDriversAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Pagination>()))
+            mock.Setup(m => m.GetAllDriversAsync(It.IsAny<FilterDriver>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Pagination>()))
                                            .ReturnsAsync((mockDrivers, mockDrivers.Count));
 
             mock.Setup(m => m.AddDriver(It.IsAny<Driver>())).Returns(Task.CompletedTask);
