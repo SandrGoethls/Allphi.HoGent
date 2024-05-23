@@ -242,6 +242,24 @@ namespace AllPhi.HoGent.Testing.ApiTest
             #endregion
         }
 
+        [Fact]
+        public async Task UpdateDriver_ReturnsBadRequest_WhenDriverDataIsNull()
+        {
+            #region Arrange
+            var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
+
+            #region Act
+            var result = await controller.UpdateDriver(null);
+            #endregion
+
+            #region Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+            #endregion
+        }
+
         // <========================================================>
         // <==================== DELETE DRIVER =====================>
         // <========================================================>
@@ -263,6 +281,25 @@ namespace AllPhi.HoGent.Testing.ApiTest
             Assert.IsType<OkObjectResult>(result);
             var okResult = result as OkObjectResult;
             Assert.Equal($"Driver with ID {driverId} successfully deleted.", okResult?.Value);
+            #endregion
+        }
+
+        [Fact]
+        public async Task DeleteDriver_ReturnsBadRequest_WhenNoDriverIdIsFound()
+        {
+            #region Arrange
+            var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
+            var driverID = Guid.Empty;  
+            #endregion
+
+            #region Act
+            var result = await controller.DeleteDriver(driverID);
+            #endregion
+
+            #region Assert
+            Assert.IsType<BadRequestObjectResult>(result);
             #endregion
         }
     }
