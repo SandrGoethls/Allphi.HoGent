@@ -39,7 +39,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
                 return NotFound();
             }
 
-            var driverListDtos =  new DriverListDto
+            var driverListDtos = new DriverListDto
             {
                 DriverDtos = MapToDriverListDto(drivers),
                 TotalItems = count
@@ -80,9 +80,13 @@ namespace AllPhi.HoGent.RestApi.Controllers
                 await _driverStore.AddDriver(driver);
                 return Ok("Driver successfully added");
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Invalid driver ID: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -91,13 +95,22 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             try
             {
+                if (driverDto == null)
+                {
+                    return BadRequest("Driver data is null.");
+                }
+
                 Driver driver = MapToDriver(driverDto);
                 await _driverStore.UpdateDriver(driver);
                 return Ok("Driver successfully updated!");
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Invalid driver data: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -106,27 +119,54 @@ namespace AllPhi.HoGent.RestApi.Controllers
         {
             try
             {
+                if (driverId == null || driverId.Equals(Guid.Empty))
+                {
+                    return BadRequest(new { Message = "No driver ID found." });
+                }
+
                 await _driverStore.RemoveDriver(driverId);
                 return Ok($"Driver with ID {driverId} successfully deleted.");
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Invalid driver ID: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
         [HttpGet("getdriverincludedfuelcardsbydriverid/{driverId}")]
         public async Task<ActionResult<DriverDto>> GetDriverIncludedFuelCardsByDriverId(Guid driverId)
         {
-            var driverWithFuelCards = await _fuelCardDriverStore.GetDriverWithConnectedFuelCardsByDriverId(driverId);
-            Driver driver = await _driverStore.GetDriverByIdAsync(driverId);
-            if (driverWithFuelCards == null)
+            try
             {
-                return NotFound();
+                if (driverId == null || driverId.Equals(Guid.Empty))
+                {
+                    return BadRequest(new { Message = "Driver ID was not found." });
+                }
+
+                var driverWithFuelCards = await _fuelCardDriverStore.GetDriverWithConnectedFuelCardsByDriverId(driverId);
+                Driver driver = await _driverStore.GetDriverByIdAsync(driverId);
+
+                if (!driverWithFuelCards.Any())
+                {
+                    return NotFound(new { Message = "No fuel cards found for this driver." });
+                }
+
+                var driverDto = MapToDriverDto(driver);
+                driverDto.FuelCards = driverWithFuelCards.Select(x => x.FuelCard).ToList();
+                return Ok(driverDto);
             }
-            var driverDto = MapToDriverDto(driver);
-            driverDto.FuelCards = driverWithFuelCards.Select(x => x.FuelCard).ToList();
-            return Ok(driverDto);
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Invalid driver ID: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

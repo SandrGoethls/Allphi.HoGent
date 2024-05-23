@@ -22,35 +22,41 @@ namespace AllPhi.HoGent.Testing.ApiTest
         [Fact]
         public async Task GetDriverById_ReturnsCorrectItem_WhenDriverExists()
         {
-            // Arrange
+            #region Arrange
             var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
             var expectedDriverId = new Guid("a7245037-c683-4f82-b261-5c053502ed93");
+            #endregion
 
-            // Act
+            #region Act
             var result = await controller.GetDriverById(expectedDriverId);
+            #endregion
 
-            // Assert
+            #region Assert
             var actionResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedDriver = Assert.IsType<DriverDto>(actionResult.Value);
             Assert.Equal(expectedDriverId, returnedDriver.Id);
+            #endregion
         }
 
         [Fact]
         public async Task GetDriverById_ReturnsNotFound_WhenDriverDoesNotExist()
         {
-            // Arrange
+            #region Arrange
             var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             driverStoreMock?.Setup(x => x.GetDriverByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Driver?)null);
             var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
 
-            // Act
+            #region Act
             var result = await controller.GetDriverById(Guid.NewGuid());
+            #endregion
 
-            // Assert
+            #region Assert
             Assert.IsType<NotFoundObjectResult>(result.Result);
+            #endregion 
         }
 
         // <========================================================>
@@ -59,44 +65,117 @@ namespace AllPhi.HoGent.Testing.ApiTest
         [Fact]
         public async Task GetDrivers_ReturnsAllDrivers_WhenDriversExist()
         {
-            // Arrange
+            #region Arrange
             var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
 
-            // Act
+            #region Act
             var result = await controller.GetAllDrivers();
+            #endregion
 
-            // Assert
+            #region Assert
             var actionResult = Assert.IsType<OkObjectResult>(result.Result);
             var returnedDrivers = Assert.IsType<DriverListDto>(actionResult.Value);
             Assert.NotEmpty(returnedDrivers.DriverDtos);
+            #endregion
         }
 
         [Fact]
         public async Task GetDrivers_ReturnsNotFound_WhenNoDriversExist()
         {
-            // Arrange
+            #region Arrange
             var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             driverStoreMock.Setup(m => m.GetAllDriversAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Pagination>()))
                 .ReturnsAsync((new List<Driver>(), 0));
             var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
+            #endregion
 
-            // Act
+            #region Act
             var result = await controller.GetAllDrivers();
+            #endregion
 
-            // Assert
+            #region Assert
             Assert.IsType<NotFoundResult>(result.Result);
+            #endregion
         }
 
         // <========================================================>
         // <====================== ADD DRIVER ======================>
         // <========================================================>
         [Fact]
+        public async Task AddDriver_ReturnsBadRequest_WhenDriverWithRegisterNumberAlreadyExists()
+        {
+            #region Arrange
+            var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            driverStoreMock.Setup(x => x.DriverWithRegisterNumberExists(It.IsAny<string>())).Returns(true);
+            var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
+            var newDriverDto = new DriverDto
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Bart",
+                LastName = "Bartens",
+                Status = Status.Active,
+                City = "Zele",
+                HouseNumber = "400",
+                PostalCode = "4000NA",
+                RegisterNumber = "95052329179",
+                DateOfBirth = new DateTime(1995, 05, 23),
+                Street = "Kortstraat",
+                TypeOfDriverLicense = TypeOfDriverLicense.B
+            };
+            #endregion
+
+            #region Act
+            var result = await controller.AddDriver(newDriverDto);
+            #endregion
+
+            #region Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+            #endregion
+        }
+
+        [Fact]
+        public async Task AddDriver_ReturnsBadRequest_WhenInvalidRegisterNumberIsProvided()
+        {
+            #region Arrange
+            var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            driverStoreMock.Setup(x => x.DriverWithRegisterNumberExists(It.IsAny<string>())).Returns(false);
+            var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
+            var newDriverDto = new DriverDto
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Bart",
+                LastName = "Bartens",
+                Status = Status.Active,
+                City = "Zele",
+                HouseNumber = "400",
+                PostalCode = "4000NA",
+                RegisterNumber = "95132329179",
+                DateOfBirth = new DateTime(1995, 05, 23),
+                Street = "Kortstraat",
+                TypeOfDriverLicense = TypeOfDriverLicense.B
+            };
+            #endregion
+
+            #region Act
+            var result = await controller.AddDriver(newDriverDto);
+            #endregion
+
+            #region Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+            #endregion
+        }
+
+
+        [Fact]
         public async Task AddDriver_ReturnsOk_WhenDriverIsSuccessfullyAdded()
         {
-            // Arrange
+            #region Arrange
             var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
@@ -114,14 +193,17 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 Street = "Kortstraat",
                 TypeOfDriverLicense = TypeOfDriverLicense.B
             };
+            #endregion
 
-            // Act
+            #region Act
             var result = await controller.AddDriver(newDriverDto);
+            #endregion
 
-            // Assert
+            #region Assert
             Assert.IsType<OkObjectResult>(result);
             var okResult = result as OkObjectResult;
             Assert.Equal("Driver successfully added", okResult?.Value);
+            #endregion
         }
 
         // <========================================================>
@@ -130,7 +212,7 @@ namespace AllPhi.HoGent.Testing.ApiTest
         [Fact]
         public async Task UpdateDriver_ReturnsOk_WhenDriverIsSuccessfullyUpdated()
         {
-            // Arrange
+            #region Arrange
             var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
@@ -147,14 +229,17 @@ namespace AllPhi.HoGent.Testing.ApiTest
                 Street = "Bijgewerkt",
                 TypeOfDriverLicense = TypeOfDriverLicense.D
             };
+            #endregion
 
-            // Act
+            #region Act
             var result = await controller.UpdateDriver(driverToUpdate);
+            #endregion
 
-            // Assert
+            #region Assert
             Assert.IsType<OkObjectResult>(result);
             var okResult = result as OkObjectResult;
             Assert.Equal("Driver successfully updated!", okResult?.Value);
+            #endregion
         }
 
         // <========================================================>
@@ -163,19 +248,22 @@ namespace AllPhi.HoGent.Testing.ApiTest
         [Fact]
         public async Task DeleteDriver_ReturnsOk_WhenDriverIsSuccessfullyDeleted()
         {
-            // Arrange
+            #region Arrange
             var driverStoreMock = DriverStoreMock.GetDriverStoreMock();
             var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
             var controller = new DriversController(driverStoreMock.Object, fuelCardDriverStoreMock.Object);
             var driverId = new Guid("c7245037-c683-4f82-b261-5c053502ed93");
+            #endregion
 
-            // Act
+            #region Act
             var result = await controller.DeleteDriver(driverId);
+            #endregion
 
-            // Assert
+            #region Assert
             Assert.IsType<OkObjectResult>(result);
             var okResult = result as OkObjectResult;
             Assert.Equal($"Driver with ID {driverId} successfully deleted.", okResult?.Value);
+            #endregion
         }
     }
 }
