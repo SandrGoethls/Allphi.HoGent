@@ -77,10 +77,10 @@ namespace AllPhi.HoGent.RestApi.Controllers
 
                 var (fuelCards, count) = await _fuelCardStore.GetAllFuelCardsAsync(filterFuelCard, sortBy, isAscending, pagination);
 
-                if (!fuelCards.Any())
-                {
-                    return NotFound( new { Message = "No vehicles found."});
-                }
+                //if (!fuelCards.Any())
+                //{
+                //    return NotFound( new { Message = "No vehicles found."});
+                //}
 
                 var fuelCardListDtos = new FuelCardListDto
                 {

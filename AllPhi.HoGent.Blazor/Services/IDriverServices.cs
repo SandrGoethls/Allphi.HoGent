@@ -8,7 +8,7 @@ namespace AllPhi.HoGent.Blazor.Services
     {
         Task<(bool, string message)> AddFDriverAsync(DriverDto driverDto);
         Task<bool> DeleteDriverAsync(Guid driverId);
-        Task<DriverListDto> GetAllDriversAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] Pagination pagination);
+        Task<DriverListDto> GetAllDriversAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] FilterDriver filterDriver, [Optional] Pagination pagination);
         Task<bool> UpdateDriverAsync(DriverDto driverDto);
     }
 }

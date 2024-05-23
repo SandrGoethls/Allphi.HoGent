@@ -81,10 +81,10 @@ namespace AllPhi.HoGent.RestApi.Controllers
 
                 var (vehicles, count) = await _vehicleStore.GetAllVehiclesAsync(filterVehicle, sortBy, isAscending, pagination);
 
-                if (!vehicles.Any())
-                {
-                    return NotFound(new { Message = "No vehicles found." });
-                }
+                //if (!vehicles.Any())
+                //{
+                //    return NotFound(new { Message = "No vehicles found." });
+                //}
 
                 var vehicleListDto = new VehicleListDto
                 {

@@ -5,45 +5,15 @@
 @using AllPhi.HoGent.Blazor.Dto
 @using AllPhi.HoGent.Datalake.Data.Helpers
 @using AllPhi.HoGent.Blazor.Components
+@using AllPhi.HoGent.Blazor.ExcelModel
 
 @inject IFuelCardServices _fuelCardService
 @inject IDriverServices _driverService
 @inject IVehicleServices _vehicleService
 @inject IFuelCardDriverServices _fuelCardDriverService
 @inject IDriverVehicleServices _driverVehicleService
+@inject IExcelExportHelper _excelHelper
 
-<style>
-    .table-responsive {
-        overflow-x: auto;
-        width: 100%;
-    }
-
-    .main-table {
-        width: inherit;
-    }
-
-    .update-table {
-        /*padding-top: 100px;*/
-    }
-
-
-    .scrollable-driver-list {
-        max-height: 220px;
-        overflow-y: auto;
-    }
-
-    .tabel-row-design:hover {
-        background-color: rgba(33,150,243,0.058823529411764705) !important;
-    }
-
-    table tbody .eentest :hover {
-        background-color: rgba(33,150,243,0.058823529411764705) !important;
-    }
-
-    .search-top {
-        height: fit-content;
-    }
-</style>
 
 <PageTitle>FuelCards</PageTitle>
 
@@ -61,10 +31,18 @@ else
                     <div class="d-flex button-mobile-ui">
                         @if (_showAllFuelCards)
                         {
-                            <div class="d-flex flex-wrap">
-                                <button type="button" class="btn buttons-succes m-2" @onclick="AddNewFuelCard">Tankkaart toevoegen</button>
-                                <input class="form-input-select m-2 search-top" placeholder="Zoek op kaartnummer" id="searchOnLicencePlate" @bind="_searchCardNumber" @oninput="OnChangeCardNumber" />
-                            </div>
+                            <form class="d-flex flex-wrap justify-content-evenly form-block">
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <button type="button" class="btn buttons-succes m-2" @onclick="AddNewFuelCard">Tankkaart toevoegen</button>
+                                    <div class="form-floating">
+                                        <input class="form-control m-2 search-top" placeholder="Zoek op kaartnummer" id="searchOnCardnumber" @bind="_searchCardNumber" @oninput="OnChangeCardNumber" />
+                                        <label class="modal-form-label" for="searchOnCardnumber">kaartnummer</label>
+                                    </div>
+                                    <button class="btn p-0 download-excel download-size" type="button" title="Download Excel" @onclick="ExportData">
+                                        <span class="download-excel fa fa-file-excel font-size-x-large "></span>
+                                    </button>
+                                </div>
+                            </form>
                         }
                         else if (!_showAllFuelCards)
                         {
@@ -382,6 +360,8 @@ else
     public string ErrorTitle { get; set; } = string.Empty;
     public string ErrorMessage { get; set; } = string.Empty;
 
+    private string _selectedFormat = "xlsx";
+
     private string _searchCardNumber = string.Empty;
     private string _searchNameTerm = string.Empty;
     private string _searchRegisterNumberTerm = string.Empty;
@@ -432,7 +412,7 @@ else
         await SelectFuelCard(fuelCardDto);
         ShowAllFuelcards();
         _showDeleteConfirmation = true;
-        _showAllFuelCards = false;
+        _showAllFuelCards = true;
 
     }
 
@@ -701,6 +681,38 @@ else
 
         if (version == _currentFilterVersion)
             await LoadFuelCardListDto();
+    }
+
+    // <=====================================================>
+    // <======================= EXCEL =======================>
+    // <=====================================================>
+    private async Task ExportData()
+    {
+        _isLoading = true;
+        string extension = _selectedFormat == "csv" ? ".csv" : ".xlsx";
+        string exportFileName = $"AllPhi_{DateTime.Now:dd-MM-yyyy}";
+
+        var fuelcards = await _fuelCardService.GetAllFuelCardsAsync();
+        List<FuelcardExcelModel> _exportFuelcards = new();
+
+        foreach (var fuelcard in fuelcards.FuelCardDtos)
+        {
+            FuelcardExcelModel fuelCardDto = new FuelcardExcelModel
+            {
+                Id = fuelcard.Id,
+                CreatedAt = fuelcard.CreatedAt.ToString(),
+                CardNumber = fuelcard.CardNumber,
+                ValidityDate = fuelcard.ValidityDate.ToString(),
+                Pin = fuelcard.Pin,
+                Status = fuelcard.Status.ToString()
+            };
+
+            _exportFuelcards.Add(fuelCardDto);
+        }
+
+        await _excelHelper.ExportDataAsync(_exportFuelcards, _selectedFormat, exportFileName);
+
+        _isLoading = false;
     }
 }
 

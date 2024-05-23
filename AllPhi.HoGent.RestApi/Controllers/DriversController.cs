@@ -25,19 +25,27 @@ namespace AllPhi.HoGent.RestApi.Controllers
         }
 
         [HttpGet("getalldrivers")]
-        public async Task<ActionResult<(List<DriverDto>, int)>> GetAllDrivers([FromQuery][Optional] string? sortBy, [FromQuery][Optional] bool isAscending, [FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        public async Task<ActionResult<(List<DriverDto>, int)>> GetAllDrivers([FromQuery] string? searchByFirstName,
+                                                                              [FromQuery] string? searchByLastName,
+                                                                              [FromQuery] string? searchByRegisternumber, 
+                                                                              [FromQuery][Optional] string? sortBy, 
+                                                                              [FromQuery][Optional] bool isAscending, 
+                                                                              [FromQuery] int? pageNumber = null, 
+                                                                              [FromQuery] int? pageSize = null)
         {
+            FilterDriver? filterDriver = new() { SearchByFirstName = searchByFirstName ?? "", SearchByLastName = searchByLastName ?? "", SearchByRegisternumber = searchByRegisternumber ?? "" };
+
             Pagination? pagination = null;
             if (pageNumber.HasValue && pageSize.HasValue)
             {
                 pagination = new Pagination(pageNumber.Value, pageSize.Value);
             }
 
-            var (drivers, count) = await _driverStore.GetAllDriversAsync(sortBy, isAscending, pagination);
-            if (count <= 0)
-            {
-                return NotFound();
-            }
+            var (drivers, count) = await _driverStore.GetAllDriversAsync(filterDriver, sortBy, isAscending, pagination);
+            //if (count <= 0)
+            //{
+            //    return NotFound();
+            //}
 
             var driverListDtos =  new DriverListDto
             {

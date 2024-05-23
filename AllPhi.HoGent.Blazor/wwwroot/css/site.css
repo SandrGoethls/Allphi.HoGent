@@ -260,3 +260,111 @@ body, html {
 .border-raduis {
     border-radius: 5px;
 }
+
+.form-floating {
+    margin-right: 12px;
+}
+
+.form-control {
+    height: 0px !important;
+}
+
+.form-floating > .form-control, .form-floating > .form-control-plaintext, .form-floating > .form-select {
+    min-height: calc(2.5rem + calc(var(--bs-border-width)* 2)) !important;
+}
+
+.show-dialog-background {
+    z-index: 1;
+}
+
+.modal-form-label {
+    color: #0000007a;
+}
+
+.download-excel {
+    color: #1fad4b;
+    height: 35px;
+    margin-bottom: 5px;
+    margin-left: 6px;
+}
+
+
+
+
+
+
+/* <============================================================> */
+/* <======================= DRIVERS PAGE =======================> */
+/* <============================================================> */
+.scrollable-list {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+/* <============================================================> */
+/* <====================== VEHICLES PAGES ======================> */
+/* <============================================================> */
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.main-table {
+    width: inherit;
+}
+
+.update-table {
+    /*padding-top: 100px;*/
+}
+
+
+.scrollable-driver-list {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.tabel-row-design:hover {
+    background-color: rgba(33,150,243,0.058823529411764705) !important;
+}
+
+table tbody .eentest :hover {
+    background-color: rgba(33,150,243,0.058823529411764705) !important;
+}
+
+.search-top {
+    height: fit-content;
+}
+
+/* <============================================================> */
+/* <====================== FUELCARDS PAGE ======================> */
+/* <============================================================> */
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.main-table {
+    width: inherit;
+}
+
+.update-table {
+    /*padding-top: 100px;*/
+}
+
+
+.scrollable-driver-list {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.tabel-row-design:hover {
+    background-color: rgba(33,150,243,0.058823529411764705) !important;
+}
+
+table tbody .eentest :hover {
+    background-color: rgba(33,150,243,0.058823529411764705) !important;
+}
+
+.search-top {
+    height: fit-content;
+}

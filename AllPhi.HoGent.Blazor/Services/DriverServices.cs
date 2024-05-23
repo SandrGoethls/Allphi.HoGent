@@ -17,13 +17,20 @@ namespace AllPhi.HoGent.Blazor.Services
             _httpClient = httpClient;
         }
 
-        public async Task<DriverListDto> GetAllDriversAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] Pagination pagination)
+        public async Task<DriverListDto> GetAllDriversAsync([Optional] string? sortBy, [Optional] bool isAscending, [Optional] FilterDriver filterDriver, [Optional] Pagination pagination)
         {
             var queryString = HttpUtility.ParseQueryString(string.Empty);
             if (!string.IsNullOrEmpty(sortBy)) 
                 queryString["sortBy"] = sortBy;
 
             queryString["isAscending"] = isAscending.ToString();
+
+            if (filterDriver != null)
+            {
+                queryString["searchByFirstName"] = filterDriver?.SearchByFirstName?.ToString();
+                queryString["searchByLastName"] = filterDriver?.SearchByLastName?.ToString();
+                queryString["searchByRegisternumber"] = filterDriver?.SearchByRegisternumber?.ToString();
+            }
 
             if (pagination != null)
             {

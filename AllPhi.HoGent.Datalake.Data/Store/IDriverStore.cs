@@ -12,7 +12,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
     public interface IDriverStore
     {
         Task<Driver> GetDriverByIdAsync(Guid driverId);
-        Task<(List<Driver>, int)> GetAllDriversAsync([Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null);
+        Task<(List<Driver>, int)> GetAllDriversAsync(FilterDriver? filterDriver, [Optional] string? sortBy, [Optional] bool isAscending, Pagination? pagination = null);
         Task AddDriver(Driver driver);
         Task UpdateDriver(Driver driver);
         Task RemoveDriver(Guid driverId);

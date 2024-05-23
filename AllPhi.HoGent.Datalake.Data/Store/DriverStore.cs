@@ -26,7 +26,7 @@ namespace AllPhi.HoGent.Datalake.Data.Store
             return await _dbContext.Drivers.FirstOrDefaultAsync(x => x.Id == driverId) ?? new();
         }
 
-        public async Task<(List<Driver>, int)> GetAllDriversAsync([Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
+        public async Task<(List<Driver>, int)> GetAllDriversAsync(FilterDriver? filterDriver, [Optional] string sortBy, [Optional] bool isAscending, Pagination? pagination = null)
         {
             List<Driver> drivers = new();
 
@@ -44,6 +44,18 @@ namespace AllPhi.HoGent.Datalake.Data.Store
                 "status" => isAscending ? driverQuery.OrderBy(x => x.Status) : driverQuery.OrderByDescending(x => x.Status),
                 _ => driverQuery
             };
+
+            if (filterDriver != null)
+            {
+                if (!string.IsNullOrEmpty(filterDriver.SearchByFirstName))
+                    sorteddrivers = sorteddrivers.Where(x => x.FirstName.Contains(filterDriver.SearchByFirstName));
+
+                if (!string.IsNullOrEmpty(filterDriver.SearchByLastName))
+                    sorteddrivers = sorteddrivers.Where(x => x.LastName.Contains(filterDriver.SearchByLastName));
+
+                if (!string.IsNullOrEmpty(filterDriver.SearchByRegisternumber))
+                    sorteddrivers = sorteddrivers.Where(x => x.RegisterNumber.Contains(filterDriver.SearchByRegisternumber));
+            }
 
             var totalItems = await sorteddrivers.CountAsync();
             if (pagination != null)

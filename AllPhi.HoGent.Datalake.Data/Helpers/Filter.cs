@@ -21,4 +21,11 @@ namespace AllPhi.HoGent.Datalake.Data.Helpers
     {
         public string SearchByCardNumber { get; set; } = string.Empty;
     }
+
+    public class FilterDriver
+    {
+        public string? SearchByFirstName { get; set; } = string.Empty;
+        public string? SearchByLastName { get; set; } = string.Empty;
+        public string? SearchByRegisternumber { get; set; } = string.Empty;
+    }
 }

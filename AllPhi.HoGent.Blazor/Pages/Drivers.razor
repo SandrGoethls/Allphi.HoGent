@@ -4,6 +4,7 @@
 @using AllPhi.HoGent.Blazor.Dto
 @using AllPhi.HoGent.Blazor.Dto.Enums
 @using AllPhi.HoGent.Datalake.Data.Helpers
+@using AllPhi.HoGent.Blazor.ExcelModel
 @using AllPhi.HoGent.Blazor.Components
 
 @inject IDriverServices _driverService
@@ -11,14 +12,8 @@
 @inject IFuelCardServices _fuelCardService
 @inject IFuelCardDriverServices _fuelCardDriverService
 @inject IDriverVehicleServices _driverVehicleService
+@inject IExcelExportHelper _excelHelper
 
-
-<style>
-    .scrollable-list {
-        max-height: 220px;
-        overflow-y: auto;
-    }
-</style>
 
 <PageTitle>Drivers</PageTitle>
 
@@ -35,7 +30,26 @@ else
                     <div class="d-flex button-mobile-ui">
                         @if (_showAllDrivers)
                         {
-                            <button type="button" class="btn buttons-succes m-2" @onclick="AddNewDriver">Bestuurder toevoegen</button>
+                            <form class="d-flex flex-wrap justify-content-evenly form-block">
+                                <div class="d-flex flex-wrap  align-items-center">
+                                    <button type="button" class="btn buttons-succes m-2" @onclick="AddNewDriver">Bestuurder toevoegen</button>
+                                    <div class="form-floating">
+                                        <input class="form-control m-2 search-top" placeholder="Zoek op voornaam" id="searchOnFirstName" @bind="_searchFirstName" @oninput="OnChangeFirstName" />
+                                        <label class="modal-form-label" for="searchOnFirstName">voornaam</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input class="form-control m-2 search-top" placeholder="Zoek op achternaam" id="searchOnLastName" @bind="_searchLastName" @oninput="OnChangeLastName" />
+                                        <label class="modal-form-label" for="searchOnLastName">achternaam</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input class="form-control m-2 search-top" placeholder="Zoek op rijksregisternummer" id="searchOnRegisternumber" @bind="_searchRegisternumnber" @oninput="OnChangeRegisternumber" />
+                                        <label class="modal-form-label" for="searchOnRegisternumber">rijksregisternummer</label>
+                                    </div>
+                                    <button class="btn p-0 download-excel download-size" type="button" title="Download Excel" @onclick="ExportData">
+                                        <span class="download-excel fa fa-file-excel font-size-x-large "></span>
+                                    </button>
+                                </div>
+                            </form>
                         }
                         else if (!_showAllDrivers)
                         {
@@ -361,7 +375,7 @@ else
                     <p>Bent u zeker dat u de bestuurder wilt verwijderen?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="() => _showDeleteConfirmation = false">Neen</button>
+                    <button type="button" class="btn btn-secondary" @onclick="HandleDialogContainer">Neen</button>
                     <button type="button" class="btn btn-primary" @onclick="async () => { await DeleteDriver(_selectedDriverDto); }">Ja</button>
                 </div>
             </div>
@@ -394,6 +408,8 @@ else
     public string ErrorTitle { get; set; } = string.Empty;
     public string ErrorMessage { get; set; } = string.Empty;
 
+    private string _selectedFormat = "xlsx";
+
     private bool _driverAdded = false;
     private bool _driverUpdated = false;
     private bool _driverDeleted = false;
@@ -409,6 +425,9 @@ else
     private IEnumerable<VehicleDto> _filteredListVehicleDto;
     private string _searchCardNumberTerm = string.Empty;
     private string _searchLicensePlateTerm = string.Empty;
+    private string _searchFirstName = string.Empty;
+    private string _searchLastName = string.Empty;
+    private string _searchRegisternumnber = string.Empty;
     private int _currentFilterVersion = 0;
     private const int FilterDelay = 700;
 
@@ -423,8 +442,9 @@ else
 
     private async Task LoadDriverListDto()
     {
+        FilterDriver filterDriver = new FilterDriver() { SearchByFirstName = _searchFirstName, SearchByLastName = _searchLastName, SearchByRegisternumber = _searchRegisternumnber };
         Pagination pagination = new Pagination(_pageNumber, _pageSize);
-        _driverListDto = await _driverService.GetAllDriversAsync(_currentSortColumn, _isSortAscending, pagination);
+        _driverListDto = await _driverService.GetAllDriversAsync(_currentSortColumn, _isSortAscending, filterDriver, pagination);
         _totalPages = (int)Math.Ceiling((double)_driverListDto.TotalItems / _pageSize);
     }
 
@@ -449,7 +469,7 @@ else
         await SelectDriver(driverDto);
         ShowAllDrivers();
         _showDeleteConfirmation = true;
-        _showAllDrivers = false;
+        _showAllDrivers = true;
 
     }
 
@@ -624,6 +644,12 @@ else
         _isLoading = false;
     }
 
+    private void HandleDialogContainer()
+    {
+        _showDeleteConfirmation = false;
+        _showAllDrivers = true;
+    }
+
     // <====================================================>
     // <==================== PAGINATION ====================>
     // <====================================================>
@@ -679,5 +705,76 @@ else
             else
                 _filteredListVehicleDto = _vehicleListDto?.VehicleDtos ?? new();
         }
+    }
+
+    private async Task OnChangeFirstName(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        _searchFirstName = e.Value?.ToString() ?? string.Empty;
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+            await LoadDriverListDto();
+    }
+
+    private async Task OnChangeLastName(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        _searchLastName = e.Value?.ToString() ?? string.Empty;
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+            await LoadDriverListDto();
+    }
+
+    private async Task OnChangeRegisternumber(ChangeEventArgs e)
+    {
+        var version = ++_currentFilterVersion;
+        _searchRegisternumnber = e.Value?.ToString() ?? string.Empty;
+
+        await Task.Delay(FilterDelay);
+
+        if (version == _currentFilterVersion)
+            await LoadDriverListDto();
+    }
+
+    // <=====================================================>
+    // <======================= EXCEL =======================>
+    // <=====================================================>
+    private async Task ExportData()
+    {
+        _isLoading = true;
+        string extension = _selectedFormat == "csv" ? ".csv" : ".xlsx";
+        string exportFileName = $"AllPhi_{DateTime.Now:dd-MM-yyyy}";
+
+        var drivers = await _driverService.GetAllDriversAsync();
+        List<DriverExcelModel> _exportDrivers = new();
+
+        foreach (var driver in drivers.DriverDtos)
+        {
+            DriverExcelModel driverExcel = new DriverExcelModel
+            {
+                Id = driver.Id,
+                CreatedAt = driver.CreatedAt.ToString(),
+                City = driver.City,
+                DateOfBirth = driver.DateOfBirth.ToString(),
+                FirstName = driver.FirstName,
+                HouseNumber = driver.HouseNumber,
+                LastName = driver.LastName,
+                PostalCode = driver.PostalCode,
+                RegisterNumber = driver.RegisterNumber,
+                Street = driver.Street,
+                TypeOfDriverLicense = driver.TypeOfDriverLicense.ToString(),
+                Status = driver.Status.ToString()
+            };
+
+            _exportDrivers.Add(driverExcel);
+        }
+
+        await _excelHelper.ExportDataAsync(_exportDrivers, _selectedFormat, exportFileName);
+
+        _isLoading = false;
     }
 }
