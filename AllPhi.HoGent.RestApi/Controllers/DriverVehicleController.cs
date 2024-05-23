@@ -23,18 +23,30 @@ namespace AllPhi.HoGent.RestApi.Controllers
         [HttpGet("getalldrivervehicles")]
         public async Task<ActionResult<DriverVehicleListDto>> GetAllDriverVehicles()
         {
-            var (driverVehicles, count) = await _driverVehicleStore.GetAllDriverVehicleAsync();
-            if (driverVehicles == null)
+            try
             {
-                return NotFound();
-            }
+                var (driverVehicles, count) = await _driverVehicleStore.GetAllDriverVehicleAsync();
 
-            var driverVehicleListDtos = new DriverVehicleListDto
+                if (!driverVehicles.Any())
+                {
+                    return NotFound(new { Messagd = "No drivers found." });
+                }
+
+                var driverVehicleListDtos = new DriverVehicleListDto
+                {
+                    DriverVehicleDtos = MapToDriverVehicleListDto(driverVehicles),
+                    TotalItems = count
+                };
+                return Ok(driverVehicleListDtos);
+            }
+            catch (ArgumentException ex)
             {
-                DriverVehicleDtos = MapToDriverVehicleListDto(driverVehicles),
-                TotalItems = count
-            };
-            return Ok(driverVehicleListDtos);
+                return BadRequest($"Invalid driver data: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred.", Detail = ex.Message });
+            }
         }
 
         [HttpGet("getdriverwithvehiclesbydriverid/{driverId}")]
@@ -56,6 +68,10 @@ namespace AllPhi.HoGent.RestApi.Controllers
 
                 return Ok(MapToDriverVehicleListDto(driverVehicles));
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Invalid driver ID: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = "An unexpected error occurred.", Detail = ex.Message });
@@ -74,7 +90,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
 
                 var driverVehicles = await _driverVehicleStore.GetVehicleWithConnectedDriversByVehicleId(vehicleId);
 
-                if (driverVehicles == null || !driverVehicles.Any())
+                if (!driverVehicles.Any())
                 {
                     return NotFound(new { Message = "No drivers found for this vehicle ID." });
                 }
@@ -82,9 +98,9 @@ namespace AllPhi.HoGent.RestApi.Controllers
                 var driverVehicleDtos = MapToDriverVehicleListDto(driverVehicles);
                 return Ok(driverVehicleDtos);
             }
-            catch (KeyNotFoundException)
+            catch (ArgumentException ex)
             {
-                return NotFound(new { Message = "Vehicle not found." });
+                return BadRequest($"Invalid driver ID: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -111,9 +127,9 @@ namespace AllPhi.HoGent.RestApi.Controllers
                 await _driverVehicleStore.UpdateDriverWithVehiclesByDriverIdAndListOfVehicleIds(driverId, newVehicleIds);
                 return Ok();
             }
-            catch (KeyNotFoundException)
+            catch (ArgumentException ex)
             {
-                return NotFound(new { Message = "Driver not found." });
+                return BadRequest($"Invalid driver ID: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -132,7 +148,7 @@ namespace AllPhi.HoGent.RestApi.Controllers
                     return BadRequest(new { Message = "Vehicle ID cannot be empty." });
                 }
 
-                if (newDriverIds == null || !newDriverIds.Any())
+                if (!newDriverIds.Any())
                 {
                     return BadRequest(new { Message = "Driver IDs list cannot be null or empty." });
                 }
@@ -140,9 +156,9 @@ namespace AllPhi.HoGent.RestApi.Controllers
                 await _driverVehicleStore.UpdateVehicleWithDriversByFuelCardIdAndDriverIds(vehicleId, newDriverIds);
                 return Ok();
             }
-            catch (KeyNotFoundException)
+            catch (ArgumentException ex)
             {
-                return NotFound(new { Message = "Vehicle not found." });
+                return BadRequest($"Invalid driver ID: {ex.Message}");
             }
             catch (Exception ex)
             {
