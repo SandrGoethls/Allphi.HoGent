@@ -189,5 +189,27 @@ namespace AllPhi.HoGent.Testing.ApiTest
             Assert.IsType<NotFoundObjectResult>(result);
             #endregion
         }
+
+        [Fact]
+        public async Task UpdateFuelCardDriversByFuelId_ReturnsInternalServerError_WhenExceptionIsThrown()
+        {
+            #region Arrange
+            var fuelCardDriverStoreMock = FuelCardDriverStoreMock.GetFuelCardDriverStoreMock();
+            fuelCardDriverStoreMock.Setup(x => x.UpdateFuelCardWithDriversByFuelCardIdAndDriverIds(It.IsAny<Guid>(), It.IsAny<List<Guid>>()))
+                                                .Throws(new Exception());
+            var controller = new FuelCardDriverController(fuelCardDriverStoreMock.Object);
+            var fuelCardId = Guid.NewGuid();
+            var newDriverIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+            #endregion
+
+            #region Act
+            var result = await controller.UpdateFuelCardDriversByFuelCardId(fuelCardId, newDriverIds);
+            #endregion
+
+            #region Assert
+            Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, (result as ObjectResult).StatusCode);
+            #endregion
+        }
     }
 }

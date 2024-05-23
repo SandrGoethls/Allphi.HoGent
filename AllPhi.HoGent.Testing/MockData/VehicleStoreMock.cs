@@ -47,7 +47,7 @@ namespace AllPhi.HoGent.Testing.MockData
                 CreatedAt = DateTime.Now.AddYears(-2)
             };
 
-            mock.Setup(x => x.GetVehicleByIdAsync(mockVehicle_1.Id)).ReturnsAsync(mockVehicle_1);
+            mock.Setup(x => x.GetVehicleByIdAsync(It.IsAny<Guid>())).ReturnsAsync(mockVehicle_1);
 
             mock.Setup(x => x.GetAllVehiclesAsync(It.IsAny<FilterVehicle>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Pagination?>()))
                                 .ReturnsAsync((new List<Vehicle> { mockVehicle_1, mockVehicle_2 }, 2));
